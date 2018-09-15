@@ -2,6 +2,7 @@
 #define _SENSOR_H_INCLUDED_
 
 #include <iostream>
+#include "Array.h"
 using namespace std
 
 class sensor {
@@ -11,9 +12,11 @@ class sensor {
 public:
 	sensor();
 	sensor(size_t n);
+	sensor(string a);
+	sensor(string a, size_t n);
 	sensor( const sensor & ); 
 	~sensor( );
-	sensor&	operator=( const sensor & ); 
+	sensor&		operator=( const sensor & ); 
 	bool 		operator==( const sensor & ) const; 
 	bool 		operator!=( const sensor & ) const; 
 	sensor &		operator[ ]( int );
@@ -24,7 +27,7 @@ public:
 	double	min(&sensor,int, int) const;	//Hace el minimo entre la posicion int y la posicion int
 	double	subsize(&sensor,int, int) const;	//Calcula la cantidad de valores que se usaron para las operaciones anteriores
 
-	friend std::istream& operator>>(std::istream&,sensor&);
+	//friend std::istream& operator>>(std::istream&,sensor&);
 
 };
 
