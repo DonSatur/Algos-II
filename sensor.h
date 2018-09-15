@@ -1,3 +1,4 @@
+#ifndef _SENSOR_H_INCLUDED_
 #define _SENSOR_H_INCLUDED_
 
 #include <iostream>
