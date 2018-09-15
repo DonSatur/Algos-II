@@ -1,21 +1,128 @@
 #include <sensor.h>
-#include <iostream>
 #include <cmath>
+#include <cassert>
+#include <cstdlib>
+#include <iostream>
+#include <sstream>
+#include <stdio.h>
+#include "Array.h"
 
 using namespace std;
 
+sensor::sensor()
+{
+	name=0;
+	values=0;
+}
 
-sensor::promedio(&sensor S,int pos1, int pos2)
+sensor::sensor(size_t n)
+{
+	name=0;
+	values(n);
+}
+
+sensor::sensor(string a)
+{
+	name=a;
+	values=0;
+}
+
+sensor::sensor(string a, size_t n)
+{
+	name=a;
+	values(n);
+}
+
+sensor::sensor(const sensor & S)
+{	
+	name=S.name;
+	values=S.values;
+}
+
+sensor::~sensor()
+{
+	if(values)
+	{
+		~values;
+	}
+}
+
+sensor&
+sensor::operator=( const sensor & S)
+{
+	if ( S.name == this->name && S.values==this->values) 
+	{
+		return *this;
+	}
+	// Después, cambiamos el tamaño del arreglo si es necesario y procedemos a copiar
+	if(S.name != this->name)
+	{
+		name=S.name;
+	}
+
+	if (S.values != this->values)
+	{
+		values=S.values;
+	}
+
+	return *this;
+
+} 
+
+
+bool
+sensor::operator==( const sensor & S) const
+{
+	if ( name != S.name)
+		return false; 
+	else{
+			if (values != S.values){
+				return false;
+			}
+		}
+
+       	return true;
+}
+bool
+sensor::operator!=( const sensor & ) const
+{
+	if ( name == S.name)
+		return false; 
+	else{
+			if (values == S.values){
+				return false;
+			}
+		}
+
+       	return true;
+}
+double &
+sensor::operator[ ](int pos)
+{
+	return sensor.values[pos];
+}
+double const &
+sensor::operator[ ](int pos) const
+{
+	return sensor.values[pos];
+}
+
+
+friend std::istream& operator>>(std::istream&,sensor&);
+
+double
+sensor::mean(&sensor S,int pos1, int pos2)
 {
 	int i, pos2;
 	double sum=0;
 	for i=pos1,i++,i<=pos2
 		sum+=S[i];
-	return sum/(pos2-pos1);
+	return sum/(pos2-pos1+1);
 
 }
 
-sensor::maximo(&sensor S,int pos1, int pos2)
+double
+sensor::max(&sensor S,int pos1, int pos2)
 {
 	int i;
 	double max=0;
@@ -25,7 +132,8 @@ sensor::maximo(&sensor S,int pos1, int pos2)
 	return max;
 }
 
-sensor::minimo(&sensor S,int pos1, int pos2)
+double
+sensor::min(&sensor S,int pos1, int pos2)
 {
 	int i;
 	double min=0;
@@ -35,192 +143,23 @@ sensor::minimo(&sensor S,int pos1, int pos2)
 	return min;
 }
 
-complejo::complejo(double r) : re_(r), im_(0)
-{
-}
-
-complejo::complejo(double r, double i) : re_(r), im_(i)
-{
-}
-
-complejo::complejo(complejo const &c) : re_(c.re_), im_(c.im_)
-{
-}
-
-complejo const &
-complejo::operator=(complejo const &c)
-{
-	re_ = c.re_;
-	im_ = c.im_;
-	return *this;
-}
-
-complejo const &
-complejo::operator*=(complejo const &c)
-{
-	double re = re_ * c.re_
-	         - im_ * c.im_;
-	double im = re_ * c.im_
-	         + im_ * c.re_;
-	re_ = re, im_ = im;
-	return *this;
-}
-
-complejo const &
-complejo::operator+=(complejo const &c)
-{
-	double re = re_ + c.re_;
-	double im = im_ + c.im_;
-	re_ = re, im_ = im;
-	return *this;
-}
-
-complejo const &
-complejo::operator-=(complejo const &c)
-{
-	double re = re_ - c.re_;
-	double im = im_ - c.im_;
-	re_ = re, im_ = im;
-	return *this;
-}
-
-complejo::~complejo()
-{
-}
-
 double
-complejo::re() const
+sensor::subsize(&sensor S,int pos1, int pos2)
 {
-	return re_;
+	return pos2-pos1+1;
 }
 
-double complejo::im() const
+
+sensor::parse(std::istream &iss)
 {
-	return im_;
-}
+	Array <std::string> *entrada;
+	char delim1= ',';
+	char delim2='/n';
+	int i=0;
+	int u=0;
 
-double
-complejo::abs() const
-{
-	return std::sqrt(re_ * re_ + im_ * im_);
-}
+	while iss
+		getline(iss, entrada[i], delim2);
+		i++;
 
-double
-complejo::abs2() const
-{
-	return re_ * re_ + im_ * im_;
-}
-
-complejo const &
-complejo::conjugar()
-{
-	im_*= -1;
-	return *this;
-}
-
-complejo const
-complejo::conjugado() const
-{
-	return complejo(re_, -im_);
-}
-
-bool
-complejo::zero() const
-{
-#define ZERO(x) ((x) == +0.0 && (x) == -0.0)
-	return ZERO(re_) && ZERO(im_) ? true : false;
-}
-
-complejo const
-operator+(complejo const &x, complejo const &y)
-{
-	complejo z(x.re_ + y.re_, x.im_ + y.im_);
-	return z;
-}
-
-complejo const
-operator-(complejo const &x, complejo const &y)
-{
-	complejo r(x.re_ - y.re_, x.im_ - y.im_);
-	return r;
-}
-
-complejo const
-operator*(complejo const &x, complejo const &y)
-{
-	complejo r(x.re_ * y.re_ - x.im_ * y.im_,
-	          x.re_ * y.im_ + x.im_ * y.re_);
-	return r;
-}
-
-complejo const
-operator/(complejo const &x, complejo const &y)
-{
-	return x * y.conjugado() / y.abs2();
-}
-
-complejo const
-operator/(complejo const &c, double f)
-{
-	return complejo(c.re_ / f, c.im_ / f);
-}
-
-bool
-operator==(complejo const &c, double f)
-{
-	bool b = (c.im_ != 0 || c.re_ != f) ? false : true;
-	return b;
-}
-
-bool
-operator==(complejo const &x, complejo const &y)
-{
-	bool b = (x.re_ != y.re_ || x.im_ != y.im_) ? false : true;
-	return b;
-}
-
-ostream &
-operator<<(ostream &os, const complejo &c)
-{
-	return os << "(" 
-	          << c.re_
-	          << ", " 
-	          << c.im_
-	          << ")";
-}
-
-istream &
-operator>>(istream &is, complejo &c)
-{
-	int good = false;
-	int bad  = false;
-	double re = 0;
-	double im = 0;
-	char ch = 0;
-
-	if (is >> ch
-	    && ch == '(') {
-		if (is >> re
-		    && is >> ch
-		    && ch == ','
-		    && is >> im
-		    && is >> ch
-		    && ch == ')')
-			good = true;
-		else
-			bad = true;
-	} else if (is.good()) {
-		is.putback(ch);
-		if (is >> re)
-			good = true;
-		else
-			bad = true;
-	}
-
-	if (good)
-		c.re_ = re, c.im_ = im;
-	if (bad)
-		is.clear(ios::badbit);
-
-	return is;
 }
