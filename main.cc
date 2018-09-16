@@ -12,6 +12,7 @@
 #include <cstdlib>
 
 #include <cmdline.h>
+#include "sensor.h"
 
 using namespace std;
 
