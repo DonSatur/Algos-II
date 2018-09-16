@@ -11,7 +11,7 @@
 #include <sstream>
 #include <cstdlib>
 
-#include <cmdline.h>
+#include "cmdline.h"
 #include "sensor.h"
 
 using namespace std;
@@ -52,7 +52,7 @@ static void opt_help(string const &);
 static option_t options[] = {
 	{1, "i", "input", "-", opt_input, OPT_DEFAULT},
 	{1, "o", "output", "-", opt_output, OPT_DEFAULT},
-	{1, "d", "data", NULL, opt_factor, OPT_MANDATORY},
+	{1, "d", "data", NULL, opt_data, OPT_MANDATORY},
 	{0, "h", "help", NULL, opt_help, OPT_DEFAULT},
 	{0, },
 };
@@ -162,16 +162,16 @@ read_query(istream & is, Array <string> & q_ids, int pos1, int pos2)
 
 	if(getline(is, str)){				//Se lee una linea
 		stringstream str_st(str);		//Se convierte en flujo
-		getline(str_st,str2,ch)			//Se leen los ids por un lado
+		getline(str_st,str2,ch)	;		//Se leen los ids por un lado
 		stringstream str_st2(str2);		//Se convierte en flujo
 		while(getline(str_st2,str3,ch2)){	//Se separa cada id y se guarda en un arreglo de strings
-			q_ids.pushback(str3);
+			q_ids.push_back(str3);
 		}			
 		if(!(str_st2>>pos1) || (str_st2>>ch && ch!=',')){
 			cout<< "BAD QUERY" << endl;
 			return state;
 		}
-		if (!(str_st2>>pos2) || (str_st2>>ch && ch!='/0')){		//PREGUNTAR SI >> RECONOCE AL '/0'
+		if (!(str_st2>>pos2) || (str_st2>>ch && ch!='\0')){		//PREGUNTAR SI >> RECONOCE AL '/0'
 			cout<< "BAD QUERY" << endl;
 			return state;
 		}
