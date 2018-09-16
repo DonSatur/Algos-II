@@ -190,14 +190,4 @@ main(int argc, char * const argv[])
 	cmdl.parse(argc, argv); // Metodo de parseo de la clase cmdline
 
 
-	Array <string> q_ids;
-	int pos1;
-	int pos2;
-
-	/////////////////EMPEZAMOS EL PROGRAMA///////////////
-	if (!readfile()){
-
-	}
-	if(!readquery(diss, &q_ids, pos1, pos2))
-
 }
