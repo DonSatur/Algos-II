@@ -1,6 +1,6 @@
 // Prueba de la clase cmdline: dado un factor entero pasado por la
-// línea de comando, leemos una secuencia de números que ingresan
-// por la entrada estándar, los multiplicamos por ese factor, y
+// lÃ­nea de comando, leemos una secuencia de nÃºmeros que ingresan
+// por la entrada estÃ¡ndar, los multiplicamos por ese factor, y
 // luego mostramos el resultado por std::cout.
 //
 // $Id: main.cc,v 1.5 2012/09/15 12:23:57 lesanti Exp $
@@ -17,33 +17,33 @@ using namespace std;
 
 static void opt_input(string const &);
 static void opt_output(string const &);
-static void opt_factor(string const &);
+static void opt_data(string const &);
 static void opt_help(string const &);
 
-// Tabla de opciones de línea de comando. El formato de la tabla
-// consta de un elemento por cada opción a definir. A su vez, en
+// Tabla de opciones de lÃ­nea de comando. El formato de la tabla
+// consta de un elemento por cada opciÃ³n a definir. A su vez, en
 // cada entrada de la tabla tendremos:
 //
-// o La primera columna indica si la opción lleva (1) o no (0) un
+// o La primera columna indica si la opciÃ³n lleva (1) o no (0) un
 //   argumento adicional.
 //
-// o La segunda columna representa el nombre corto de la opción.
+// o La segunda columna representa el nombre corto de la opciÃ³n.
 //
 // o Similarmente, la tercera columna determina el nombre largo.
 //
 // o La cuarta columna contiene el valor por defecto a asignarle
-//   a esta opción en caso que no esté explícitamente presente
-//   en la línea de comandos del programa. Si la opción no tiene
+//   a esta opciÃ³n en caso que no estÃ© explÃ­citamente presente
+//   en la lÃ­nea de comandos del programa. Si la opciÃ³n no tiene
 //   argumento (primera columna nula), todo esto no tiene efecto.
 //
-// o La quinta columna apunta al método de parseo de la opción,
+// o La quinta columna apunta al mÃ©todo de parseo de la opciÃ³n,
 //   cuyo prototipo debe ser siempre void (*m)(string const &arg);
 //
-// o La última columna sirve para especificar el comportamiento a
-//   adoptar en el momento de procesar esta opción: cuando la
-//   opción es obligatoria, deberá activarse OPT_MANDATORY.
+// o La Ãºltima columna sirve para especificar el comportamiento a
+//   adoptar en el momento de procesar esta opciÃ³n: cuando la
+//   opciÃ³n es obligatoria, deberÃ¡ activarse OPT_MANDATORY.
 //
-// Además, la última entrada de la tabla debe contener todos sus
+// AdemÃ¡s, la Ãºltima entrada de la tabla debe contener todos sus
 // elementos nulos, para indicar el final de la misma.
 //
 
@@ -51,12 +51,13 @@ static void opt_help(string const &);
 static option_t options[] = {
 	{1, "i", "input", "-", opt_input, OPT_DEFAULT},
 	{1, "o", "output", "-", opt_output, OPT_DEFAULT},
-	{1, "f", "factor", NULL, opt_factor, OPT_MANDATORY},
+	{1, "d", "data", NULL, opt_factor, OPT_MANDATORY},
 	{0, "h", "help", NULL, opt_help, OPT_DEFAULT},
 	{0, },
 };
 
-static int factor;
+static fstream difs;
+static istream *diss;
 static istream *iss = 0;	// Input Stream (clase para manejo de los flujos de entrada)
 static ostream *oss = 0;	// Output Stream (clase para manejo de los flujos de salida)
 static fstream ifs; 		// Input File Stream (derivada de la clase ifstream que deriva de istream para el manejo de archivos)
@@ -70,7 +71,7 @@ static void
 opt_input(string const &arg)
 {
 	// Si el nombre del archivos es "-", usaremos la entrada
-	// estándar. De lo contrario, abrimos un archivo en modo
+	// estÃ¡ndar. De lo contrario, abrimos un archivo en modo
 	// de lectura.
 	//
 	if (arg == "-") {
@@ -98,7 +99,7 @@ static void
 opt_output(string const &arg)
 {
 	// Si el nombre del archivos es "-", usaremos la salida
-	// estándar. De lo contrario, abrimos un archivo en modo
+	// estÃ¡ndar. De lo contrario, abrimos un archivo en modo
 	// de escritura.
 	//
 	if (arg == "-") {
@@ -115,31 +116,22 @@ opt_output(string const &arg)
 		     << arg
 		     << "."
 		     << endl;
-		exit(1);		// EXIT: Terminación del programa en su totalidad
+		exit(1);		// EXIT: TerminaciÃ³n del programa en su totalidad
 	}
 }
 
 static void
-opt_factor(string const &arg)
+opt_data(string const &arg)
 {
-	istringstream iss(arg);
+	difs.open(arg.c_str(), ios::in); 
+	diss = &difs;
 
-	// Intentamos extraer el factor de la línea de comandos.
-	// Para detectar argumentos que únicamente consistan de
-	// números enteros, vamos a verificar que EOF llegue justo
-	// después de la lectura exitosa del escalar.
+	// Verificamos que el stream este OK.
 	//
-	if (!(iss >> factor)
-	    || !iss.eof()) {
-		cerr << "non-integer factor: "
+	if (!diss->good()) {
+		cerr << "cannot open "
 		     << arg
 		     << "."
-		     << endl;
-		exit(1);
-	}
-
-	if (iss.bad()) {
-		cerr << "cannot read integer factor."
 		     << endl;
 		exit(1);
 	}
@@ -148,42 +140,64 @@ opt_factor(string const &arg)
 static void
 opt_help(string const &arg)
 {
-	cout << "cmdline -f factor [-i file] [-o file]"
+	cout << "cmdline [-d file] [-i file] [-o file]"
 	     << endl;
 	exit(0);
 }
 
-void
-multiply(istream *is, ostream *os)
+
+
+
+//Funcion que lee el query
+
+bool
+read_query(istream & is, Array <string> & q_ids, int pos1, int pos2)
 {
-	int num;
+	bool state=false;
+	string str, str2, str3;
+	stringstream str_st, str_st2;
+	char ch=',';
+	char ch2=';';
 
-	while (*is >> num) {
-		*os << num * factor
-		    << "\n";
-	}
+	if(getline(is, str)){				//Se lee una linea
+		stringstream str_st(str);		//Se convierte en flujo
+		getline(str_st,str2,ch)			//Se leen los ids por un lado
+		stringstream str_st2(str2);		//Se convierte en flujo
+		while(getline(str_st2,str3,ch2)){	//Se separa cada id y se guarda en un arreglo de strings
+			q_ids.pushback(str3);
+		}			
+		if(!(str_st2>>pos1) || (str_st2>>ch && ch!=',')){
+			cout<< "BAD QUERY" << endl;
+			return state;
+		}
+		if (!(str_st2>>pos2) || (str_st2>>ch && ch!='/0')){		//PREGUNTAR SI >> RECONOCE AL '/0'
+			cout<< "BAD QUERY" << endl;
+			return state;
+		}
 
-	if (os->bad()) {
-		cerr << "cannot write to output stream."
-		     << endl;
-		exit(1);
+		state=true;
+		return state;
 	}
-	if (is->bad()) {
-		cerr << "cannot read from input stream."
-		     << endl;
-		exit(1);
-	}
-	if (!is->eof()) {
-		cerr << "cannot find EOF on input stream."
-		     << endl;
-		exit(1);
-	}
+	return state;
 }
+
+
 
 int
 main(int argc, char * const argv[])
 {
-	cmdline cmdl(options);	// Objeto con parametro tipo option_t (struct) declarado globalmente. Ver línea 51 main.cc
+	cmdline cmdl(options);	// Objeto con parametro tipo option_t (struct) declarado globalmente. Ver lÃ­nea 51 main.cc
 	cmdl.parse(argc, argv); // Metodo de parseo de la clase cmdline
-	multiply(iss, oss);	    // Función externa, no es un metodo de ninguna clase o estructura usada en el código
+
+
+	Array <string> q_ids;
+	int pos1;
+	int pos2;
+
+	/////////////////EMPEZAMOS EL PROGRAMA///////////////
+	if (!readfile()){
+
+	}
+	if(!readquery(diss, &q_ids, pos1, pos2))
+
 }
