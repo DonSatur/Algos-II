@@ -6,7 +6,7 @@
 using namespace std
 
 class sensor {
-	string name;	//El nombre del sensor
+	string ID;	//El nombre del sensor
 	Array <double> values;	//Un vector con los valores del sensor
 	
 public:
