@@ -5,37 +5,36 @@
 #include <iostream>
 #include <sstream>
 #include <stdio.h>
-#include "Array.h"
 
 using namespace std;
 
 sensor::sensor()
 {
-	name=0;
+	ID=0;
 	values=0;
 }
 
 sensor::sensor(size_t n)
 {
-	name=0;
+	ID=0;
 	values(n);
 }
 
 sensor::sensor(string a)
 {
-	name=a;
+	ID=a;
 	values=0;
 }
 
 sensor::sensor(string a, size_t n)
 {
-	name=a;
+	ID=a;
 	values(n);
 }
 
 sensor::sensor(const sensor & S)
 {	
-	name=S.name;
+	ID=S.ID;
 	values=S.values;
 }
 
@@ -50,14 +49,14 @@ sensor::~sensor()
 sensor&
 sensor::operator=( const sensor & S)
 {
-	if ( S.name == this->name && S.values==this->values) 
+	if ( S.ID == this->ID && S.values==this->values) 
 	{
 		return *this;
 	}
 	// Después, cambiamos el tamaño del arreglo si es necesario y procedemos a copiar
-	if(S.name != this->name)
+	if(S.ID != this->ID)
 	{
-		name=S.name;
+		ID=S.ID;
 	}
 
 	if (S.values != this->values)
@@ -73,7 +72,7 @@ sensor::operator=( const sensor & S)
 bool
 sensor::operator==( const sensor & S) const
 {
-	if ( name != S.name)
+	if ( ID != S.ID)
 		return false; 
 	else{
 			if (values != S.values){
@@ -86,7 +85,7 @@ sensor::operator==( const sensor & S) const
 bool
 sensor::operator!=( const sensor & ) const
 {
-	if ( name == S.name)
+	if ( ID == S.ID)
 		return false; 
 	else{
 			if (values == S.values){
@@ -107,8 +106,6 @@ sensor::operator[ ](int pos) const
 	return sensor.values[pos];
 }
 
-
-friend std::istream& operator>>(std::istream&,sensor&);
 
 double
 sensor::mean(&sensor S,int pos1, int pos2)
