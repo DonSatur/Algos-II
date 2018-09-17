@@ -182,7 +182,35 @@ read_query(istream & is, Array <string> & q_ids, int pos1, int pos2)
 	return state;
 }
 
+int 
+amount(size_t pos1, size_t pos2){
+	return int(pos2)-int(pos1)+1;
+}
 
+double
+mean(Array <double> vector, size_t pos1, size_t pos2, int amount){
+	size_t i;
+	double sum = 0;
+
+	for (i=pos1, i<=pos2, i++){
+		sum+=vector[i];
+	}
+
+	return sum/double(amount);		//PREGUNTAR SI ESTA BIEN CONVERTIRLO A DOUBLE PARA HACER LA DIVISION
+}
+
+double 
+max_min(Array <double> vector, size_t pos1, size_t pos2){
+	double max=vector[pos1], min=vector[pos1];
+	for (int i=pos1+1, i<=pos2, i++){
+		if (vector[i]>=max){
+			max=vector[i];
+		}
+		if(vector[i]<min){
+			min=vector[i];
+		}
+	}
+}
 
 int
 main(int argc, char * const argv[])
@@ -192,4 +220,3 @@ main(int argc, char * const argv[])
 
 
 }
-a
