@@ -62,7 +62,7 @@ istream& read_file(istream &is, sensornet &s)
 	string str;
 	double aux2;
 	size_t i = 0, j = 0;
-	//sensornet sArray;
+
 
 	getline(is,aux);
 	while (aux[j]){
@@ -79,9 +79,9 @@ istream& read_file(istream &is, sensornet &s)
 	s.sArray.push_back(sensor(str));
 
 	while(getline(is, aux)){
-		stringstream str_st(str); // puede ser que streamstring no sea el nombre de la funcion
-		if(!(str_st>>s.sArray)){ // esta linea esta tirando problemas. El operador >> no esta sobrecargado para string  >> array
-			//~s;  // Este destructor tira error. Dice no match for operator~ (operand type is sensornet)
+		stringstream str_st(str); 
+		if(!(str_st>>s.sArray)){ 
+			delete &s;
 			cerr<<"Error data read"<<endl;
 		}
 		//if(!(str_st>>sArray) || str_st==eof){		
