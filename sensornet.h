@@ -3,31 +3,91 @@
 
 #include <iostream>
 #include "sensor.h"
-using namespace std
+#include "Array.h"
+#include <cmath>
+using namespace std;
 
 class sensornet {
-	Array <sensor> sensors;	//Un vector con los valores del sensor
+	Array <sensor> sArray;	//Un vector con los valores del sensor
 	
 public:
 	sensornet();
 	sensornet(size_t n);
 	sensornet( const sensornet & ); 
-	~sensornet( );
-//	sensor&	operator=( const sensornet & ); 
-//	bool 		operator==( const sensornet & ) const; 
-//	bool 		operator!=( const sensornet & ) const; 
-	sensornet &		operator[ ]( int );
-	sensornet const &	operator[ ]( int ) const;
+	~sensornet();
+	sensor &		operator[ ]( size_t pos);
+	sensor const &	operator[ ]( size_t pos) const;
 
-	double	mean(&sensornet,string,int, int) const;	//Hace el promedio entre la posicion int y la posicion int
-	double	max(&sensornet,string,int, int) const;	//Hace el maximo entre la posicion int y la posicion int
-	double	min(&sensornet,string,int, int) const;	//Hace el minimo entre la posicion int y la posicion int
-	double	subsize(&sensornet,string,int, int) const;	//Calcula la cantidad de valores que se usaron para las operaciones anteriores
-
-	friend std::istream& read_file(std::istream&,sensornet&);
+	friend istream& read_file(std::istream&,sensornet&);
+//	friend std::istream& operator>>(std::istream&,Array<TT>&);
 
 };
 
+sensornet::sensornet()
+{
+	sArray = 0;
+}
 
+sensornet::sensornet(size_t n)
+{
+	Array <sensor> aux(n);
+	sArray = aux;
+}
+
+sensornet::sensornet(const sensornet & S)
+{
+	sArray = S.sArray;
+}
+
+sensornet::~sensornet()
+{
+	sArray.~Array();
+}
+
+sensor &
+sensornet::operator[ ](size_t pos){
+	return sArray[pos];
+}
+
+
+sensor const&
+sensornet::operator[ ](size_t pos) const{
+	return sArray[pos];
+}
+
+istream& read_file(istream &is, sensornet &s)
+{
+	string str_st;
+	string aux;
+	string str;
+	double aux2;
+	size_t i = 0, j = 0;
+	//sensornet sArray;
+
+	getline(is,aux);
+	while (aux[j]){
+		if(aux[j] == ','){
+			s.sArray.push_back(sensor(str));	//se puede hacer esto??
+			i=0;
+		}
+		else{
+			str[i] = aux[j];
+			i++;
+		}
+		j++;
+	}
+	s.sArray.push_back(sensor(str));
+
+	while(getline(is, aux)){
+		stringstream str_st(str); // puede ser que streamstring no sea el nombre de la funcion
+		if(!(str_st>>s.sArray)){ // esta linea esta tirando problemas. El operador >> no esta sobrecargado para string  >> array
+			//~s;  // Este destructor tira error. Dice no match for operator~ (operand type is sensornet)
+			cerr<<"Error data read"<<endl;
+		}
+		//if(!(str_st>>sArray) || str_st==eof){		
+//		}
+	}
+	return is;
+}
 
 #endif
