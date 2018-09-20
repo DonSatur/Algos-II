@@ -183,34 +183,104 @@ read_query(istream & is, Array <string> & q_ids, int pos1, int pos2)
 }
 
 int 
-amount(size_t pos1, size_t pos2){
-	return int(pos2)-int(pos1)+1;
+amount(size_t s_amount, size_t pos1, size_t pos2){
+	return (int(pos2)-int(pos1)+1)*int(s_amount);
 }
 
-double
-mean(Array <double> vector, size_t pos1, size_t pos2, int amount){
+
+
+double 
+sum_all(Array <double> val, size_t pos1, size_t pos2){
 	size_t i;
-	double sum = 0;
+	double aux;
 
 	for (i=pos1, i<=pos2, i++){
-		sum+=vector[i];
+		aux+=val[i];
 	}
 
-	return sum/double(amount);		//PREGUNTAR SI ESTA BIEN CONVERTIRLO A DOUBLE PARA HACER LA DIVISION
+	return aux;
+}
+
+
+double 
+max(Array <double> vector, size_t pos1, size_t pos2){
+	size_t i;
+	double max=vector[pos1];
+
+		for (i=pos1+1, i<=pos2, i++){
+			if (vector[i]>=max){
+				max=vector[i];
+			}
+		}
+
 }
 
 double 
-max_min(Array <double> vector, size_t pos1, size_t pos2){
-	double max=vector[pos1], min=vector[pos1];
-	for (int i=pos1+1, i<=pos2, i++){
-		if (vector[i]>=max){
-			max=vector[i];
+min(Array <double> vector, size_t pos1, size_t pos2){
+	size_t i;
+	double min=vector[pos1];
+
+		for (i=pos1+1, i<=pos2, i++){
+			if (vector[i]<min){
+				min=vector[i];
+			}
 		}
-		if(vector[i]<min){
-			min=vector[i];
+
+}
+
+
+
+Array <double>
+process_data(sensornet S, Array <string> & q_ids, size_t pos1, size_t pos2)
+{
+	size_t i,j;
+	int l, am;
+	double max, min, sum_aux=0;
+	Array <double> output;
+
+	for (i=0, i<q_ids.used_size_, i++){
+		for (j=0, j<=S.sArray.used_size_, j++){		//Encuentro cada sensor correspondiente al query
+			if (q_ids[i]==S.sArray[j].id){
+				l=j;
+			}
+		}
+		sum_aux+=sum_all(S.sArray[l].values, pos1, pos2);
+		
+		if (i==0){
+			max=max(S.sArray[l].values, pos1, pos2);
+			min=min(S.sArray[l].values, pos1, pos2);
+		}
+		else{
+			max=max([max,S.sArray[l].values], pos1, pos2);
+			min=min([min,S.sArray[l].values], pos1, pos2);
 		}
 	}
+	output[0]=sum_aux/am;
+	output[1]=min;
+	output[2]=max;
+	output[3]=amount(i, pos1, pos2);
+
+	return output;
+
 }
+
+
+bool
+check_data(sensornet S, Array <string> q_ids, size_t pos1, size_t pos2){
+	size_t i,j;
+	bool data_st=false;
+
+	for (i=0, i<q_ids.used_size_, i++){
+		for (j=0, j<=S.sArray.used_size_, j++){		//Encuentro cada sensor correspondiente al query
+			if (q_ids[i]==S.sArray[j].id){
+				if (pos1<=S.sArray[j].values.used_size_ && pos2<=S.sArray[j].values.used_size_){
+					data_st=true;
+				}
+			}
+	}
+	return data_st;
+}
+
 
 int
 main(int argc, char * const argv[])
@@ -218,5 +288,34 @@ main(int argc, char * const argv[])
 	cmdline cmdl(options);	// Objeto con parametro tipo option_t (struct) declarado globalmente. Ver línea 51 main.cc
 	cmdl.parse(argc, argv); // Metodo de parseo de la clase cmdline
 
+	sensornet s;
+	Array <string> query_ids;
+	size_t pos1, pos2;
+	Array <double> output;
+
+	if(!read_file(diss, &s)){
+		delete & s;
+			delete & query_ids;
+			delete & output;
+		}
+		else{
+			if(!readquery(iss, &query_ids, pos1, pos2)){
+				delete & s;
+				delete & query_ids;
+				delete & output;
+			}
+			else{
+				if(!check_data(s, query_ids, pos1, pos2)){
+					delete & s;
+					delete & query_ids;
+					delete & output;
+				}
+				else{
+				output=process_data(s, query_ids, pos1, pos2);
+				write_file(oss, output);
+				}
+		}
+	}
+	return 0;	
 
 }
