@@ -1,20 +1,12 @@
-#ifndef _DATA_H_INCLUDED_
-#define _DATA_H_INCLUDED_
-
 #include <cmath>
 #include <cassert>
 #include <cstdlib>
 #include <iostream>
 #include <sstream>
 #include <stdio.h>
+#include "data.h"
 
 using namespace std;
-
-class data {
-	
-	double value_;
-	bool state_;		//Si state es true, hay un valor; si state es false, no hay valor.
-
 
 data::data(){
 	value_ = 0;
@@ -44,16 +36,28 @@ data::~data( ){
 }
 	
 
+bool
+data::get_state(){
+	return state_;
+}
+
+
+double		
+data::get_value(){
+	return value_;
+}
+
+
 data &
 data::operator=( const data & D){
-	if (value_ == D.value && state_ == D.state){
+	if (value_ == D.value_ && state_ == D.state_){
 		return *this;
 	}
-	if (value_ != D.value){
-		value_ = D.value;
+	if (value_ != D.value_){
+		value_ = D.value_;
 	}
-	if (state_ != D.state){
-		state_ = D.state;
+	if (state_ != D.state_){
+		state_ = D.state_;
 	}
 	return *this;
 }
@@ -61,11 +65,11 @@ data::operator=( const data & D){
 
 bool
 data::operator==( const data & D) const{
-	if ( value_ != D.value){
+	if ( value_ != D.value_){
 		return false; 
 	}
 	else{
-			if (state_ != D.state){
+			if (state_ != D.state_){
 				return false;
 			}
 		}
@@ -77,11 +81,11 @@ data::operator==( const data & D) const{
 
 bool
 data::operator!=( const data & D) const{
-	if ( value_ == D.value){
+	if ( value_ == D.value_){
 		return false; 
 	}
 	else{
-			if (state_ == D.state){
+			if (state_ == D.state_){
 				return false;
 			}
 		}
@@ -90,3 +94,38 @@ data::operator!=( const data & D) const{
 
 }
 
+	
+bool
+data::operator>( const data & D) const{
+	if (value_<=D.value_){
+		return false;
+	}
+	return true;
+}
+	
+
+bool
+data::operator>=( const data & D) const{
+	if (value_<D.value_){
+		return false;
+	}
+	return true;
+}
+
+
+bool
+data::operator<( const data & D) const{
+	if (value_>=D.value_){
+		return false;
+	}
+	return true;
+}
+
+
+bool
+data::operator<=( const data & D) const{
+	if (value_>D.value_){
+		return false;
+	}
+	return true;
+}
