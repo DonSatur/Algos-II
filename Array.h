@@ -26,6 +26,11 @@ public:
 	bool 		operator!=( const Array<T> & ) const; 
 	T &		operator[ ]( int );
 	T const &	operator[ ]( int ) const;
+
+	T &		maximum();
+	T &		minimum();
+	T &		mean();
+
 	void		push_back(const T&);
 	int 		linear_search(T&);
 	void		clear();
@@ -166,6 +171,48 @@ const T & Array<T>::operator [ ]( int pos ) const
 	return ptr_[ pos ]; 
 }
 
+
+template <typename T>
+T & Array<T>::maximum(){
+	T aux = ptr_[0];
+
+	for (size_t i = 1; i < used_size_; i++){
+		if (ptr_[i] > aux){
+			aux = ptr_[i];
+		}
+	}
+
+	return aux;
+}
+
+
+template <typename T>
+T & Array<T>::minimum(){
+	T aux = ptr_[0];
+
+	for (size_t i = 1; i < used_size_; i++){
+		if (ptr_[i] < aux){
+			aux = ptr_[i];
+		}
+	}
+
+	return aux;
+}
+
+
+
+template <typename T>
+T & Array<T>::mean(){
+	T aux = 0;
+
+	for (size_t i = 0; i < used_size_; i++){
+		aux += ptr_[i];
+	}
+	return aux/used_size_;
+}
+
+
+
 template <typename T> 
 void Array<T>::clear()
 {
@@ -234,7 +281,7 @@ std::ostream & operator<< (std::ostream& os,const Array<T> & arr)
 template <typename T>
 std::istream & operator>> (std::istream& is,Array<T>& arr)
 {
-	// Limpio el arreglo y leo en formato T1,T2,...,Tn de is. Si no se hace conforme a lo
+	// Limpio el arreglo y leo en formato (T1,T2,...,Tn) de is. Si no se hace conforme a lo
 	// esperado, limpio el arreglo (devuelvo uno sin elementos)
 	// Si llega a EOF, marcará en el istream
 
@@ -242,13 +289,13 @@ std::istream & operator>> (std::istream& is,Array<T>& arr)
 	char ch = 0;
 
 	arr.clear();
-	if (is >> aux){
+	if( (is >> ch) && (ch == '(') && (is >> aux) ){
 		arr.push_back(aux);
 		while( (is >> ch) && (ch == ',') && (is >> aux) ){
 			arr.push_back(aux);
 		}
-	}
-	else{
+	} 
+	if ( ch != ')' ){
 		arr.clear();
 	}
 
