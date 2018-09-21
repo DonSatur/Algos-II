@@ -27,10 +27,6 @@ public:
 	T &		operator[ ]( int );
 	T const &	operator[ ]( int ) const;
 
-	T &		maximum();
-	T &		minimum();
-	T &		mean();
-
 	void		push_back(const T&);
 	int 		linear_search(T&);
 	void		clear();
@@ -171,45 +167,6 @@ const T & Array<T>::operator [ ]( int pos ) const
 	return ptr_[ pos ]; 
 }
 
-
-template <typename T>
-T & Array<T>::maximum(){
-	T aux = ptr_[0];
-
-	for (size_t i = 1; i < used_size_; i++){
-		if (ptr_[i] > aux){
-			aux = ptr_[i];
-		}
-	}
-
-	return aux;
-}
-
-
-template <typename T>
-T & Array<T>::minimum(){
-	T aux = ptr_[0];
-
-	for (size_t i = 1; i < used_size_; i++){
-		if (ptr_[i] < aux){
-			aux = ptr_[i];
-		}
-	}
-
-	return aux;
-}
-
-
-
-template <typename T>
-T & Array<T>::mean(){
-	T aux = 0;
-
-	for (size_t i = 0; i < used_size_; i++){
-		aux += ptr_[i];
-	}
-	return aux/used_size_;
-}
 
 
 
