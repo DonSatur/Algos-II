@@ -44,11 +44,16 @@ public:
 	data &		operator[ ]( size_t pos);
 	data const &	operator[ ]( size_t pos) const;
 
-//	friend
-//	bool		readquery(istream & iss, sensornet & S);
-//	friend
-//	bool		checkdata(sensornet & S, string q_ids, size_t pos1, size_t pos2);
 
+	friend
+	bool		check_id(string str, sensornet & S, Array <size_t> & id_arr);
+	friend
+	bool		check_pos(sensornet & S, Array <size_t> id_arr, Array <size_t> & pos_arr);
+	friend
+	bool		read_query(istream & is, sensornet & S, Array <size_t> & id_arr, Array <size_t> & pos_arr);
+	
+
+	query &		process_data(query & Q, sensornet & S, Array <size_t> id_arr, Array <size_t> pos_arr);
 };
 
 query::query(){
@@ -265,9 +270,107 @@ query::operator[ ]( size_t pos) const{
 
 
 
-//	friend
-//	bool		readquery(istream & iss, sensornet & S);
-//	friend
-//	bool		checkdata(sensornet & S, string q_ids, size_t pos1, size_t pos2);
+bool
+check_id(string str, sensornet & S, Array <size_t> id_arr){
+
+	size_t S_size = S.size();
+	size_t i;
+
+	for (i = 0; i < S_size; i++){
+		if (str == S[i].get_id()){
+			return true;
+		}
+	}
+	return false;
+}
+
+
+bool
+check_pos(sensornet & S, Array <size_t> id_arr, Array <size_t> & pos_arr){
+	size_t i;
+
+	for (i = 0; i < id_arr.size(); i++){
+		if(pos_arr[0] > S[id_arr[i]].size()){
+			return false;
+		}
+		else{
+			if (pos_arr[1] > S[id_arr[i]].size()){
+				pos_arr[1]= S[id_arr[i]].size();
+			}
+		}
+	}
+	return true;
+}
+
+
+
+bool
+read_query(istream & is, sensornet & S, Array <size_t> & id_arr, Array <size_t> & pos_arr){
+	string str,str2,str3;
+	Array <size_t> id_number;		//Aca se guarda la posicion de cada sensor dentro de sensornet
+
+	if (!getline(is, str)){					//Leo una sola linea
+		cerr << "BAD QUERY" << endl;
+		return false;
+	}
+	else{
+		stringstream str_st(str);				
+		if (!getline(str_st, str2, ',')){			//Leo solo los q_ids
+			cerr << "BAD QUERY" << endl;
+			return false;
+		}
+		else{
+			stringstream str_st2(str2);
+			while (getline(str_st2, str3, ';')){	//Leo cada q_id por separado
+				if(str3.empty()){
+					for (size_t i = 0; i < S.size(); i++){
+					id_arr[i] = S[i].get_id;
+					}
+				}
+				else if(!check_id(str3, S, id_arr)){
+					cerr << "UNKNOWN ID" << endl;
+					return false;
+				}
+			}	
+		}
+	}
+	stringstream str_st3(str2);		//Convierto a flujo de entrada las posiciones
+	if (!str_st3 >> pos_arr[0]){
+		cerr << "BAD QUERY" << endl;
+		return false;
+	}
+	else{
+		if (!str_st3 >> pos_arr[1]){
+			cerr << "BAD QUERY" << endl;
+			return false;
+		}
+		else{
+			if(!check_pos(S, id_arr, pos_arr)){
+				cerr << "NO DATA" << endl;
+				return false;
+			}
+		}
+	}
+	return true;
+
+}
+
+
+query &
+query::process_data(query & Q, sensornet & S, Array <size_t> id_arr, Array <size_t> pos_arr){
+	size_t j;
+	Array <data> aux_arr;
+	data aux(0.0);
+
+	for (j = pos_arr[0] ; j <= pos_arr[1]; j++){
+		for (i = 0; i < id_arr.size(); i++){
+			aux += S[id_arr[i][j]];
+		}
+		aux_arr[j] = aux;
+	}
+
+	return & query(aux_arr);
+
+}
 
 #endif
