@@ -28,15 +28,15 @@ public:
 	query( const query & Q); 
 	~query( );
 
-	double		maximum();
-	double		minimum();
-	double		mean();
-	size_t		amount();
+	double		maximum();			//Obtiene el valor maximo del arreglo
+	double		minimum();			//Obtiene el valor minimo del arreglo
+	double		mean();				//Obtiene el promedio del arreglo
+	size_t		amount();			//Obtiene la cantidad de lugares del arreglo
 
-	double		get_max();
-	double		get_min();
-	double		get_mean();
-	size_t		get_amount();
+	double		get_max();			//Devuelve el valor maximo del arreglo
+	double		get_min();			//Devuelve el valor minimo del arreglo
+	double		get_mean();			//Devuelve el promedio del arreglo
+	size_t		get_amount();		//Devuelve la cantidad de lugares del arreglo
 
 	query&		operator=( const query & Q); 
 	bool 		operator==( const query & Q) const; 
@@ -52,8 +52,11 @@ public:
 	friend
 	bool		read_query(istream & is, sensornet & S, Array <size_t> & id_arr, Array <size_t> & pos_arr);
 	
+	query 		process_data(query & Q, sensornet & S, Array <size_t> id_arr, Array <size_t> pos_arr);
 
-	query &		process_data(query & Q, sensornet & S, Array <size_t> id_arr, Array <size_t> pos_arr);
+	friend
+	ostream& 	operator<<(ostream & os, query & Q); 	
+
 };
 
 query::query(){
@@ -277,7 +280,8 @@ check_id(string str, sensornet & S, Array <size_t> id_arr){
 	size_t i;
 
 	for (i = 0; i < S_size; i++){
-		if (str == S[i].get_id()){
+		if (str == S[i].get_id()){		//Si encuentra el sensor que pide el query, agrega su posicion
+			id_arr.push_back(i);		//a id_arr y afirma que el query fue inicialmente correcto
 			return true;
 		}
 	}
@@ -290,14 +294,14 @@ check_pos(sensornet & S, Array <size_t> id_arr, Array <size_t> & pos_arr){
 	size_t i;
 
 	for (i = 0; i < id_arr.size(); i++){
-		if(pos_arr[0] > S[id_arr[i]].size()){
-			return false;
+		if(pos_arr[0] > S[id_arr[i]].size()){	//Chequea que la posicion mas baja no sobrepase
+			return false;						//la cantidad de lugares del arreglo	
 		}
 		else{
-			if (pos_arr[1] > S[id_arr[i]].size()){
-				pos_arr[1]= S[id_arr[i]].size();
-			}
-		}
+			if (pos_arr[1] > S[id_arr[i]].size()){	//Chequea si la posicion mas alta sobrepaso la
+				pos_arr[1]= S[id_arr[i]].size();	//cantidad de lugares del arreglo y de ser asi,
+			}										//coloca como posicion mas alta la cantidad de 
+		}											//lugares del arreglo
 	}
 	return true;
 }
@@ -307,35 +311,35 @@ check_pos(sensornet & S, Array <size_t> id_arr, Array <size_t> & pos_arr){
 bool
 read_query(istream & is, sensornet & S, Array <size_t> & id_arr, Array <size_t> & pos_arr){
 	string str,str2,str3;
-	Array <size_t> id_number;		//Aca se guarda la posicion de cada sensor dentro de sensornet
+	Array <size_t> id_number;		//Aca se guarda la posicion (dentro de sensornet) de cada sensor
 
-	if (!getline(is, str)){					//Leo una sola linea
+	if (!getline(is, str)){					//Se lee por linea
 		cerr << "BAD QUERY" << endl;
 		return false;
 	}
 	else{
 		stringstream str_st(str);				
-		if (!getline(str_st, str2, ',')){			//Leo solo los q_ids
+		if (!getline(str_st, str2, ',')){			//Se leen solo los q_ids
 			cerr << "BAD QUERY" << endl;
 			return false;
 		}
 		else{
 			stringstream str_st2(str2);
-			while (getline(str_st2, str3, ';')){	//Leo cada q_id por separado
-				if(str3.empty()){
-					for (size_t i = 0; i < S.size(); i++){
-					id_arr[i] = S[i].get_id;
+			while (getline(str_st2, str3, ';')){	//Se lee cada q_id por separado
+				if(str3.empty()){					//Si no hay q_id, significa que se hacen los calculos
+					for (size_t i = 0; i < S.size(); i++){	//con todos los sensores
+					id_arr[i] = i;
 					}
 				}
-				else if(!check_id(str3, S, id_arr)){
+				else if(!check_id(str3, S, id_arr)){	//Se chequea que los q_id sean correctos
 					cerr << "UNKNOWN ID" << endl;
 					return false;
 				}
 			}	
 		}
 	}
-	stringstream str_st3(str2);		//Convierto a flujo de entrada las posiciones
-	if (!str_st3 >> pos_arr[0]){
+	stringstream str_st3(str2);		//Se convierte a flujo de entrada las posiciones
+	if (!str_st3 >> pos_arr[0]){	
 		cerr << "BAD QUERY" << endl;
 		return false;
 	}
@@ -345,7 +349,7 @@ read_query(istream & is, sensornet & S, Array <size_t> & id_arr, Array <size_t> 
 			return false;
 		}
 		else{
-			if(!check_pos(S, id_arr, pos_arr)){
+			if(!check_pos(S, id_arr, pos_arr)){	//Se chequea que las posiciones sean correctas
 				cerr << "NO DATA" << endl;
 				return false;
 			}
@@ -356,21 +360,48 @@ read_query(istream & is, sensornet & S, Array <size_t> & id_arr, Array <size_t> 
 }
 
 
-query &
+query 
 query::process_data(query & Q, sensornet & S, Array <size_t> id_arr, Array <size_t> pos_arr){
-	size_t j;
+	size_t j, i;
+	double k = 0;
 	Array <data> aux_arr;
 	data aux(0.0);
 
 	for (j = pos_arr[0] ; j <= pos_arr[1]; j++){
 		for (i = 0; i < id_arr.size(); i++){
-			aux += S[id_arr[i][j]];
+			if(S[id_arr[i]][j].get_state() == true){	
+				aux = aux + S[id_arr[i]][j];	//Se suman todos los valores de la i-esima posicion
+				k++;						//de cada sensor y se cuentan cuantos valores se sumaron
+			}
 		}
-		aux_arr[j] = aux;
+		aux_arr[j] = aux/k;		//Se guarda en un vector el promedio de esos valores
 	}
+	query Q_out(aux_arr);	//Se crea un query a partir del arreglo obtenido
 
-	return & query(aux_arr);
+	return Q_out;
 
 }
+
+//Esta funcion devuelve los resultados obtenidos
+ostream& operator<<(ostream & os, query & Q){
+
+	char ch = ',';
+
+	if (Q.d_arr_.size() == 0){
+		return os;
+	}
+	
+	os << Q.mean_;
+	os << ch;
+	os << Q.min_;
+	os << ch;
+	os << Q.max_;
+	os << ch;
+	os << Q.amount_;
+	
+	return os;
+}	
+
+
 
 #endif
