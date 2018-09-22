@@ -23,8 +23,8 @@ public:
 	data( const data & D); 
 	~data( );
 
-	bool		get_state();
-	double		get_value();
+	bool		state();	//Devuelve el valor de state_
+	double		value();	//Devuelve el valor de value_
 
 	data &		operator=( const data & D); 
 	bool 		operator==( const data & D) const; 
@@ -33,6 +33,7 @@ public:
 	bool		operator>=( const data & D) const;
 	bool		operator<( const data & D) const;
 	bool		operator<=( const data & D) const;
+	double		operator+( const data & D) const;
 
 };
 
