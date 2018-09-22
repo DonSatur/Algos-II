@@ -7,14 +7,14 @@
 #include <iostream>
 #include <sstream>
 #include <stdio.h>
-#include "Array.h"
+#include "array.h"
 #include "sensornet.h"
 
 
 using namespace std;
 
 class query {
-	Array <data> d_arr_;	//El arreglo que se va a crear con todos los datos que se van a utilizar
+	array <data> d_arr_;	//El arreglo que se va a crear con todos los datos que se van a utilizar
 	double mean_;
 	double max_;
 	double min_;
@@ -23,14 +23,14 @@ class query {
 	
 public:
 	query();
-	query(Array <data> d_arr);
+	query(array <data> d_arr);
 	query( const query & Q); 
 	~query( );
 
-	double		maximum();			//Obtiene el valor maximo del arreglo
-	double		minimum();			//Obtiene el valor minimo del arreglo
-	double		mean();				//Obtiene el promedio del arreglo
-	size_t		amount();			//Obtiene la cantidad de lugares del arreglo
+	double		calc_max();			//Obtiene el valor maximo del arreglo
+	double		calc_min();			//Obtiene el valor minimo del arreglo
+	double		calc_mean();				//Obtiene el promedio del arreglo
+	size_t		calc_amount();			//Obtiene la cantidad de lugares del arreglo
 
 	double		max();			//Devuelve el valor maximo del arreglo
 	double		min();			//Devuelve el valor minimo del arreglo
@@ -45,13 +45,13 @@ public:
 
 
 	friend
-	bool		check_id(string str, sensornet & S, Array <size_t> & id_arr);
+	bool		check_id(string str, sensornet & S, array <size_t> & id_arr);
 	friend
-	bool		check_pos(sensornet & S, Array <size_t> id_arr, Array <size_t> & pos_arr);
+	bool		check_pos(sensornet & S, array <size_t> id_arr, array <size_t> & pos_arr);
 	friend
-	bool		read_query(istream & is, sensornet & S, Array <size_t> & id_arr, Array <size_t> & pos_arr);
+	bool		read_query(istream & is, sensornet & S, array <size_t> & id_arr, array <size_t> & pos_arr);
 	
-	void 		process_data(query & Q, sensornet & S, Array <size_t> id_arr, Array <size_t> pos_arr);
+	void 		process_data(query & Q, sensornet & S, array <size_t> id_arr, array <size_t> pos_arr);
 
 	friend
 	ostream& 	operator<<(ostream & os, query & Q); 	
@@ -65,12 +65,12 @@ query::query(){
 	this->amount_ = 0;
 }
 
-query::query(Array <data> d_arr){
+query::query(array <data> d_arr){
 	this->d_arr_ = d_arr;
-	this->amount_ = d_arr.size();
-	this->max_ = maximum();
-	this->min_ = minimum();
-	this->mean_= mean();
+	this->amount_ = calc_amount();
+	this->max_ = calc_max();
+	this->min_ = calc_min();
+	this->mean_= calc_mean();
 }
 
 
@@ -88,7 +88,7 @@ query::~query( ){
 	
 
 double
-query::maximum(){
+query::calc_max(){
 	size_t i;
 	size_t d_size = d_arr_.size();
 	double aux = this->d_arr_[0].value();
@@ -103,7 +103,7 @@ query::maximum(){
 	
 
 double
-query::minimum(){
+query::calc_min(){
 	size_t i;
 	size_t d_size = d_arr_.size();
 	double aux = this->d_arr_[0].value();
@@ -118,7 +118,7 @@ query::minimum(){
 
 
 size_t
-query::amount(){
+query::calc_amount(){
 	size_t i, aux = 0;
 	size_t d_size = this->d_arr_.size();
 
@@ -132,7 +132,7 @@ query::amount(){
 
 
 double
-query::mean(){
+query::calc_mean(){
 	size_t i;
 	double aux = 0;
 	size_t d_size = this->d_arr_.size();
@@ -264,14 +264,14 @@ query::operator[ ]( size_t pos) const{
 
 
 bool
-check_id(string str, sensornet & S, Array <size_t> id_arr){
+check_id(string str, sensornet & S, array <size_t> id_arr){
 
 	size_t S_size = S.size();
 	size_t i;
 
 	for (i = 0; i < S_size; i++){
 		if (str == S[i].id()){			//Si encuentra el sensor que pide el query, agrega su posicion
-			id_arr.push_back(i);		//a id_arr y afirma que el query fue inicialmente correcto
+			id_arr.push(i);		//a id_arr y afirma que el query fue inicialmente correcto
 			return true;
 		}
 	}
@@ -279,8 +279,9 @@ check_id(string str, sensornet & S, Array <size_t> id_arr){
 }
 
 
+
 bool
-check_pos(sensornet & S, Array <size_t> id_arr, Array <size_t> & pos_arr){
+check_pos(sensornet & S, array <size_t> id_arr, array <size_t> & pos_arr){
 	size_t i;
 
 	for (i = 0; i < id_arr.size(); i++){
@@ -299,9 +300,9 @@ check_pos(sensornet & S, Array <size_t> id_arr, Array <size_t> & pos_arr){
 
 
 bool
-read_query(istream & is, sensornet & S, Array <size_t> & id_arr, Array <size_t> & pos_arr){
+read_query(istream & is, sensornet & S, array <size_t> & id_arr, array <size_t> & pos_arr){
 	string str,str2,str3;
-	Array <size_t> id_number;		//Aca se guarda la posicion (dentro de sensornet) de cada sensor
+	array <size_t> id_number;		//Aca se guarda la posicion (dentro de sensornet) de cada sensor
 
 	if (!getline(is, str)){					//Se lee por linea
 		cerr << "BAD QUERY" << endl;
@@ -316,7 +317,7 @@ read_query(istream & is, sensornet & S, Array <size_t> & id_arr, Array <size_t> 
 		else{
 			stringstream str_st2(str2);
 			while (getline(str_st2, str3, ';')){	//Se lee cada q_id por separado
-				if(str3.empty()){					//Si no hay q_id, significa que se hacen los calculos
+				if(str3 == '-'){					//Si no hay q_id y hay un guion, significa que se hacen los calculos
 					for (size_t i = 0; i < S.size(); i++){	//con todos los sensores
 					id_arr[i] = i;
 					}
@@ -351,10 +352,10 @@ read_query(istream & is, sensornet & S, Array <size_t> & id_arr, Array <size_t> 
 
 
 void
-query::process_data(query & Q, sensornet & S, Array <size_t> id_arr, Array <size_t> pos_arr){
+query::process_data(query & Q, sensornet & S, array <size_t> id_arr, array <size_t> pos_arr){
 	size_t j, i;
 	double k = 0;
-	Array <data> aux_arr;
+	array <data> aux_arr;
 	data aux(0.0);
 
 	for (j = pos_arr[0] ; j <= pos_arr[1]; j++){
@@ -364,7 +365,7 @@ query::process_data(query & Q, sensornet & S, Array <size_t> id_arr, Array <size
 				k++;						//de cada sensor y se cuentan cuantos valores se sumaron
 			}
 		}
-		aux_arr[j] = aux/k;		//Se guarda en un vector el promedio de esos valores
+		aux_arr[j] = aux.value()/k;		//Se guarda en un vector el promedio de esos valores
 	}
 	query Q_aux(aux_arr);	//Se crea un query a partir del arreglo obtenido
 	Q = Q_aux;
@@ -375,9 +376,9 @@ ostream& operator<<(ostream & os, query & Q){
 
 	char ch = ',';
 
-	if (Q.d_arr_.size() == 0){
-		return os;
-	}
+//	if (Q.d_arr_.size() == 0){
+//		return os;
+//	}
 	
 	os << Q.mean_;
 	os << ch;
