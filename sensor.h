@@ -8,74 +8,90 @@
 #include <sstream>
 #include <stdio.h>
 #include "Array.h"
+#include "data.h"
 
 using namespace std;
 
 class sensor {
-	string ID;	//El nombre del sensor
-	Array <double> values;	//Un vector con los valores del sensor
+	string id_;	//El nombre del sensor
+	Array <data> v_arr_;	//Un vector con los valores del sensor
 	
 public:
 	sensor();
-	sensor(string a);
-	sensor(string a, size_t n);
+	sensor(string id);
+	sensor(string id, size_t n);
 	sensor( const sensor & S); 
 	~sensor( );
+
+	string id();	//Devuelve el id_ del sensor
+	size_t size();		//Devuelve la longitud del arreglo values_
+
+
 	sensor&		operator=( const sensor & S); 
 	bool 		operator==( const sensor & S) const; 
 	bool 		operator!=( const sensor & S) const; 
-	double &		operator[ ]( int pos);
-	double const &	operator[ ]( int pos) const;
+	data &		operator[ ]( size_t pos);
+	data const &	operator[ ]( size_t pos) const;
 
 };
 
 
 sensor::sensor()
 {
-	values=0;
-	ID='\0';
+	this->v_arr_=0;
+	this->id_='\0';
 }
 
-sensor::sensor(string a)
+sensor::sensor(string id)
 {
-	values=0;
-	ID=a;
+	this->v_arr_=0;
+	this->id_=id;
 }
  
-sensor::sensor(string a, size_t n)
+sensor::sensor(string id, size_t n)
 {
-	Array <double> aux(n);
-	values = aux;
-	ID=a;
+	Array <data> aux(n);
+	this->v_arr_ = aux;
+	this->id_=id;
 }
 
 sensor::sensor(const sensor & S)
 {	
-	values=S.values;
-	ID=S.ID;
+	this->v_arr_=S.v_arr_;
+	this->id_=S.id_;
 }
 
 sensor::~sensor()
 {
-	values.~Array();
+	
+}
+
+string
+sensor::id(){
+	return this->id_;
+}
+
+size_t
+sensor::size(){
+	return this->v_arr_.size();
 }
 
 sensor&
 sensor::operator=( const sensor & S)
 {
-	if ( S.ID == this->ID && S.values==this->values) 
+	if ( S.id_ == this->id_ && S.v_arr_==this->v_arr_) 
 	{
 		return *this;
 	}
 	// Después, cambiamos el tamaño del arreglo si es necesario y procedemos a copiar
-	if(S.ID != this->ID)
+	if(S.id_ != this->id_)
 	{
-		ID=S.ID;
+		id_=S.id_;
 	}
 
-	if (S.values != this->values)
+	if (S.v_arr_ != this->v_arr_)
 	{
-		values=S.values;
+		this->v_arr_=S.v_arr_;
 	}
 
 	return *this;
@@ -86,10 +102,10 @@ sensor::operator=( const sensor & S)
 bool
 sensor::operator==( const sensor & S) const
 {
-	if ( ID != S.ID)
+	if ( this->id_ != S.id_)
 		return false; 
 	else{
-			if (values != S.values){
+			if (this->v_arr_ != S.v_arr_){
 				return false;
 			}
 		}
@@ -100,10 +116,10 @@ sensor::operator==( const sensor & S) const
 bool
 sensor::operator!=( const sensor & S) const
 {
-	if ( ID == S.ID)
+	if ( this->id_ == S.id_)
 		return false; 
 	else{
-			if (values == S.values){
+			if (this->v_arr_ == S.v_arr_){
 				return false;
 			}
 		}
@@ -112,18 +128,17 @@ sensor::operator!=( const sensor & S) const
 }
 
 
-double &
-sensor::operator[ ](int pos)
+data &
+sensor::operator[ ](size_t pos)
 {
-	return this->values[pos];
+	return this->v_arr_[pos];
 }
 
 
-double const &
-sensor::operator[ ](int pos) const
+data const &
+sensor::operator[ ](size_t pos) const
 {
-	return this->values[pos];
+	return this->v_arr_[pos];
 }
-
 
 #endif
