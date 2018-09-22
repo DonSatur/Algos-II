@@ -22,7 +22,7 @@ public:
 	sensor &		operator[ ]( size_t pos);
 	sensor const &	operator[ ]( size_t pos) const;
 
-//	friend istream& read_file(std::istream&,sensornet&);
+	friend bool read_file(istream&,sensornet&);
 //	friend std::istream& operator>>(std::istream&,Array<TT>&);
 
 };
@@ -63,40 +63,46 @@ sensornet::operator[ ](size_t pos) const{
 	return this->s_arr_[pos];
 }
 
-//istream& read_file(istream &is, sensornet &s)
-//{
-//	string str_st;
-//	string aux;
-//	string str;
-//	double aux2;
-//	size_t i = 0, j = 0;
-//
-//
-//	getline(is,aux);
-//	while (aux[j]){
-//		if(aux[j] == ','){
-//			s.sArray.push_back(sensor(str));	//se puede hacer esto??
-//			i=0;
-//		}
-//		else{
-//			str[i] = aux[j];
-//			i++;
-//		}
-//		j++;
-//	}
-//	s.sArray.push_back(sensor(str));
-//
-//	while(getline(is, aux)){
-//		i=0;
-//		stringstream str_st(str); 
-//		if(!(str_st>>s.sArray[i].values)){ 
-//			delete &s;
-//			cerr<<"Error data read"<<endl;
-//		}
-//		//if(!(str_st>>sArray) || str_st==eof){		
-//		}
-//	}
-//	return is;
-//}
+bool read_file(istream &is, sensornet &s){
+	string str_st;
+	string str,str2;
+	data no_data(false);
+	size_t i = 0, j = 0;
+
+
+	getline(is,str2);
+	while (str2[j]){
+		if(str2[j] == ','){
+			s.s_arr_.push(sensor(str));	//se puede hacer esto??
+			i=0;
+		}
+		else{
+			str[i] = str2[j];
+			i++;
+		}
+		j++;
+	}
+	s.s_arr_.push(sensor(str));
+	j=0;
+	while(getline(is, str2)){
+		i=0;
+		stringstream str_st(str2);
+		while( getline(str_st,str2,',')){
+			if(str2.empty())
+				s[i].push(no_data); // No habia informacion. Se guarda un "false" en la posicion del i-esimo sensor
+			else{
+				stringstream str_st2(str2);
+				str_st>> s[i][j];
+				if(s[i][j].state() == false){
+					cout<<"Bad data"<<endl;
+					return false;
+				}
+			}
+			i++;
+		}
+		j++;
+	}
+	return true;
+}
 
 #endif
