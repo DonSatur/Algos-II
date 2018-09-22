@@ -135,3 +135,16 @@ double
 data::operator+( const data & D) const{
 	return this->value_+D.value_;
 }
+
+istream& operator>>(istream &is, data &D){
+	double value_aux;
+	bool state_aux;
+	if(is>>value_aux){
+		D.state_ = true;
+		D.value_ = value_aux;
+		return is;
+	}
+	else
+		D.state_ = false;
+		return is;
+}
