@@ -3,91 +3,100 @@
 
 #include <iostream>
 #include "sensor.h"
-#include "Array.h"
+#include "array.h"
 #include <cmath>
+
 using namespace std;
 
 class sensornet {
-	Array <sensor> sArray;	//Un vector con los valores del sensor
+	array <sensor> s_arr_;	//Un vector con los valores del sensor
 	
 public:
 	sensornet();
 	sensornet(size_t n);
 	sensornet( const sensornet & ); 
 	~sensornet();
+
+	size_t size();
+
 	sensor &		operator[ ]( size_t pos);
 	sensor const &	operator[ ]( size_t pos) const;
 
-	friend istream& read_file(std::istream&,sensornet&);
+//	friend istream& read_file(std::istream&,sensornet&);
 //	friend std::istream& operator>>(std::istream&,Array<TT>&);
 
 };
 
 sensornet::sensornet()
 {
-	sArray = 0;
+	this->s_arr_ = 0;
 }
 
 sensornet::sensornet(size_t n)
 {
-	Array <sensor> aux(n);
-	sArray = aux;
+	array <sensor> aux(n);
+	this->s_arr_ = aux;
 }
 
 sensornet::sensornet(const sensornet & S)
 {
-	sArray = S.sArray;
+	this->s_arr_ = S.s_arr_;
 }
 
 sensornet::~sensornet()
 {
-	sArray.~Array();
+}
+
+size_t
+sensornet::size(){
+	return this->s_arr_.size();
 }
 
 sensor &
 sensornet::operator[ ](size_t pos){
-	return sArray[pos];
+	return this->s_arr_[pos];
 }
 
 
 sensor const&
 sensornet::operator[ ](size_t pos) const{
-	return sArray[pos];
+	return this->s_arr_[pos];
 }
 
-istream& read_file(istream &is, sensornet &s)
-{
-	string str_st;
-	string aux;
-	string str;
-	double aux2;
-	size_t i = 0, j = 0;
-
-
-	getline(is,aux);
-	while (aux[j]){
-		if(aux[j] == ','){
-			s.sArray.push_back(sensor(str));	//se puede hacer esto??
-			i=0;
-		}
-		else{
-			str[i] = aux[j];
-			i++;
-		}
-		j++;
-	}
-	s.sArray.push_back(sensor(str));
-
-	while(getline(is, aux)){
-		stringstream str_st(str); 
-		if(!(str_st>>s.sArray)){ 
-			delete &s;
-			cerr<<"Error data read"<<endl;
-		}
-		//if(!(str_st>>sArray) || str_st==eof){		
+//istream& read_file(istream &is, sensornet &s)
+//{
+//	string str_st;
+//	string aux;
+//	string str;
+//	double aux2;
+//	size_t i = 0, j = 0;
+//
+//
+//	getline(is,aux);
+//	while (aux[j]){
+//		if(aux[j] == ','){
+//			s.sArray.push_back(sensor(str));	//se puede hacer esto??
+//			i=0;
 //		}
-	}
-	return is;
-}
+//		else{
+//			str[i] = aux[j];
+//			i++;
+//		}
+//		j++;
+//	}
+//	s.sArray.push_back(sensor(str));
+//
+//	while(getline(is, aux)){
+//		i=0;
+//		stringstream str_st(str); 
+//		if(!(str_st>>s.sArray[i].values)){ 
+//			delete &s;
+//			cerr<<"Error data read"<<endl;
+//		}
+//		//if(!(str_st>>sArray) || str_st==eof){		
+//		}
+//	}
+//	return is;
+//}
 
 #endif
