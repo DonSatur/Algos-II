@@ -157,6 +157,7 @@ main(int argc, char * const argv[])
 	cmdline cmdl(options);	// Objeto con parametro tipo option_t (struct) declarado globalmente. Ver línea 51 main.cc
 	cmdl.parse(argc, argv); // Metodo de parseo de la clase cmdline
 
+	bool q_state = true;
 	sensornet S;
 	Array <size_t> id_arr, pos_arr;
 	query Q;
@@ -165,12 +166,11 @@ main(int argc, char * const argv[])
 		return EXIT_FAILURE;
 	}
 	else{
-		if(!read_query(*iss, S, id_arr, pos_arr)){
-			return EXIT_FAILURE;
-		}
-		else{
-			Q.process_data(Q, S, id_arr, pos_arr);
-			*oss <<Q;
+		while(read_query(*iss,*oss, S, id_arr, pos_arr,q_state)){
+			if(q_state){
+				Q.process_data(Q, S, id_arr, pos_arr);
+				*oss <<Q;
+			}
 		}
 	}
 	return EXIT_SUCCESS;
