@@ -11,8 +11,11 @@
 #include <sstream>
 #include <cstdlib>
 
-#include "cmdline.h"
-#include "sensor.h"
+#include "cmdline.cpp"
+#include "sensornet.h"
+#include "query.h"
+#include "Array.h"
+#include "data.cpp"
 
 using namespace std;
 
@@ -79,7 +82,7 @@ opt_input(string const &arg)
 		iss = &cin;		// Establezco la entrada estandar cin como flujo de entrada
 	}
 	else {
-		ifs.open(arg.c_str(), ios::in); // c_str(): Returns a pointer to an array that contains a null-terminated
+		ifs.open(arg.c_str(), ios::in); // c_str(): Returns a pointer to an Array that contains a null-terminated
 										// sequence of characters (i.e., a C-string) representing
 										// the current value of the string object.
 		iss = &ifs;
@@ -158,17 +161,17 @@ main(int argc, char * const argv[])
 	Array <size_t> id_arr, pos_arr;
 	query Q;
 
-	if (!read_file()){
-		exit;
+	if (!read_file(*diss,S)){
+		return EXIT_FAILURE;
 	}
 	else{
-		if(!read_query(iss, S, id_arr, pos_arr)){
-			exit;
+		if(!read_query(*iss, S, id_arr, pos_arr)){
+			return EXIT_FAILURE;
 		}
 		else{
-			process_data(Q, S, id_arr, pos_arr);
-			oss << Q;
+			Q.process_data(Q, S, id_arr, pos_arr);
+			*oss <<Q;
 		}
 	}
-	exit;
+	return EXIT_SUCCESS;
 }
