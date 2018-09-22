@@ -3,13 +3,13 @@
 
 #include <iostream>
 #include "sensor.h"
-#include "array.h"
+#include "Array.h"
 #include <cmath>
 
 using namespace std;
 
 class sensornet {
-	array <sensor> s_arr_;	//Un vector con los valores del sensor
+	Array <sensor> s_arr_;	//Un vector con los valores del sensor
 	
 public:
 	sensornet();
@@ -34,7 +34,7 @@ sensornet::sensornet()
 
 sensornet::sensornet(size_t n)
 {
-	array <sensor> aux(n);
+	Array <sensor> aux(n);
 	this->s_arr_ = aux;
 }
 
