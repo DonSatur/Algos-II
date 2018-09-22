@@ -24,7 +24,6 @@ class query {
 public:
 	query();
 	query(Array <data> d_arr);
-	query(Array <data> d_arr, double mean, double max, double min, size_t amount);
 	query( const query & Q); 
 	~query( );
 
@@ -33,10 +32,10 @@ public:
 	double		mean();				//Obtiene el promedio del arreglo
 	size_t		amount();			//Obtiene la cantidad de lugares del arreglo
 
-	double		get_max();			//Devuelve el valor maximo del arreglo
-	double		get_min();			//Devuelve el valor minimo del arreglo
-	double		get_mean();			//Devuelve el promedio del arreglo
-	size_t		get_amount();		//Devuelve la cantidad de lugares del arreglo
+	double		max();			//Devuelve el valor maximo del arreglo
+	double		min();			//Devuelve el valor minimo del arreglo
+	double		mean();			//Devuelve el promedio del arreglo
+	size_t		amount();		//Devuelve la cantidad de lugares del arreglo
 
 	query&		operator=( const query & Q); 
 	bool 		operator==( const query & Q) const; 
@@ -52,7 +51,7 @@ public:
 	friend
 	bool		read_query(istream & is, sensornet & S, Array <size_t> & id_arr, Array <size_t> & pos_arr);
 	
-	query 		process_data(query & Q, sensornet & S, Array <size_t> id_arr, Array <size_t> pos_arr);
+	void 		process_data(query & Q, sensornet & S, Array <size_t> id_arr, Array <size_t> pos_arr);
 
 	friend
 	ostream& 	operator<<(ostream & os, query & Q); 	
@@ -60,36 +59,27 @@ public:
 };
 
 query::query(){
-	mean_ = 0;
-	max_ = 0;
-	min_ = 0;
-	amount_ = 0;
+	this->mean_ = 0;
+	this->max_ = 0;
+	this->min_ = 0;
+	this->amount_ = 0;
 }
 
 query::query(Array <data> d_arr){
-	d_arr_ = d_arr;
-	amount_ = d_arr.size();
-	max_ = maximum();
-	min_ = minimum();
-	mean_= mean();
-}
-
-
-query::query(Array <data> d_arr, double mean, double max, double min, size_t amount){
-	d_arr_ = d_arr;
-	mean_ = mean;
-	max_ = max;
-	min_ = min;
-	amount_ = amount;
+	this->d_arr_ = d_arr;
+	this->amount_ = d_arr.size();
+	this->max_ = maximum();
+	this->min_ = minimum();
+	this->mean_= mean();
 }
 
 
 query::query( const query & Q){
-	d_arr_ = Q.d_arr_;
-	mean_ = Q.mean_;
-	max_ = Q.max_;
-	min_ = Q.min_;
-	amount_ = Q.amount_;
+	this->d_arr_ = Q.d_arr_;
+	this->mean_ = Q.mean_;
+	this->max_ = Q.max_;
+	this->min_ = Q.min_;
+	this->amount_ = Q.amount_;
 } 
 
 query::~query( ){
@@ -101,11 +91,11 @@ double
 query::maximum(){
 	size_t i;
 	size_t d_size = d_arr_.size();
-	double aux = d_arr_[0].get_value();
+	double aux = this->d_arr_[0].value();
 
 	for (i = 1; i < d_size; i++){
-		if (d_arr_[i] > aux){
-			aux = d_arr_[i].get_value();
+		if (this->d_arr_[i] > aux){
+			aux = this->d_arr_[i].value();
 		}
 	}
 	return aux;
@@ -116,11 +106,11 @@ double
 query::minimum(){
 	size_t i;
 	size_t d_size = d_arr_.size();
-	double aux = d_arr_[0].get_value();
+	double aux = this->d_arr_[0].value();
 
 	for (i = 1; i < d_size; i++){
-		if (d_arr_[i] < aux){
-			aux = d_arr_[i].get_value();
+		if (this->d_arr_[i] < aux){
+			aux = d_arr_[i].value();
 		}
 	}
 	return aux;
@@ -130,10 +120,10 @@ query::minimum(){
 size_t
 query::amount(){
 	size_t i, aux = 0;
-	size_t d_size = d_arr_.size();
+	size_t d_size = this->d_arr_.size();
 
 	for (i = 0; i < d_size; i++){
-		if (d_arr_[i].get_state() == true){
+		if (this->d_arr_[i].state() == true){
 			aux++;
 		}
 	}
@@ -145,57 +135,57 @@ double
 query::mean(){
 	size_t i;
 	double aux = 0;
-	size_t d_size = d_arr_.size();
+	size_t d_size = this->d_arr_.size();
 
 	for (i = 0; i < d_size; i++){
-		if (d_arr_[i].get_state( )== true){
-			aux+=d_arr_[i].get_value();
+		if (this->d_arr_[i].state( )== true){
+			aux+=this->d_arr_[i].value();
 		}
 	}
-	return aux/amount_;
+	return aux/this->amount_;
 }
 
 
 double
-query::get_max(){
-	return max_;
+query::max(){
+	return this->max_;
 }
 
 double
-query::get_min(){
-	return min_;
+query::min(){
+	return this->min_;
 }
 
 double
-query::get_mean(){
-	return mean_;
+query::mean(){
+	return this->mean_;
 }
 	
 size_t
-query::get_amount(){
-	return amount_;
+query::amount(){
+	return this->amount_;
 }
 
 
 query&
 query::operator=( const query & Q ){
-	if (d_arr_ == Q. d_arr_ && mean_ == Q.mean_ && max_ == Q.max_ && min_ == Q.min_ && amount_ == Q.amount_){
+	if (this->d_arr_ == Q. d_arr_ && this->mean_ == Q.mean_ && this->max_ == Q.max_ && this->min_ == Q.min_ && this->amount_ == Q.amount_){
 		return *this;
 	}
-	if(d_arr_ != Q.d_arr_){
-		d_arr_ = Q.d_arr_;
+	if(this->d_arr_ != Q.d_arr_){
+		this->d_arr_ = Q.d_arr_;
 	}
-	if(mean_ != Q.mean_){
-		mean_ = Q.mean_;
+	if(this->mean_ != Q.mean_){
+		this->mean_ = Q.mean_;
 	}
-	if(max_ != Q.max_){
-		max_ = Q.max_;
+	if(this->max_ != Q.max_){
+		this->max_ = Q.max_;
 	}
-	if(min_ != Q.min_){
-		min_ = Q.min_;
+	if(this->min_ != Q.min_){
+		this->min_ = Q.min_;
 	}
-	if(amount_ != Q.amount_){
-		amount_ = Q.amount_;
+	if(this->amount_ != Q.amount_){
+		this->amount_ = Q.amount_;
 	}
 	return *this;
 } 
@@ -203,23 +193,23 @@ query::operator=( const query & Q ){
 
 bool
 query::operator==( const query & Q) const{
-	if(d_arr_ != Q.d_arr_){
+	if(this->d_arr_ != Q.d_arr_){
 			return false;
 	}
 	else{
-		if(mean_ != Q.mean_){
+		if(this->mean_ != Q.mean_){
 			return false;
 		}
 		else{
-			if(max_ != Q.max_){
+			if(this->max_ != Q.max_){
 				return false;
 			}
 			else{
-				if(min_ != Q.min_){
+				if(this->min_ != Q.min_){
 					return false;
 				}
 				else{
-					if(amount_ != Q.amount_){
+					if(this->amount_ != Q.amount_){
 						return false;
 					}
 				}
@@ -233,23 +223,23 @@ query::operator==( const query & Q) const{
 
 bool
 query::operator!=( const query & Q) const{
-	if(d_arr_ == Q.d_arr_){
+	if(this->d_arr_ == Q.d_arr_){
 			return false;
 	}
 	else{
-		if(mean_ == Q.mean_){
+		if(this->mean_ == Q.mean_){
 			return false;
 		}
 		else{
-			if(max_ == Q.max_){
+			if(this->max_ == Q.max_){
 				return false;
 			}
 			else{
-				if(min_ == Q.min_){
+				if(this->min_ == Q.min_){
 					return false;
 				}
 				else{
-					if(amount_ == Q.amount_){
+					if(this->amount_ == Q.amount_){
 						return false;
 					}
 				}
@@ -262,13 +252,13 @@ query::operator!=( const query & Q) const{
 	
 data &
 query::operator[ ]( size_t pos){
-	return d_arr_[pos];
+	return this->d_arr_[pos];
 }
 
 
 data const &
 query::operator[ ]( size_t pos) const{
-	return d_arr_[pos];
+	return this->d_arr_[pos];
 }
 
 
@@ -280,7 +270,7 @@ check_id(string str, sensornet & S, Array <size_t> id_arr){
 	size_t i;
 
 	for (i = 0; i < S_size; i++){
-		if (str == S[i].get_id()){		//Si encuentra el sensor que pide el query, agrega su posicion
+		if (str == S[i].id()){			//Si encuentra el sensor que pide el query, agrega su posicion
 			id_arr.push_back(i);		//a id_arr y afirma que el query fue inicialmente correcto
 			return true;
 		}
@@ -360,7 +350,7 @@ read_query(istream & is, sensornet & S, Array <size_t> & id_arr, Array <size_t> 
 }
 
 
-query 
+void
 query::process_data(query & Q, sensornet & S, Array <size_t> id_arr, Array <size_t> pos_arr){
 	size_t j, i;
 	double k = 0;
@@ -369,17 +359,15 @@ query::process_data(query & Q, sensornet & S, Array <size_t> id_arr, Array <size
 
 	for (j = pos_arr[0] ; j <= pos_arr[1]; j++){
 		for (i = 0; i < id_arr.size(); i++){
-			if(S[id_arr[i]][j].get_state() == true){	
+			if(S[id_arr[i]][j].state() == true){	
 				aux = aux + S[id_arr[i]][j];	//Se suman todos los valores de la i-esima posicion
 				k++;						//de cada sensor y se cuentan cuantos valores se sumaron
 			}
 		}
 		aux_arr[j] = aux/k;		//Se guarda en un vector el promedio de esos valores
 	}
-	query Q_out(aux_arr);	//Se crea un query a partir del arreglo obtenido
-
-	return Q_out;
-
+	query Q_aux(aux_arr);	//Se crea un query a partir del arreglo obtenido
+	Q = Q_aux;
 }
 
 //Esta funcion devuelve los resultados obtenidos
