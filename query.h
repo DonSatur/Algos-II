@@ -7,14 +7,14 @@
 #include <iostream>
 #include <sstream>
 #include <stdio.h>
-#include "array.h"
+#include "Array.h"
 #include "sensornet.h"
 
 
 using namespace std;
 
 class query {
-	array <data> d_arr_;	//El arreglo que se va a crear con todos los datos que se van a utilizar
+	Array <data> d_arr_;	//El arreglo que se va a crear con todos los datos que se van a utilizar
 	double mean_;
 	double max_;
 	double min_;
@@ -23,7 +23,7 @@ class query {
 	
 public:
 	query();
-	query(array <data> d_arr);
+	query(Array <data> d_arr);
 	query( const query & Q); 
 	~query( );
 
@@ -45,16 +45,16 @@ public:
 
 
 	friend
-	bool		check_id(string str, sensornet & S, array <size_t> & id_arr);
+	bool		check_id(string str, sensornet & S, Array <size_t> & id_arr);
 	friend
-	bool		check_pos(sensornet & S, array <size_t> id_arr, array <size_t> & pos_arr);
+	bool		check_pos(sensornet & S, Array <size_t> id_arr, Array <size_t> & pos_arr);
 	friend
-	bool		read_query(istream & is, sensornet & S, array <size_t> & id_arr, array <size_t> & pos_arr);
+	bool		read_query(istream & is, sensornet & S, Array <size_t> & id_arr, Array <size_t> & pos_arr);
 	
-	void 		process_data(query & Q, sensornet & S, array <size_t> id_arr, array <size_t> pos_arr);
+	void 		process_data(query & Q, sensornet & S, Array <size_t> id_arr, Array <size_t> pos_arr);
 
 	friend
-	ostream& 	operator<<(ostream & os, query & Q); 	
+	ostream& 	operator<<(ostream & os, query Q); 	
 
 };
 
@@ -65,7 +65,7 @@ query::query(){
 	this->amount_ = 0;
 }
 
-query::query(array <data> d_arr){
+query::query(Array <data> d_arr){
 	this->d_arr_ = d_arr;
 	this->amount_ = calc_amount();
 	this->max_ = calc_max();
@@ -264,7 +264,7 @@ query::operator[ ]( size_t pos) const{
 
 
 bool
-check_id(string str, sensornet & S, array <size_t> id_arr){
+check_id(string str, sensornet & S, Array <size_t> id_arr){
 
 	size_t S_size = S.size();
 	size_t i;
@@ -281,7 +281,7 @@ check_id(string str, sensornet & S, array <size_t> id_arr){
 
 
 bool
-check_pos(sensornet & S, array <size_t> id_arr, array <size_t> & pos_arr){
+check_pos(sensornet & S, Array <size_t> id_arr, Array <size_t> & pos_arr){
 	size_t i;
 
 	for (i = 0; i < id_arr.size(); i++){
@@ -300,9 +300,9 @@ check_pos(sensornet & S, array <size_t> id_arr, array <size_t> & pos_arr){
 
 
 bool
-read_query(istream & is, sensornet & S, array <size_t> & id_arr, array <size_t> & pos_arr){
+read_query(istream & is, sensornet & S, Array <size_t> & id_arr, Array <size_t> & pos_arr){
 	string str,str2,str3;
-	array <size_t> id_number;		//Aca se guarda la posicion (dentro de sensornet) de cada sensor
+	Array <size_t> id_number;		//Aca se guarda la posicion (dentro de sensornet) de cada sensor
 
 	if (!getline(is, str)){					//Se lee por linea
 		cerr << "BAD QUERY" << endl;
@@ -317,7 +317,7 @@ read_query(istream & is, sensornet & S, array <size_t> & id_arr, array <size_t> 
 		else{
 			stringstream str_st2(str2);
 			while (getline(str_st2, str3, ';')){	//Se lee cada q_id por separado
-				if(str3 == '-'){					//Si no hay q_id y hay un guion, significa que se hacen los calculos
+				if(str3 == "-"){					//Si no hay q_id y hay un guion, significa que se hacen los calculos
 					for (size_t i = 0; i < S.size(); i++){	//con todos los sensores
 					id_arr[i] = i;
 					}
@@ -352,10 +352,10 @@ read_query(istream & is, sensornet & S, array <size_t> & id_arr, array <size_t> 
 
 
 void
-query::process_data(query & Q, sensornet & S, array <size_t> id_arr, array <size_t> pos_arr){
+query::process_data(query & Q, sensornet & S, Array <size_t> id_arr, Array <size_t> pos_arr){
 	size_t j, i;
 	double k = 0;
-	array <data> aux_arr;
+	Array <data> aux_arr;
 	data aux(0.0);
 
 	for (j = pos_arr[0] ; j <= pos_arr[1]; j++){
@@ -372,7 +372,7 @@ query::process_data(query & Q, sensornet & S, array <size_t> id_arr, array <size
 }
 
 //Esta funcion devuelve los resultados obtenidos
-ostream& operator<<(ostream & os, query & Q){
+ostream& operator<<(ostream & os, query Q){
 
 	char ch = ',';
 
@@ -380,13 +380,13 @@ ostream& operator<<(ostream & os, query & Q){
 //		return os;
 //	}
 	
-	os << Q.mean_;
+	os << Q.mean();
 	os << ch;
-	os << Q.min_;
+	os << Q.min();
 	os << ch;
-	os << Q.max_;
+	os << Q.max();
 	os << ch;
-	os << Q.amount_;
+	os << Q.amount();
 	
 	return os;
 }	
