@@ -49,7 +49,7 @@ public:
 	friend
 	bool		check_pos(sensornet & S, Array <size_t> id_arr, Array <size_t> & pos_arr);
 	friend
-	bool		read_query(istream & is, sensornet & S, Array <size_t> & id_arr, Array <size_t> & pos_arr);
+	bool		read_query(istream & is,ostream & os, sensornet & S, Array <size_t> & id_arr, Array <size_t> & pos_arr, bool end);
 	
 	void 		process_data(query & Q, sensornet & S, Array <size_t> id_arr, Array <size_t> pos_arr);
 
@@ -300,19 +300,19 @@ check_pos(sensornet & S, Array <size_t> id_arr, Array <size_t> & pos_arr){
 
 
 bool
-read_query(istream & is, sensornet & S, Array <size_t> & id_arr, Array <size_t> & pos_arr){
+read_query(istream & is,ostream & os, sensornet & S, Array <size_t> & id_arr, Array <size_t> & pos_arr,bool q_state){
 	string str,str2,str3;
 	Array <size_t> id_number;		//Aca se guarda la posicion (dentro de sensornet) de cada sensor
 
 	if (!getline(is, str)){					//Se lee por linea
-		cerr << "BAD QUERY" << endl;
 		return false;
 	}
 	else{
 		stringstream str_st(str);				
 		if (!getline(str_st, str2, ',')){			//Se leen solo los q_ids
-			cerr << "BAD QUERY" << endl;
-			return false;
+			os << "BAD QUERY" << endl;
+			q_state	= false;
+			return true;
 		}
 		else{
 			stringstream str_st2(str2);
@@ -323,26 +323,30 @@ read_query(istream & is, sensornet & S, Array <size_t> & id_arr, Array <size_t> 
 					}
 				}
 				else if(!check_id(str3, S, id_arr)){	//Se chequea que los q_id sean correctos
-					cerr << "UNKNOWN ID" << endl;
-					return false;
+					os << "UNKNOWN ID" << endl;
+					q_state = false;
+					return true;
 				}
 			}	
 		}
 	}
 	stringstream str_st3(str2);		//Se convierte a flujo de entrada las posiciones
 	if (!str_st3 >> pos_arr[0]){	
-		cerr << "BAD QUERY" << endl;
-		return false;
+		os << "BAD QUERY" << endl;
+		q_state = false;
+		return true;
 	}
 	else{
 		if (!str_st3 >> pos_arr[1]){
-			cerr << "BAD QUERY" << endl;
-			return false;
+			os << "BAD QUERY" << endl;
+			q_state = false;
+			return true;
 		}
 		else{
 			if(!check_pos(S, id_arr, pos_arr)){	//Se chequea que las posiciones sean correctas
-				cerr << "NO DATA" << endl;
-				return false;
+				os << "NO DATA" << endl;
+				q_state = false;
+				return true;
 			}
 		}
 	}
