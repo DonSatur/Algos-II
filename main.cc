@@ -148,47 +148,27 @@ opt_help(string const &arg)
 
 
 
-
-//Funcion que lee el query
-
-bool
-read_query(istream & is, Array <string> & q_ids, int pos1, int pos2)
-{
-	bool state=false;
-	string str, str2, str3;
-	stringstream str_st, str_st2;
-	char ch=',';
-	char ch2=';';
-
-	if(getline(is, str)){				//Se lee una linea
-		stringstream str_st(str);		//Se convierte en flujo
-		getline(str_st,str2,ch)	;		//Se leen los ids por un lado
-		stringstream str_st2(str2);		//Se convierte en flujo
-		while(getline(str_st2,str3,ch2)){	//Se separa cada id y se guarda en un arreglo de strings
-			q_ids.push_back(str3);
-		}			
-		if(!(str_st2>>pos1) || (str_st2>>ch && ch!=',')){
-			cout<< "BAD QUERY" << endl;
-			return state;
-		}
-		if (!(str_st2>>pos2) || (str_st2>>ch && ch!='\0')){		//PREGUNTAR SI >> RECONOCE AL '/0'
-			cout<< "BAD QUERY" << endl;
-			return state;
-		}
-
-		state=true;
-		return state;
-	}
-	return state;
-}
-
-
-
 int
 main(int argc, char * const argv[])
 {
 	cmdline cmdl(options);	// Objeto con parametro tipo option_t (struct) declarado globalmente. Ver línea 51 main.cc
 	cmdl.parse(argc, argv); // Metodo de parseo de la clase cmdline
 
+	sensornet S;
+	Array <size_t> id_arr, pos_arr;
+	query Q;
 
+	if (!read_file()){
+		exit;
+	}
+	else{
+		if(!read_query(iss, S, id_arr, pos_arr)){
+			exit;
+		}
+		else{
+			process_data(Q, S, id_arr, pos_arr);
+			oss << Q;
+		}
+	}
+	exit;
 }
