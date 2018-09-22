@@ -11,17 +11,17 @@
 #define ARRAY_GROWTH_RATE 5
 
 template <typename T>
-class array
+class Array
 {
 public:
-	array();
-	array(size_t n); 
-	array( const array<T> & ); 
-	~array( ); 
+	Array();
+	Array(size_t n); 
+	Array( const Array<T> & ); 
+	~Array( ); 
 	size_t 		size( ) const; 
-	array<T>&	operator=( const array<T> & ); 
-	bool 		operator==( const array<T> & ) const; 
-	bool 		operator!=( const array<T> & ) const; 
+	Array<T>&	operator=( const Array<T> & ); 
+	bool 		operator==( const Array<T> & ) const; 
+	bool 		operator!=( const Array<T> & ) const; 
 	T &		operator[ ]( int );
 	T const &	operator[ ]( int ) const;
 
@@ -38,14 +38,14 @@ private:
 };
 
 template <typename T> 
-array<T>::array(){
+Array<T>::Array(){
 	alloc_size_ = ARRAY_DEFAULT_SIZE;
 	used_size_ = 0;
 	ptr_ = new T[alloc_size_];
 }
 
 template <typename T> 
-array<T>::array(size_t n){
+Array<T>::Array(size_t n){
 	// Si no se inicializan sus valores, están indeterminados (aunque
 	// muchos compiladores suelen completar con ceros).
 	// A su vez, es bueno notar que el usuario tiene a disposición todo el
@@ -57,7 +57,7 @@ array<T>::array(size_t n){
 }
 
 template <typename T> 
-array<T>::array( const array<T> &init ){
+Array<T>::Array( const Array<T> &init ){
 	// Se asume que existe el operador = en la clase T, lo que permite
 	// usar esta función para todo tipo de clases
 
@@ -69,17 +69,17 @@ array<T>::array( const array<T> &init ){
 }
 
 template <typename T> 
-array<T>::~array(){
+Array<T>::~Array(){
 	if (ptr_)
 		delete[] ptr_; 
 }
 
 
 template <typename T> 
-size_t array<T>::size() const { return used_size_; }
+size_t Array<T>::size() const { return used_size_; }
 
 template <typename T> 
-array<T>& array<T>::operator=( const array<T> &rhs )
+Array<T>& Array<T>::operator=( const Array<T> &rhs )
 {
 	T* aux;
 	// Nomenclatura: rhs es right hand side (lado derecho), lhs (que acá no 
@@ -107,7 +107,7 @@ array<T>& array<T>::operator=( const array<T> &rhs )
 	return *this;
 }
 template <typename T> 
-bool array<T>::operator==( const array<T> &rhs ) const
+bool Array<T>::operator==( const Array<T> &rhs ) const
 {
 	// Primero reviso si tienen igual tamaño. Si no, no pueden ser iguales.
 	// Luego reviso miembro a miembro si estos son iguales.
@@ -125,7 +125,7 @@ bool array<T>::operator==( const array<T> &rhs ) const
 }
 
 template <typename T> 
-bool array<T>::operator!=( const array<T> &rhs ) const
+bool Array<T>::operator!=( const Array<T> &rhs ) const
 {
 	// Si no son iguales son distintos
 	if ( rhs == *this )
@@ -135,7 +135,7 @@ bool array<T>::operator!=( const array<T> &rhs ) const
 }
 
 template <typename T> 
-T & array<T>::operator [ ]( int pos )
+T & Array<T>::operator [ ]( int pos )
 {
 	// Utilizamos assert para saber si se puede acceder al elemento.
 	// Si no se puede, detiene el programa mandando la señal SIGABRT y dirá 
@@ -146,7 +146,7 @@ T & array<T>::operator [ ]( int pos )
 }
 
 template <typename T> 
-const T & array<T>::operator [ ]( int pos ) const
+const T & Array<T>::operator [ ]( int pos ) const
 {
 	// La diferencia acá es que tiene los operadores de const.
 	// Es necesario si se llama desde dentro de una función que es const
@@ -160,7 +160,7 @@ const T & array<T>::operator [ ]( int pos ) const
 
 
 template <typename T> 
-void array<T>::clear()
+void Array<T>::clear()
 {
 	delete[] ptr_;
 	alloc_size_ = ARRAY_DEFAULT_SIZE;
@@ -169,7 +169,7 @@ void array<T>::clear()
 }
 
 template <typename T> 
-void array<T>::resize(size_t new_size)
+void Array<T>::resize(size_t new_size)
 {
 	// Redimensiono el arreglo, y copio todo hasta donde puedo.
 	// Desde afuera no se ve el redimensionamiento
@@ -189,7 +189,7 @@ void array<T>::resize(size_t new_size)
 }
 
 template <typename T> 
-void array<T>::push(const T &new_thing)
+void Array<T>::push(const T &new_thing)
 {
 	// Si es necesario agrandar el arreglo ya que no queda más espacio, lo
 	// agrando por 2.
