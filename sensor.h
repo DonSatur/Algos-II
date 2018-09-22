@@ -7,14 +7,14 @@
 #include <iostream>
 #include <sstream>
 #include <stdio.h>
-#include "Array.h"
+#include "array.h"
 #include "data.h"
 
 using namespace std;
 
 class sensor {
 	string id_;	//El nombre del sensor
-	Array <data> v_arr_;	//Un vector con los valores del sensor
+	array <data> v_arr_;	//Un vector con los valores del sensor
 	
 public:
 	sensor();
@@ -50,7 +50,7 @@ sensor::sensor(string id)
  
 sensor::sensor(string id, size_t n)
 {
-	Array <data> aux(n);
+	array <data> aux(n);
 	this->v_arr_ = aux;
 	this->id_=id;
 }
