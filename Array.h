@@ -193,15 +193,9 @@ void Array<T>::resize(size_t new_size)
 template <typename T> 
 void Array<T>::push(const T &new_thing)
 {
-	// Si es necesario agrandar el arreglo ya que no queda más espacio, lo
-	// agrando por 2.
-	// La decisión de cuando agrandar puede variar, ya que puede ser cuando 
-	// el tamaño es la mitad del reservado, por ejemplo.
-	// Al agrandar, copio todos los elementos del arreglo
-
 	if(alloc_size_ == used_size_){
 		this->resize(alloc_size_*ARRAY_GROWTH_RATE);
-	}	
+	}
 	ptr_[used_size_] = new_thing;
 	used_size_++;
 }
