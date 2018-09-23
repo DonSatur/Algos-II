@@ -38,13 +38,13 @@ public:
 
 sensor::sensor()
 {
-	this->v_arr_=0;
+	this->v_arr_ = ARRAY_DEFAULT_SIZE ;
 	this->id_='\0';
 }
 
 sensor::sensor(string id)
 {
-	this->v_arr_=0;
+	this->v_arr_ = ARRAY_DEFAULT_SIZE;
 	this->id_=id;
 }
  
@@ -86,7 +86,7 @@ sensor::operator=( const sensor & S)
 	// Después, cambiamos el tamaño del arreglo si es necesario y procedemos a copiar
 	if(S.id_ != this->id_)
 	{
-		id_=S.id_;
+		this->id_=S.id_;
 	}
 
 	if (S.v_arr_ != this->v_arr_)
@@ -149,3 +149,4 @@ sensor::push(const data &new_data)
 
 
 #endif
+
