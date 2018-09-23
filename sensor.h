@@ -26,7 +26,6 @@ public:
 	string id();	//Devuelve el id_ del sensor
 	size_t size();		//Devuelve la longitud del arreglo values_
 
-
 	sensor&		operator=( const sensor & S); 
 	bool 		operator==( const sensor & S) const; 
 	bool 		operator!=( const sensor & S) const; 
@@ -145,12 +144,6 @@ sensor::operator[ ](size_t pos) const
 void 
 sensor::push(const data &new_data)
 {
-	// Si es necesario agrandar el arreglo ya que no queda más espacio, lo
-	// agrando por 2.
-	// La decisión de cuando agrandar puede variar, ya que puede ser cuando 
-	// el tamaño es la mitad del reservado, por ejemplo.
-	// Al agrandar, copio todos los elementos del arreglo
-
 	this->v_arr_.push(new_data);
 }
 
