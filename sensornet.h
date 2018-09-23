@@ -88,7 +88,7 @@ bool read_file(istream &is, sensornet &s){
 		i=0;
 		stringstream str_st(str2);
 		while( getline(str_st,str2,',')){
-			if(!str2.empty())
+			if(!str2.empty()){
 				stringstream str_st2(str2);
 				
 				str_st >> s[i][j];
