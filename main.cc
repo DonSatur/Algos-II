@@ -11,11 +11,11 @@
 #include <sstream>
 #include <cstdlib>
 
-#include "cmdline.cpp"
+#include "cmdline.h"
 #include "sensornet.h"
 #include "query.h"
 #include "Array.h"
-#include "data.cpp"
+#include "data.h"
 
 using namespace std;
 
