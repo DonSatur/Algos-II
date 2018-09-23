@@ -59,6 +59,7 @@ public:
 };
 
 query::query(){
+	this->d_arr_ = ARRAY_DEFAULT_SIZE;
 	this->mean_ = 0;
 	this->max_ = 0;
 	this->min_ = 0;
