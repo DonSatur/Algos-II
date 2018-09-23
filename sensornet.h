@@ -30,7 +30,7 @@ public:
 
 sensornet::sensornet()
 {
-	this->s_arr_ = 0;
+	this->s_arr_ = ARRAY_DEFAULT_SIZE;
 }
 
 sensornet::sensornet(size_t n)
@@ -83,7 +83,8 @@ bool read_file(istream &is, sensornet &s){
 		}
 		j++;
 	}
-	s.s_arr_.push(sensor(str));
+	sensor S(str);
+	s.s_arr_.push(S);
 	j=0;
 	while(getline(is, str2)){
 		i=0;
@@ -104,7 +105,8 @@ bool read_file(istream &is, sensornet &s){
 void 
 sensornet::push(const sensor &new_sensor)
 {
-	this->s_arr_.push(new_sensor);
+	sensor S(new_sensor);
+	this->s_arr_.push(S);
 }
 
 
