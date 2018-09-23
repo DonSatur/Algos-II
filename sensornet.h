@@ -88,11 +88,10 @@ bool read_file(istream &is, sensornet &s){
 		i=0;
 		stringstream str_st(str2);
 		while( getline(str_st,str2,',')){
-			if(str2.empty())
-				s[i].push(no_data); // No habia informacion. Se guarda un "false" en la posicion del i-esimo sensor
-			else{
+			if(!str2.empty())
 				stringstream str_st2(str2);
-				str_st>> s[i][j];
+				
+				str_st >> s[i][j];
 				if(s[i][j].state() == false){
 					cout<<"Bad data"<<endl;
 					return false;
