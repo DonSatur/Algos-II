@@ -22,8 +22,8 @@ public:
 	Array<T>&	operator=( const Array<T> & ); 
 	bool 		operator==( const Array<T> & ) const; 
 	bool 		operator!=( const Array<T> & ) const; 
-	T &		operator[ ]( int );
-	T const &	operator[ ]( int ) const;
+	T &		operator[ ]( size_t );
+	T const &	operator[ ]( size_t ) const;
 
 	void		push(const T&);
 	void		clear();
@@ -135,7 +135,7 @@ bool Array<T>::operator!=( const Array<T> &rhs ) const
 }
 
 template <typename T> 
-T & Array<T>::operator [ ]( int pos )
+T & Array<T>::operator [ ]( size_t pos )
 {
 	// Utilizamos assert para saber si se puede acceder al elemento.
 	// Si no se puede, detiene el programa mandando la señal SIGABRT y dirá 
@@ -146,7 +146,7 @@ T & Array<T>::operator [ ]( int pos )
 }
 
 template <typename T> 
-const T & Array<T>::operator [ ]( int pos ) const
+const T & Array<T>::operator [ ]( size_t pos ) const
 {
 	// La diferencia acá es que tiene los operadores de const.
 	// Es necesario si se llama desde dentro de una función que es const
