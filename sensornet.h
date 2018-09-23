@@ -23,7 +23,8 @@ public:
 	sensor const &	operator[ ]( size_t pos) const;
 
 	friend bool read_file(istream&,sensornet&);
-//	friend std::istream& operator>>(std::istream&,Array<TT>&);
+
+	void push(const sensor &new_sensor);
 
 };
 
@@ -73,7 +74,7 @@ bool read_file(istream &is, sensornet &s){
 	getline(is,str2);
 	while (str2[j]){
 		if(str2[j] == ','){
-			s.s_arr_.push(sensor(str));	//se puede hacer esto??
+			s.push(sensor(str));	
 			i=0;
 		}
 		else{
@@ -88,14 +89,10 @@ bool read_file(istream &is, sensornet &s){
 		i=0;
 		stringstream str_st(str2);
 		while( getline(str_st,str2,',')){
+			s[i].push(no_data);
 			if(!str2.empty()){
 				stringstream str_st2(str2);
-				
 				str_st >> s[i][j];
-				if(s[i][j].state() == false){
-					cout<<"Bad data"<<endl;
-					return false;
-				}
 			}
 			i++;
 		}
@@ -103,5 +100,12 @@ bool read_file(istream &is, sensornet &s){
 	}
 	return true;
 }
+
+void 
+sensornet::push(const sensor &new_sensor)
+{
+	this->s_arr_.push(new_sensor);
+}
+
 
 #endif
