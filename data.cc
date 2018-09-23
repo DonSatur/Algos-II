@@ -138,13 +138,13 @@ data::operator+( const data & D) const{
 
 istream& operator>>(istream &is, data &D){
 	double value_aux;
-	bool state_aux;
+	
 	if(is>>value_aux){
-		D.state_ = true;
-		D.value_ = value_aux;
+		data D_aux(value_aux);
+		D = D_aux;
 		return is;
 	}
-	else
-		D.state_ = false;
+	else{
 		return is;
+	}
 }
