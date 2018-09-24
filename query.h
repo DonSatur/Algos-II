@@ -313,6 +313,7 @@ bool
 read_query(istream & is,ostream & os, sensornet & S, Array <size_t> & id_arr, Array <size_t> & pos_arr,bool q_state){
 	string str,str2,str3;
 	Array <size_t> id_number;		//Aca se guarda la posicion (dentro de sensornet) de cada sensor
+	char ch;
 
 	if (!getline(is, str)){					//Se lee por linea
 		return false;
@@ -341,7 +342,16 @@ read_query(istream & is,ostream & os, sensornet & S, Array <size_t> & id_arr, Ar
 			}	
 		}
 
-		str_st >> pos_arr;
+		str_st >> pos_arr[0];
+		str_st >> ch;
+		if(ch != ','){
+			os << "BAD QUERY" << endl;
+			q_state	= false;
+			return true;
+		}
+		str_st >> pos_arr[1];
+//
+//		str_st >> pos_arr;
 		if(!check_pos(S, id_arr, pos_arr)){	//Se chequea que las posiciones sean correctas
 			os << "NO DATA" << endl;
 			q_state = false;
@@ -388,6 +398,7 @@ ostream& operator<<(ostream & os, query Q){
 	os << Q.max();
 	os << ch;
 	os << Q.amount();
+	os << endl;
 	
 	return os;
 }	

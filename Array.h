@@ -30,9 +30,6 @@ public:
 	void		push(const T&);
 	void		clear();
 
-	template <typename TT>
-	friend std::istream& operator>>(std::istream&,Array<TT>&);
-
 
 private:
 	size_t alloc_size_; 
@@ -203,27 +200,5 @@ void Array<T>::push(const T &new_thing)
 	used_size_++;
 }
 
-template <typename T>
-std::istream & operator>> (std::istream& is,Array<T>& arr)
-{
-	// Limpio el arreglo y leo en formato (T1,T2,...,Tn) de is. Si no se hace conforme a lo
-	// esperado, limpio el arreglo (devuelvo uno sin elementos)
-	// Si llega a EOF, marcará en el istream
-
-	T aux;
-	char ch = 0;
-
-	arr.clear();
-	if(is >> aux){
-		arr.push(aux);
-		if( (is >> ch) && (ch == ',') && (is >> aux) ){
-			arr.push(aux);
-		}
-		else{
-			arr.clear();
-		}
-	} 
-	return is;
-}
 
 #endif
