@@ -65,26 +65,31 @@ sensornet::operator[ ](size_t pos) const{
 }
 
 bool read_file(istream &is, sensornet &s){
-	string str_st;
+//	string str_st;
 	string str,str2;
 	data no_data(false);
 	size_t i = 0, j = 0;
 
 
 	getline(is,str2);
-	while (str2[j]){
+	while (str2[j]){ // Esto es lo que habria que cambiar !! ASDLKFA;SDKHAKGHD;KJGAKJDA
 		if(str2[j] == ','){
-			s.push(sensor(str));	
+			sensor S_aux(str);
+			s.push(S_aux);	
 			i=0;
 		}
 		else{
 			str[i] = str2[j];
+			cout<<i<<','<<j<<endl;
 			i++;
 		}
 		j++;
 	}
-	sensor S(str);
-	s.s_arr_.push(S);
+	sensor S_aux(str);
+	s.push(S_aux);
+//	for(j=0;j<s.size();j++){
+//		cout<<(s[j].id)<<endl;
+//	}
 	j=0;
 	while(getline(is, str2)){
 		i=0;
