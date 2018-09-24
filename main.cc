@@ -109,8 +109,16 @@ opt_output(string const &arg)
 	if (arg == "-") {
 		oss = &cout;	// Establezco la salida estandar cout como flujo de salida
 	} else {
-		ofs.open(arg.c_str(), ios::out);
-		oss = &ofs;
+		if(!ofs){
+			ofstream output_csv("output.csv");
+			output_csv.open(arg.c_str(), ios::out);
+			oss = &output_csv;
+		}
+		else{
+			ofs.open(arg.c_str(), ios::out);
+			oss = &ofs;
+		}
+		
 	}
 
 	// Verificamos que el stream este OK.
@@ -123,7 +131,6 @@ opt_output(string const &arg)
 		exit(1);		// EXIT: Terminación del programa en su totalidad
 	}
 }
-
 static void
 opt_data(string const &arg)
 {
