@@ -270,12 +270,16 @@ check_id(string str, sensornet & S, Array <size_t> id_arr){
 	size_t S_size = S.size();
 	size_t i;
 
+	cout<<"Chequeando que este el sensor:"<<str<<endl;
 	for (i = 0; i < S_size; i++){
+		cout<<S[i].id()<<endl;
 		if (str == S[i].id()){			//Si encuentra el sensor que pide el query, agrega su posicion
 			id_arr.push(i);		//a id_arr y afirma que el query fue inicialmente correcto
+			cout<<"Lo encontro"<<endl;
 			return true;
 		}
 	}
+	cout<<"No lo encontro :"<<i<<endl;
 	return false;
 }
 
@@ -318,7 +322,7 @@ read_query(istream & is,ostream & os, sensornet & S, Array <size_t> & id_arr, Ar
 		else{
 			stringstream str_st2(str2);
 			while (getline(str_st2, str3, ';')){	//Se lee cada q_id por separado
-				if(str3 == "-"){					//Si no hay q_id y hay un guion, significa que se hacen los calculos
+				if(str3.empty()){					//Si no hay q_id y hay un guion, significa que se hacen los calculos
 					for (size_t i = 0; i < S.size(); i++){	//con todos los sensores
 					id_arr[i] = i;
 					}

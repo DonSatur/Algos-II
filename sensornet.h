@@ -72,6 +72,18 @@ bool read_file(istream &is, sensornet &s){
 
 
 	getline(is,str2);
+	stringstream str_st(str2);
+	while(getline(str_st,str,',')){
+		if(str.empty()){
+			cout<<"Error Data"<<endl;
+		}
+		sensor S(str);
+		s.push(S);
+		cout<<str<<endl;
+	}
+/*
+
+
 	while (str2[j]){ // Esto es lo que habria que cambiar !! ASDLKFA;SDKHAKGHD;KJGAKJDA
 		if(str2[j] == ','){
 			sensor S_aux(str);
@@ -89,8 +101,7 @@ bool read_file(istream &is, sensornet &s){
 	s.push(S_aux);
 //	for(j=0;j<s.size();j++){
 //		cout<<(s[j].id)<<endl;
-//	}
-	j=0;
+//	}*/
 	while(getline(is, str2)){
 		i=0;
 		stringstream str_st(str2);
