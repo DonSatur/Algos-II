@@ -166,7 +166,7 @@ main(int argc, char * const argv[])
 
 	bool q_state = true;
 	sensornet S;
-	Array <size_t> id_arr;
+	Array <size_t> id_arr = 1;
 	Array <size_t> pos_arr;
 	query Q;
 

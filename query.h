@@ -269,18 +269,19 @@ bool
 check_id(string str, sensornet & S, Array <size_t> & id_arr){
 
 	size_t S_size = S.size();
-	size_t i, k = 0;
+	size_t i;
+	bool k = true;
 
-	for (i = 0; i < S_size; ++i){
+	for (i = 0; i < S_size; i++){
 		if (str == S[i].id()){		//Si encuentra el sensor que pide el query, agrega su posicion
-			if (id_arr.size() == 1 && k == 0){
+			if (id_arr.size() == 1 && k == true){
 				id_arr[0] = i;
-				k++;
+				//k=false;
 			}
 			else{
 				id_arr.push(i);	
 			}
-
+			cout << id_arr[id_arr.size()-1] << endl;
 			return true;
 		}
 	}
@@ -374,7 +375,6 @@ query::process_data(query & Q, sensornet & S, Array <size_t> id_arr, Array <size
 
 	for (j = pos_arr[0] ; j <= pos_arr[1]; j++){
 		for (i = 0; i < id_arr.size(); i++){
-			cout<<S[id_arr[i]].size()<< endl;
 			if(S[id_arr[i]][j].state() == true){
 				aux = aux + S[id_arr[i]][j];	//Se suman todos los valores de la i-esima posicion
 				k++;						//de cada sensor y se cuentan cuantos valores se sumaron
