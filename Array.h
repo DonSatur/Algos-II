@@ -142,8 +142,8 @@ T & Array<T>::operator [ ]( size_t pos )
 	// Utilizamos assert para saber si se puede acceder al elemento.
 	// Si no se puede, detiene el programa mandando la señal SIGABRT y dirá 
 	// que fallo acá
-
-	assert( (0 < pos) || (pos < used_size_) ) ; 
+//	printf("La variable pos vale %d y used_size es %d\n",pos,used_size_ );
+	assert( (0 <= pos) || (pos < used_size_) ) ; 
 	return ptr_[ pos ]; 
 }
 
@@ -154,7 +154,7 @@ const T & Array<T>::operator [ ]( size_t pos ) const
 	// Es necesario si se llama desde dentro de una función que es const
 	// El compilador se dará cuenta de cual usar
 
-	assert( (0 < pos) || (pos < used_size_) ) ; 
+	assert( (0 <= pos) || (pos < used_size_) ) ; 
 	return ptr_[ pos ]; 
 }
 

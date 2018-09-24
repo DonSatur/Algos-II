@@ -265,21 +265,28 @@ query::operator[ ]( size_t pos) const{
 
 
 bool
-check_id(string str, sensornet & S, Array <size_t> id_arr){
+check_id(string str, sensornet & S, Array <size_t> & id_arr){
 
 	size_t S_size = S.size();
-	size_t i;
+	size_t i, k = 0;
 
-	cout<<"Chequeando que este el sensor:"<<str<<endl;
-	for (i = 0; i < S_size; i++){
-		cout<<S[i].id()<<endl;
-		if (str == S[i].id()){			//Si encuentra el sensor que pide el query, agrega su posicion
-			id_arr.push(i);		//a id_arr y afirma que el query fue inicialmente correcto
-			cout<<"Lo encontro"<<endl;
+	for (i = 0; i < S_size; ++i){
+	//	cout<<S[i].id()<<endl;
+		if (str == S[i].id()){		//Si encuentra el sensor que pide el query, agrega su posicion
+			if (id_arr.size() == 1 && k == 0){
+				id_arr[0] = i;
+				k++;
+			}
+			else{
+				id_arr.push(i);	
+			}
+			//a id_arr y afirma que el query fue inicialmente correcto
+			//cout<<"Lo encontro"<<endl;
 			return true;
 		}
 	}
-	cout<<"No lo encontro :"<<i<<endl;
+	//
+	//cout<<"No lo encontro :"<<i<<endl;
 	return false;
 }
 
@@ -332,6 +339,7 @@ read_query(istream & is,ostream & os, sensornet & S, Array <size_t> & id_arr, Ar
 					q_state = false;
 					return true;
 				}
+
 			}	
 		}
 	}
@@ -341,13 +349,16 @@ read_query(istream & is,ostream & os, sensornet & S, Array <size_t> & id_arr, Ar
 		q_state = false;
 		return true;
 	}
+	
 	else{
+		cout << pos_arr[0] << endl;
 		if (!str_st3 >> pos_arr[1]){
 			os << "BAD QUERY" << endl;
 			q_state = false;
 			return true;
 		}
 		else{
+			cout << pos_arr[1] << endl;
 			if(!check_pos(S, id_arr, pos_arr)){	//Se chequea que las posiciones sean correctas
 				os << "NO DATA" << endl;
 				q_state = false;
@@ -369,7 +380,7 @@ query::process_data(query & Q, sensornet & S, Array <size_t> id_arr, Array <size
 
 	for (j = pos_arr[0] ; j <= pos_arr[1]; j++){
 		for (i = 0; i < id_arr.size(); i++){
-			if(S[id_arr[i]][j].state() == true){	
+			if(S[id_arr[i]][j].state() == true){
 				aux = aux + S[id_arr[i]][j];	//Se suman todos los valores de la i-esima posicion
 				k++;						//de cada sensor y se cuentan cuantos valores se sumaron
 			}
@@ -378,6 +389,13 @@ query::process_data(query & Q, sensornet & S, Array <size_t> id_arr, Array <size
 	}
 	query Q_aux(aux_arr);	//Se crea un query a partir del arreglo obtenido
 	Q = Q_aux;
+//	for (i = 0; i< Q.d_arr_.size(); i++){
+//		cout << Q[i].value() << endl;
+//	}
+//	cout << Q.mean() << endl;
+//	cout << Q.min() << endl;
+//	cout << Q.max() << endl;
+//	cout << Q.amount() << endl;
 }
 
 //Esta funcion devuelve los resultados obtenidos

@@ -149,4 +149,3 @@ sensor::push(const data &new_data)
 
 
 #endif
-
