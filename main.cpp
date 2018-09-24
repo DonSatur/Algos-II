@@ -167,7 +167,7 @@ main(int argc, char * const argv[])
 	bool q_state = true;
 	sensornet S;
 	Array <size_t> id_arr;
-	Array <size_t> pos_arr(2);
+	Array <size_t> pos_arr;
 	query Q;
 
 	if (!read_file(*diss,S)){
