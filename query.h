@@ -38,6 +38,8 @@ public:
 	double		mean();			//Devuelve el promedio del arreglo
 	size_t		amount();		//Devuelve la cantidad de lugares del arreglo
 
+	size_t		size();
+
 	query&		operator=( const query & Q); 
 	bool 		operator==( const query & Q) const; 
 	bool 		operator!=( const query & Q) const; 
@@ -111,7 +113,7 @@ query::calc_min(){
 	size_t d_size = d_arr_.size();
 	double aux = this->d_arr_[0].value();
 
-	for (i = 1; i < d_size; i++){
+	for (i = 1; i < d_size ; i++){
 		if (this->d_arr_[i] < aux){
 			aux = d_arr_[i].value();
 		}
@@ -168,6 +170,11 @@ query::amount(){
 	return this->amount_;
 }
 
+
+size_t
+query::size(){
+	return d_arr_.size();
+}
 
 query&
 query::operator=( const query & Q ){
@@ -315,6 +322,12 @@ read_query(istream & is,ostream & os, sensornet & S, Array <size_t> & id_arr, si
 	Array <size_t> id_number;		//Aca se guarda la posicion (dentro de sensornet) de cada sensor
 	char ch;
 	bool first = true;
+	bool first1 = true;
+	size_t i;
+
+	id_arr.clear();
+	q_state = true;
+
 
 	if (!getline(is, str)){					//Se lee por linea
 		return false;
@@ -327,22 +340,31 @@ read_query(istream & is,ostream & os, sensornet & S, Array <size_t> & id_arr, si
 			return true;
 		}
 		else{
-			stringstream str_st2(str2);
-			while (getline(str_st2, str3, ';')){	//Se lee cada q_id por separado
-				if(str3.empty()){					//Si no hay q_id y hay un guion, significa que se hacen los calculos
-					for (size_t i = 0; i < S.size(); i++){	//con todos los sensores
-					id_arr[i] = i;
+			if(str2.empty()){				//Si no hay q_id y hay un guion, significa que se hacen los calculos
+				for (i = 0; i < S.size(); i++){	//con todos los sensores
+					if (id_arr.size() == 1 && first1 == true){
+						i=0;
+						id_arr[0] = i;
+						first1 = false;
+					}
+					else{
+						id_arr.push(i);	
+
+					}
+					
+				}
+			}
+			else{
+				stringstream str_st2(str2);
+				while (getline(str_st2, str3, ';')){	//Se lee cada q_id por separado
+					if(!check_id(str3, S, id_arr,first)){	//Se chequea que los q_id sean correctos
+						os << "UNKNOWN ID" << endl;
+						q_state = false;
+						return true;
 					}
 				}
-				else if(!check_id(str3, S, id_arr,first)){	//Se chequea que los q_id sean correctos
-					os << "UNKNOWN ID" << endl;
-					q_state = false;
-					return true;
-				}
-
 			}	
 		}
-
 		str_st >> pos1;
 		str_st >> ch;
 		if(ch != ','){
@@ -366,38 +388,78 @@ read_query(istream & is,ostream & os, sensornet & S, Array <size_t> & id_arr, si
 
 void
 query::process_data(query & Q, sensornet & S, Array <size_t> id_arr, size_t & pos1, size_t & pos2){
-	size_t j, i;
-	double k = 0;
-	Array <data> aux_arr;
-	data aux(0.0);
+//	size_t j, i;
+//	double k = 0;
+//	Array <data> aux_arr;
+//	bool first = true;
+
+	
+//	for (j = pos1 ; j <= pos2; j++){
+//		data aux(0.0); k = 0;
+//		for (i = 0; i < id_arr.size(); i++){
+//			if(S[id_arr[i]][j].state() == true){
+//				aux = aux + S[id_arr[i]][j];	//Se suman todos los valores de la i-esima posicion
+//				k++;						//de cada sensor y se cuentan cuantos valores se sumaron
+//			}
+//		
+//		}
+//
+//		if (aux_arr.size() == 1 && first == true){
+//			aux_arr[0] = aux.value()/k;
+//			first = false;
+//		}
+//		else{
+//			aux_arr.push(aux.value()/k);		//Se guarda en un vector el promedio de esos valores
+//		}
+//	}
+
+//	query Q_aux(aux_arr);	//Se crea un query a partir del arreglo obtenido
+
+//	Q = Q_aux;
+
+	Array <data> aux_arr = 1;
+	size_t i, j = 0, k = 0;
 	bool first = true;
-
-	//cout << pos1 << "    DOS   " << pos2 << endl;
-
-	for (j = pos1 ; j <= pos2; j++){
-		for (i = 0; i < id_arr.size(); i++){
-			if(S[id_arr[i]][j].state() == true){
-				aux = aux + S[id_arr[i]][j];	//Se suman todos los valores de la i-esima posicion
-				k++;						//de cada sensor y se cuentan cuantos valores se sumaron
-				//cout << j << endl;
+	data aux(0.0);
+	double q = 0;
+	
+	
+	if (id_arr.size() == 1){
+		for (i = pos1; i <= pos2; i++){
+			if (aux_arr.size() == 1 && first == true){
+				aux_arr[j] = S[id_arr[j]][i];
+				first = false;
 			}
-			//cout<<i<<endl;
-		}
-		if (aux_arr.size() == 1 && first == true){
-			aux_arr[0] = aux.value()/k;
-			first = false;
-		}
-		else{
-			aux_arr.push(aux.value()/k);		//Se guarda en un vector el promedio de esos valores
+			else{
+				aux_arr.push(S[id_arr[0]][i]);
+			}
+			j++;
 		}
 	}
-//	cout << "UNO" << endl;
 
-	query Q_aux(aux_arr);	//Se crea un query a partir del arreglo obtenido
-//	cout << "DOS" << endl;
+	else{
+		first = true;
+		for (i = pos1; i <= pos2; i++){
+			aux = 0.0;
+			q = 0;
+			for (j = 0; j < id_arr.size(); j++){
+				aux = aux + S[id_arr[j]][i];
+				q++;
+			}			if (aux_arr.size() == 1 && first == true){
+				aux_arr[k] = aux.value()/q;
+				first = false;
+			}
+			else{
+				aux_arr.push(aux.value()/q);
+			}
+			k++;
+		} 
+	}
+
+	query Q_aux(aux_arr);
 	Q = Q_aux;
-	
-	//cout << "TRES" << endl;
+
+
 }
 
 //Esta funcion devuelve los resultados obtenidos

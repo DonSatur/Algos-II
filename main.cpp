@@ -178,7 +178,9 @@ main(int argc, char * const argv[])
 			if(q_state){
 				Q.process_data(Q, S, id_arr, pos1, pos2);
 				*oss <<Q;
+
 			}
+
 		}
 	}
 	return EXIT_SUCCESS;
