@@ -48,11 +48,11 @@ public:
 	friend
 	bool		check_id(string str, sensornet & S, Array <size_t> & id_arr,bool & first);
 	friend
-	bool		check_pos(sensornet & S, Array <size_t> id_arr, Array <size_t> & pos_arr);
+	bool		check_pos(sensornet & S, Array <size_t> id_arr, size_t & pos1, size_t & pos2);
 	friend
-	bool		read_query(istream & is,ostream & os, sensornet & S, Array <size_t> & id_arr, Array <size_t> & pos_arr, bool end);
+	bool		read_query(istream & is,ostream & os, sensornet & S, Array <size_t> & id_arr, size_t & pos1, size_t & pos2, bool & end);
 	
-	void 		process_data(query & Q, sensornet & S, Array <size_t> id_arr, Array <size_t> pos_arr);
+	void 		process_data(query & Q, sensornet & S, Array <size_t> id_arr, size_t &pos1, size_t & pos2);
 
 	friend
 	ostream& 	operator<<(ostream & os, query Q); 	
@@ -73,6 +73,7 @@ query::query(Array <data> d_arr){
 	this->max_ = calc_max();
 	this->min_ = calc_min();
 	this->mean_= calc_mean();
+	
 }
 
 
@@ -280,7 +281,7 @@ check_id(string str, sensornet & S, Array <size_t> & id_arr,bool &first){
 			else{
 				id_arr.push(i);	
 			}
-			cout<< id_arr[id_arr.size()-1] << endl;
+			//cout<< id_arr[id_arr.size()-1] << endl;
 			return true;
 		}
 	}
@@ -291,16 +292,16 @@ check_id(string str, sensornet & S, Array <size_t> & id_arr,bool &first){
 
 
 bool
-check_pos(sensornet & S, Array <size_t> id_arr, Array <size_t> & pos_arr){
+check_pos(sensornet & S, Array <size_t> id_arr, size_t & pos1, size_t & pos2){
 	size_t i;
 
 	for (i = 0; i < id_arr.size(); i++){
-		if(pos_arr[0] > S[id_arr[i]].size()){	//Chequea que la posicion mas baja no sobrepase
+		if(pos1 > S[id_arr[i]].size()){	//Chequea que la posicion mas baja no sobrepase
 			return false;						//la cantidad de lugares del arreglo	
 		}
 		else{
-			if (pos_arr[1] > S[id_arr[i]].size()){	//Chequea si la posicion mas alta sobrepaso la
-				pos_arr[1]= S[id_arr[i]].size();	//cantidad de lugares del arreglo y de ser asi,
+			if (pos2 > S[id_arr[i]].size()){	//Chequea si la posicion mas alta sobrepaso la
+				pos2= S[id_arr[i]].size();	//cantidad de lugares del arreglo y de ser asi,
 			}										//coloca como posicion mas alta la cantidad de 
 		}											//lugares del arreglo
 	}
@@ -310,7 +311,7 @@ check_pos(sensornet & S, Array <size_t> id_arr, Array <size_t> & pos_arr){
 
 
 bool
-read_query(istream & is,ostream & os, sensornet & S, Array <size_t> & id_arr, Array <size_t> & pos_arr,bool q_state){
+read_query(istream & is,ostream & os, sensornet & S, Array <size_t> & id_arr, size_t & pos1, size_t & pos2,bool & q_state){
 	string str,str2,str3;
 	Array <size_t> id_number;		//Aca se guarda la posicion (dentro de sensornet) de cada sensor
 	char ch;
@@ -343,17 +344,16 @@ read_query(istream & is,ostream & os, sensornet & S, Array <size_t> & id_arr, Ar
 			}	
 		}
 
-		str_st >> pos_arr[0];
+		str_st >> pos1;
 		str_st >> ch;
 		if(ch != ','){
 			os << "BAD QUERY" << endl;
 			q_state	= false;
 			return true;
 		}
-		str_st >> pos_arr[1];
-//
-//		str_st >> pos_arr;
-		if(!check_pos(S, id_arr, pos_arr)){	//Se chequea que las posiciones sean correctas
+		str_st >> pos2;
+
+		if(!check_pos(S, id_arr, pos1, pos2)){	//Se chequea que las posiciones sean correctas
 			os << "NO DATA" << endl;
 			q_state = false;
 			return true;
@@ -366,24 +366,37 @@ read_query(istream & is,ostream & os, sensornet & S, Array <size_t> & id_arr, Ar
 
 
 void
-query::process_data(query & Q, sensornet & S, Array <size_t> id_arr, Array <size_t> pos_arr){
+query::process_data(query & Q, sensornet & S, Array <size_t> id_arr, size_t & pos1, size_t & pos2){
 	size_t j, i;
 	double k = 0;
 	Array <data> aux_arr;
 	data aux(0.0);
+	bool first = true;
 
-	for (j = pos_arr[0] ; j <= pos_arr[1]; j++){
+	//cout << pos1 << "    DOS   " << pos2 << endl;
+
+	for (j = pos1 ; j <= pos2; j++){
 		for (i = 0; i < id_arr.size(); i++){
 			if(S[id_arr[i]][j].state() == true){
 				aux = aux + S[id_arr[i]][j];	//Se suman todos los valores de la i-esima posicion
 				k++;						//de cada sensor y se cuentan cuantos valores se sumaron
+				//cout << j << endl;
 			}
-			cout<<i<<endl;
+			//cout<<i<<endl;
 		}
-		aux_arr[j] = aux.value()/k;		//Se guarda en un vector el promedio de esos valores
+		if (aux_arr.size() == 1 && first == true){
+			aux_arr[0] = aux.value()/k;
+		}
+		else{
+			aux_arr.push(aux.value()/k);		//Se guarda en un vector el promedio de esos valores
+		}
 	}
+//	cout << "UNO" << endl;
 	query Q_aux(aux_arr);	//Se crea un query a partir del arreglo obtenido
+//	cout << "DOS" << endl;
 	Q = Q_aux;
+	
+	//cout << "TRES" << endl;
 }
 
 //Esta funcion devuelve los resultados obtenidos

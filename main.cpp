@@ -167,17 +167,17 @@ main(int argc, char * const argv[])
 	bool q_state = true;
 	sensornet S;
 	Array <size_t> id_arr = 1;
-	Array <size_t> pos_arr;
+	size_t pos1 = 0, pos2 = 0;
 	query Q;
 
 	if (!read_file(*diss,S)){
 		return EXIT_FAILURE;
 	}
 	else{
-		while(read_query(*iss,*oss, S, id_arr, pos_arr,q_state)){
+		while(read_query(*iss,*oss, S, id_arr, pos1, pos2,q_state)){
 			if(q_state){
-				Q.process_data(Q, S, id_arr, pos_arr);
-				//*oss <<Q;
+				Q.process_data(Q, S, id_arr, pos1, pos2);
+				*oss <<Q;
 			}
 		}
 	}

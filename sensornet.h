@@ -97,11 +97,9 @@ bool read_file(istream &is, sensornet &s){
 		i=0;
 		stringstream str_st(str2);
 		while( getline(str_st,str,',')){ // str ahora tiene un valor
-			//cout<<str<<',';
 			if(s[i].size() == 1 && first[i] == true){ //Evaluamos el caso en que sea el primer elemento del arreglo de datos
 				s[i][0] = no_data;					 //Ya que push 
 				first[i] = false;
-			//	cout<<"i es "<<i<<endl;
 			}
 			else
 				s[i].push(no_data);
@@ -109,10 +107,10 @@ bool read_file(istream &is, sensornet &s){
 				stringstream str_st2(str);
 				str_st2 >> s[i][j];
 			}
-			cout<<s[i][j].value()<<',';
+			//cout<<s[i][j].value()<<',';
 			i++;
 		}
-		cout<<endl;
+		//cout<<endl;
 		j++;
 	}
 	return true;
