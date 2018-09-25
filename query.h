@@ -94,12 +94,15 @@ query::~query( ){
 
 double
 query::calc_max(){
-	size_t i;
+	size_t i, j = 0;
 	size_t d_size = d_arr_.size();
-	double aux = this->d_arr_[0].value();
+	while(this->d_arr_[j].state() == false){
+		j++;
+	}
+	double aux = this->d_arr_[j].value();
 
-	for (i = 1; i < d_size; i++){
-		if (this->d_arr_[i] > aux){
+	for (i = 1; i < d_size-1; i++){
+		if (this->d_arr_[i] > aux && this->d_arr_[i].state() == true){
 			aux = this->d_arr_[i].value();
 		}
 	}
@@ -109,15 +112,19 @@ query::calc_max(){
 
 double
 query::calc_min(){
-	size_t i;
+	size_t i, j = 0;
 	size_t d_size = d_arr_.size();
-	double aux = this->d_arr_[0].value();
+	while(this->d_arr_[j].state() == false){
+		j++;
+	}
+	double aux = this->d_arr_[j].value();
 
-	for (i = 1; i < d_size ; i++){
-		if (this->d_arr_[i] < aux){
-			aux = d_arr_[i].value();
+	for (i = j+1; i < d_size-1 ; i++){
+		if (this->d_arr_[i] < aux && this->d_arr_[i].state() == true){
+			aux = d_arr_[i].value();	
 		}
 	}
+
 	return aux;
 }
 
@@ -287,7 +294,7 @@ check_id(string str, sensornet & S, Array <size_t> & id_arr,bool &first){
 			else{
 				id_arr.push(i);	
 			}
-			//cout<< id_arr[id_arr.size()-1] << endl;
+
 			return true;
 		}
 	}
@@ -388,34 +395,6 @@ read_query(istream & is,ostream & os, sensornet & S, Array <size_t> & id_arr, si
 
 void
 query::process_data(query & Q, sensornet & S, Array <size_t> id_arr, size_t & pos1, size_t & pos2){
-//	size_t j, i;
-//	double k = 0;
-//	Array <data> aux_arr;
-//	bool first = true;
-
-	
-//	for (j = pos1 ; j <= pos2; j++){
-//		data aux(0.0); k = 0;
-//		for (i = 0; i < id_arr.size(); i++){
-//			if(S[id_arr[i]][j].state() == true){
-//				aux = aux + S[id_arr[i]][j];	//Se suman todos los valores de la i-esima posicion
-//				k++;						//de cada sensor y se cuentan cuantos valores se sumaron
-//			}
-//		
-//		}
-//
-//		if (aux_arr.size() == 1 && first == true){
-//			aux_arr[0] = aux.value()/k;
-//			first = false;
-//		}
-//		else{
-//			aux_arr.push(aux.value()/k);		//Se guarda en un vector el promedio de esos valores
-//		}
-//	}
-
-//	query Q_aux(aux_arr);	//Se crea un query a partir del arreglo obtenido
-
-//	Q = Q_aux;
 
 	Array <data> aux_arr = 1;
 	size_t i, j = 0, k = 0;
@@ -458,6 +437,7 @@ query::process_data(query & Q, sensornet & S, Array <size_t> id_arr, size_t & po
 
 	query Q_aux(aux_arr);
 	Q = Q_aux;
+
 
 
 }

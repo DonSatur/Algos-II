@@ -1,10 +1,3 @@
-// Prueba de la clase cmdline: dado un factor entero pasado por la
-// línea de comando, leemos una secuencia de números que ingresan
-// por la entrada estándar, los multiplicamos por ese factor, y
-// luego mostramos el resultado por std::cout.
-//
-// $Id: main.cc,v 1.5 2012/09/15 12:23:57 lesanti Exp $
-
 #include <fstream>
 #include <iomanip>
 #include <iostream>
@@ -19,37 +12,12 @@
 
 using namespace std;
 
+
+// Funciones correspondientes a cada opcion posible de la linea de comandos
 static void opt_input(string const &);
 static void opt_output(string const &);
 static void opt_data(string const &);
 static void opt_help(string const &);
-
-// Tabla de opciones de línea de comando. El formato de la tabla
-// consta de un elemento por cada opción a definir. A su vez, en
-// cada entrada de la tabla tendremos:
-//
-// o La primera columna indica si la opción lleva (1) o no (0) un
-//   argumento adicional.
-//
-// o La segunda columna representa el nombre corto de la opción.
-//
-// o Similarmente, la tercera columna determina el nombre largo.
-//
-// o La cuarta columna contiene el valor por defecto a asignarle
-//   a esta opción en caso que no esté explícitamente presente
-//   en la línea de comandos del programa. Si la opción no tiene
-//   argumento (primera columna nula), todo esto no tiene efecto.
-//
-// o La quinta columna apunta al método de parseo de la opción,
-//   cuyo prototipo debe ser siempre void (*m)(string const &arg);
-//
-// o La última columna sirve para especificar el comportamiento a
-//   adoptar en el momento de procesar esta opción: cuando la
-//   opción es obligatoria, deberá activarse OPT_MANDATORY.
-//
-// Además, la última entrada de la tabla debe contener todos sus
-// elementos nulos, para indicar el final de la misma.
-//
 
 /**************** Elementos globales ******************/
 static option_t options[] = {
@@ -60,36 +28,29 @@ static option_t options[] = {
 	{0, },
 };
 
-static fstream difs;
-static istream *diss;
-static istream *iss = 0;	// Input Stream (clase para manejo de los flujos de entrada)
-static ostream *oss = 0;	// Output Stream (clase para manejo de los flujos de salida)
-static fstream ifs; 		// Input File Stream (derivada de la clase ifstream que deriva de istream para el manejo de archivos)
-static fstream ofs;		// Output File Stream (derivada de la clase ofstream que deriva de ostream para el manejo de archivos)
+static fstream difs;		// Flujo de archivo de entrada correspondiente a los valores y IDs de cada sensor
+static istream *diss;		// Flujo de entrada que toma los valores que posee difs
+static fstream ifs; 		// Flujo de archivo de entrada correspondiente al query 
+static istream *iss = 0;	// Flujo de entrada que de existir archivo, toma sus valores y si no, lee el query por cin
+static fstream ofs;			// Flujo de archivo de salida donde se escribiran los resultados
+static ostream *oss = 0;	// Flujo de salida que de existir archivo de salida, toma su direccion y si no, escribe por cout
 
 
-
-/*****************************************************/
+// Definicion y desarrollo de las funciones necesarias para cada opcion:
 
 static void
 opt_input(string const &arg)
 {
-	// Si el nombre del archivos es "-", usaremos la entrada
-	// estándar. De lo contrario, abrimos un archivo en modo
-	// de lectura.
-	//
+	// Si la entrada es "-", el flujo de entrada es cin
 	if (arg == "-") {
-		iss = &cin;		// Establezco la entrada estandar cin como flujo de entrada
+		iss = &cin;		
 	}
 	else {
-		ifs.open(arg.c_str(), ios::in); // c_str(): Returns a pointer to an Array that contains a null-terminated
-										// sequence of characters (i.e., a C-string) representing
-										// the current value of the string object.
+		ifs.open(arg.c_str(), ios::in); // Al ser un archivo, se abre para lectura
 		iss = &ifs;
 	}
 
-	// Verificamos que el stream este OK.
-	//
+	// Se verifica que el flujo sea correcto
 	if (!iss->good()) {
 		cerr << "cannot open "
 		     << arg
@@ -102,43 +63,38 @@ opt_input(string const &arg)
 static void
 opt_output(string const &arg)
 {
-	// Si el nombre del archivos es "-", usaremos la salida
-	// estándar. De lo contrario, abrimos un archivo en modo
-	// de escritura.
-	//
+	// Si la entrada es "-", el flujo de entrada es cout
 	if (arg == "-") {
 		oss = &cout;	// Establezco la salida estandar cout como flujo de salida
 	} else {
-		if(!ofs){
+		if(!ofs){		// Chequea si el archivo existe y si no, lo crea
 			ofstream output_csv("output.csv");
 			output_csv.open(arg.c_str(), ios::out);
 			oss = &output_csv;
 		}
-		else{
+		else{			// Si el archivo existe, lo abre para escritura
 			ofs.open(arg.c_str(), ios::out);
 			oss = &ofs;
 		}
 		
 	}
 
-	// Verificamos que el stream este OK.
-	//
+	// Se verifica que el flujo sea correcto
 	if (!oss->good()) {
 		cerr << "cannot open "
 		     << arg
 		     << "."
 		     << endl;
-		exit(1);		// EXIT: Terminación del programa en su totalidad
+		exit(1);		
 	}
 }
 static void
 opt_data(string const &arg)
 {
-	difs.open(arg.c_str(), ios::in); 
-	diss = &difs;
+	difs.open(arg.c_str(), ios::in); 	// Al ser un archivo obligatoriamente, se abre y 
+	diss = &difs;						// luego se pasa la direccion al flujo de entrada
 
-	// Verificamos que el stream este OK.
-	//
+	// Se verifica que el flujo sea correcto
 	if (!diss->good()) {
 		cerr << "cannot open "
 		     << arg
@@ -148,6 +104,8 @@ opt_data(string const &arg)
 	}
 }
 
+
+// Opcion que indica como se deben ingresar los argumentos en la linea de comandos
 static void
 opt_help(string const &arg)
 {
@@ -161,23 +119,27 @@ opt_help(string const &arg)
 int
 main(int argc, char * const argv[])
 {
-	cmdline cmdl(options);	// Objeto con parametro tipo option_t (struct) declarado globalmente. Ver línea 51 main.cc
-	cmdl.parse(argc, argv); // Metodo de parseo de la clase cmdline
+	cmdline cmdl(options);
+	cmdl.parse(argc, argv); 
 
-	bool q_state = true;
-	sensornet S;
-	Array <size_t> id_arr = 1;
-	size_t pos1 = 0, pos2 = 0;
-	query Q;
+	bool q_state = true;			// Variable que indica si las consultas fueron correctas o no
+	sensornet S;					// Inicializacion del arreglo de sensores
+	Array <size_t> id_arr = 1;		// Arreglo donde se guarda la posicion (en el arreglo de sensores) 
+									// de cada sensor (que pide la consulta) 
+	size_t pos1 = 0, pos2 = 0;		// Posiciones para las cuales se calcula el resultado
+	query Q;						// Objeto donde se van a guardar:
+									//	*el arreglo al que se le calculan los resultados
+									//	*los resultados: promedio, minimo, maximo, cantidad de valores.
 
-	if (!read_file(*diss,S)){
+
+	if (!read_file(*diss,S)){		// Lee el archivo de entrada donde estan los valores de los sensores
 		return EXIT_FAILURE;
 	}
 	else{
-		while(read_query(*iss,*oss, S, id_arr, pos1, pos2,q_state)){
-			if(q_state){
-				Q.process_data(Q, S, id_arr, pos1, pos2);
-				*oss <<Q;
+		while(read_query(*iss,*oss, S, id_arr, pos1, pos2,q_state)){	// Lee las consultas
+			if(q_state){												// Si las consultas son correctas,
+				Q.process_data(Q, S, id_arr, pos1, pos2);				// se procesa la data.
+				*oss <<Q;									// Se escribe el resultado donde corresponde.
 
 			}
 

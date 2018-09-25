@@ -34,6 +34,7 @@ public:
 	bool		operator<( const data & D) const;
 	bool		operator<=( const data & D) const;
 	double		operator+( const data & D) const;
+	
 	friend istream& operator>>(istream &, data &new_data);
 
 };

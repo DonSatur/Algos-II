@@ -23,7 +23,7 @@ public:
 	sensor( const sensor & S); 
 	~sensor( );
 
-	string id();	//Devuelve el id_ del sensor
+	string id();		//Devuelve el ID del sensor
 	size_t size();		//Devuelve la longitud del arreglo values_
 
 	sensor&		operator=( const sensor & S); 
@@ -31,23 +31,26 @@ public:
 	bool 		operator!=( const sensor & S) const; 
 	data &		operator[ ]( size_t pos);
 	data const &	operator[ ]( size_t pos) const;
+
 	void 		push(const data& new_data);
 
 };
 
-
+// Constructor por defecto
 sensor::sensor()
 {
 	this->v_arr_ = ARRAY_DEFAULT_SIZE ;
 	this->id_='\0';
 }
 
+// Constructor a partir del ID
 sensor::sensor(string id)
 {
 	this->v_arr_ = ARRAY_DEFAULT_SIZE;
 	this->id_=id;
 }
  
+// Constructor a partir del ID y la longitud del arreglo
 sensor::sensor(string id, size_t n)
 {
 	Array <data> aux(n);
@@ -55,26 +58,30 @@ sensor::sensor(string id, size_t n)
 	this->id_=id;
 }
 
+// Constructor por puntero
 sensor::sensor(const sensor & S)
 {	
 	this->v_arr_=S.v_arr_;
 	this->id_=S.id_;
 }
 
+// Destructor
 sensor::~sensor()
 {
-	
 }
 
+// Devuelve el ID del sensor
 string
 sensor::id(){
 	return this->id_;
 }
 
+// Devuelve el tamano del arreglo de valores
 size_t
 sensor::size(){
 	return this->v_arr_.size();
 }
+
 
 sensor&
 sensor::operator=( const sensor & S)

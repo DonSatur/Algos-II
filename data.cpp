@@ -8,40 +8,42 @@
 
 using namespace std;
 
+// Constructor por defecto
 data::data(){
 	this->value_ = 0;
 	this->state_ = true;
 }
 
-
+// Constructor a partir del valor
 data::data(double value){
 	this->value_ = value;
 	this->state_ = true;
 }
 	
-
+// Constructor a partir del estado
 data::data(bool state){
 	this->value_= 0;
 	this->state_ = state;
 }
 	
-
+// Constructor por puntero
 data::data( const data & D){
 	this->value_ = D.value_;
 	this->state_ = D.state_;
 }
 	
 
+// Destructor
 data::~data( ){
 }
 	
-
+// Devuelve el valor del estado
 bool
 data::state(){
 	return this->state_;
 }
 
-
+// Devuelve el valor de value
 double		
 data::value(){
 	return this->value_;
@@ -136,6 +138,7 @@ data::operator+( const data & D) const{
 	return this->value_+D.value_;
 }
 
+// Operador de lectura de una variable data a partir de un flujo de entrada
 istream&
 operator>>(istream &is, data &D){
 	double value_aux;
