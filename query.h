@@ -124,7 +124,6 @@ size_t
 query::calc_amount(){
 	size_t i, aux = 0;
 	size_t d_size = this->d_arr_.size();
-
 	for (i = 0; i < d_size; i++){
 		if (this->d_arr_[i].state() == true){
 			aux++;
@@ -386,12 +385,14 @@ query::process_data(query & Q, sensornet & S, Array <size_t> id_arr, size_t & po
 		}
 		if (aux_arr.size() == 1 && first == true){
 			aux_arr[0] = aux.value()/k;
+			first = false;
 		}
 		else{
 			aux_arr.push(aux.value()/k);		//Se guarda en un vector el promedio de esos valores
 		}
 	}
 //	cout << "UNO" << endl;
+
 	query Q_aux(aux_arr);	//Se crea un query a partir del arreglo obtenido
 //	cout << "DOS" << endl;
 	Q = Q_aux;
