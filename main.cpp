@@ -177,7 +177,7 @@ main(int argc, char * const argv[])
 		while(read_query(*iss,*oss, S, id_arr, pos_arr,q_state)){
 			if(q_state){
 				Q.process_data(Q, S, id_arr, pos_arr);
-				*oss <<Q;
+				//*oss <<Q;
 			}
 		}
 	}

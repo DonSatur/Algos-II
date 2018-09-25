@@ -46,7 +46,7 @@ public:
 
 
 	friend
-	bool		check_id(string str, sensornet & S, Array <size_t> & id_arr);
+	bool		check_id(string str, sensornet & S, Array <size_t> & id_arr,bool & first);
 	friend
 	bool		check_pos(sensornet & S, Array <size_t> id_arr, Array <size_t> & pos_arr);
 	friend
@@ -266,22 +266,21 @@ query::operator[ ]( size_t pos) const{
 
 
 bool
-check_id(string str, sensornet & S, Array <size_t> & id_arr){
+check_id(string str, sensornet & S, Array <size_t> & id_arr,bool &first){
 
 	size_t S_size = S.size();
 	size_t i;
-	bool k = true;
 
 	for (i = 0; i < S_size; i++){
 		if (str == S[i].id()){		//Si encuentra el sensor que pide el query, agrega su posicion
-			if (id_arr.size() == 1 && k == true){
+			if (id_arr.size() == 1 && first == true){
 				id_arr[0] = i;
-				//k=false;
+				first = false;
 			}
 			else{
 				id_arr.push(i);	
 			}
-			cout << id_arr[id_arr.size()-1] << endl;
+			cout<< id_arr[id_arr.size()-1] << endl;
 			return true;
 		}
 	}
@@ -315,6 +314,7 @@ read_query(istream & is,ostream & os, sensornet & S, Array <size_t> & id_arr, Ar
 	string str,str2,str3;
 	Array <size_t> id_number;		//Aca se guarda la posicion (dentro de sensornet) de cada sensor
 	char ch;
+	bool first = true;
 
 	if (!getline(is, str)){					//Se lee por linea
 		return false;
@@ -334,7 +334,7 @@ read_query(istream & is,ostream & os, sensornet & S, Array <size_t> & id_arr, Ar
 					id_arr[i] = i;
 					}
 				}
-				else if(!check_id(str3, S, id_arr)){	//Se chequea que los q_id sean correctos
+				else if(!check_id(str3, S, id_arr,first)){	//Se chequea que los q_id sean correctos
 					os << "UNKNOWN ID" << endl;
 					q_state = false;
 					return true;
@@ -360,7 +360,6 @@ read_query(istream & is,ostream & os, sensornet & S, Array <size_t> & id_arr, Ar
 		}
 	
 	}
-
 	return true;
 
 }
@@ -379,6 +378,7 @@ query::process_data(query & Q, sensornet & S, Array <size_t> id_arr, Array <size
 				aux = aux + S[id_arr[i]][j];	//Se suman todos los valores de la i-esima posicion
 				k++;						//de cada sensor y se cuentan cuantos valores se sumaron
 			}
+			cout<<i<<endl;
 		}
 		aux_arr[j] = aux.value()/k;		//Se guarda en un vector el promedio de esos valores
 	}

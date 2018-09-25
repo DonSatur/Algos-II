@@ -69,6 +69,8 @@ bool read_file(istream &is, sensornet &s){
 	string str,str2;
 	data no_data(false);
 	size_t i = 0, j = 0, k = 0;
+	Array <bool> first;
+	first[0] = true;
 
 
 	getline(is,str2);
@@ -87,36 +89,30 @@ bool read_file(istream &is, sensornet &s){
 		}
 	//	cout<<str<<endl;
 	}
-/*
-	while (str2[j]){ // Esto es lo que habria que cambiar !! ASDLKFA;SDKHAKGHD;KJGAKJDA
-		if(str2[j] == ','){
-			sensor S_aux(str);
-			s.push(S_aux);	
-			i=0;
-		}
-		else{
-			str[i] = str2[j];
-			cout<<i<<','<<j<<endl;
-			i++;
-		}
-		j++;
+	for (size_t i = 0; i < s.size(); i++)
+	{
+		first.push(true);
 	}
-	sensor S_aux(str);
-	s.push(S_aux);
-//	for(j=0;j<s.size();j++){
-//		cout<<(s[j].id)<<endl;
-//	}*/
-	while(getline(is, str2)){
+	while(getline(is, str2)){ // str2 se queda con los valores separados por coma
 		i=0;
 		stringstream str_st(str2);
-		while( getline(str_st,str2,',')){
-			s[i].push(no_data);
-			if(!str2.empty()){
-				stringstream str_st2(str2);
-				str_st >> s[i][j];
+		while( getline(str_st,str,',')){ // str ahora tiene un valor
+			//cout<<str<<',';
+			if(s[i].size() == 1 && first[i] == true){ //Evaluamos el caso en que sea el primer elemento del arreglo de datos
+				s[i][0] = no_data;					 //Ya que push 
+				first[i] = false;
+			//	cout<<"i es "<<i<<endl;
 			}
+			else
+				s[i].push(no_data);
+			if(!str.empty()){
+				stringstream str_st2(str);
+				str_st2 >> s[i][j];
+			}
+			cout<<s[i][j].value()<<',';
 			i++;
 		}
+		cout<<endl;
 		j++;
 	}
 	return true;
