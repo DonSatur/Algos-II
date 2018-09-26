@@ -286,6 +286,9 @@ check_id(string str, sensornet & S, Array <size_t> & id_arr,bool &first){
 	size_t i;
 
 	for (i = 0; i < S_size; i++){
+		while (str[i] = '\0'){
+			str[i] = str[i+1];
+		}
 		if (str == S[i].id()){		//Si encuentra el sensor que pide el query, agrega su posicion
 			if (id_arr.size() == 1 && first == true){
 				id_arr[0] = i;
@@ -309,7 +312,7 @@ check_pos(sensornet & S, Array <size_t> id_arr, size_t & pos1, size_t & pos2){
 	size_t i;
 
 	for (i = 0; i < id_arr.size(); i++){
-		if(pos1 > S[id_arr[i]].size()){	//Chequea que la posicion mas baja no sobrepase
+		if(pos1 > S[id_arr[i]].size() || pos1 > pos2 || pos1<0){	//Chequea que la posicion mas baja no sobrepase
 			return false;						//la cantidad de lugares del arreglo	
 		}
 		else{
@@ -372,14 +375,21 @@ read_query(istream & is,ostream & os, sensornet & S, Array <size_t> & id_arr, si
 				}
 			}	
 		}
-		str_st >> pos1;
-		str_st >> ch;
-		if(ch != ','){
+		if(!str_st >> pos1){
 			os << "BAD QUERY" << endl;
 			q_state	= false;
 			return true;
 		}
-		str_st >> pos2;
+		if(str_st >> ch && ch != ','){
+			os << "BAD QUERY" << endl;
+			q_state	= false;
+			return true;
+		}
+		if(!str_st >> pos2){
+			os << "BAD QUERY" << endl;
+			q_state	= false;
+			return true;
+		}
 
 		if(!check_pos(S, id_arr, pos1, pos2)){	//Se chequea que las posiciones sean correctas
 			os << "NO DATA" << endl;
