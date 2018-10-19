@@ -1,5 +1,3 @@
-// Template de arreglo dinamico
-
 #ifndef ARRAYDIN_H
 #define ARRAYDIN_H
 
@@ -10,7 +8,9 @@
 #include <stdio.h>
 
 #define ARRAY_DEFAULT_SIZE 1
-#define ARRAY_GROWTH_RATE 5
+#define ARRAY_GROWTH_RATE 2
+
+using namespace std;
 
 template <typename T>
 class Array
@@ -21,18 +21,16 @@ public:
 	Array( const Array<T> & ); 
 	~Array( ); 
 	size_t 		size( ) const; 
+	size_t		alloc_size( ) const;
 	Array<T>&	operator=( const Array<T> & ); 
 	bool 		operator==( const Array<T> & ) const; 
 	bool 		operator!=( const Array<T> & ) const; 
-	T &		operator[ ]( int );
-	T const &	operator[ ]( int ) const;
-	void		push_back(const T&);
-	int 		linear_search(T&);
+	T &		operator[ ]( size_t );
+	T const &	operator[ ]( size_t ) const;
+
+	void		push(const T&);
 	void		clear();
-	template <typename TT>
-	friend std::ostream& operator<<(std::ostream&,const Array<TT>&);
-	template <typename TT>
-	friend std::istream& operator>>(std::istream&,Array<TT>&);
+
 
 private:
 	size_t alloc_size_; 
@@ -43,18 +41,14 @@ private:
 };
 
 template <typename T> 
-Array<T>::Array()
-{
-	// Desde afuera, para agregar elementos al arreglo habrá que hacer push_back
-
+Array<T>::Array(){
 	alloc_size_ = ARRAY_DEFAULT_SIZE;
 	used_size_ = 0;
 	ptr_ = new T[alloc_size_];
 }
 
 template <typename T> 
-Array<T>::Array(size_t n)
-{
+Array<T>::Array(size_t n){
 	// Si no se inicializan sus valores, están indeterminados (aunque
 	// muchos compiladores suelen completar con ceros).
 	// A su vez, es bueno notar que el usuario tiene a disposición todo el
@@ -66,8 +60,7 @@ Array<T>::Array(size_t n)
 }
 
 template <typename T> 
-Array<T>::Array( const Array<T> &init )
-{
+Array<T>::Array( const Array<T> &init ){
 	// Se asume que existe el operador = en la clase T, lo que permite
 	// usar esta función para todo tipo de clases
 
@@ -79,14 +72,17 @@ Array<T>::Array( const Array<T> &init )
 }
 
 template <typename T> 
-Array<T>::~Array()
-{
+Array<T>::~Array(){
 	if (ptr_)
 		delete[] ptr_; 
 }
 
+
 template <typename T> 
 size_t Array<T>::size() const { return used_size_; }
+
+template <typename T> 
+size_t Array<T>::alloc_size() const { return alloc_size_; }
 
 template <typename T> 
 Array<T>& Array<T>::operator=( const Array<T> &rhs )
@@ -145,26 +141,29 @@ bool Array<T>::operator!=( const Array<T> &rhs ) const
 }
 
 template <typename T> 
-T & Array<T>::operator [ ]( int pos )
+T & Array<T>::operator [ ]( size_t pos )
 {
 	// Utilizamos assert para saber si se puede acceder al elemento.
 	// Si no se puede, detiene el programa mandando la señal SIGABRT y dirá 
 	// que fallo acá
-
-	assert( (0 < pos) || (pos < used_size_) ) ; 
+//	printf("La variable pos vale %d y used_size es %d\n",pos,used_size_ );
+	assert( (0 <= pos) || (pos < used_size_) ) ; 
 	return ptr_[ pos ]; 
 }
 
 template <typename T> 
-const T & Array<T>::operator [ ]( int pos ) const
+const T & Array<T>::operator [ ]( size_t pos ) const
 {
 	// La diferencia acá es que tiene los operadores de const.
 	// Es necesario si se llama desde dentro de una función que es const
 	// El compilador se dará cuenta de cual usar
 
-	assert( (0 < pos) || (pos < used_size_) ) ; 
+	assert( (0 <= pos) || (pos < used_size_) ) ; 
 	return ptr_[ pos ]; 
 }
+
+
+
 
 template <typename T> 
 void Array<T>::clear()
@@ -196,77 +195,14 @@ void Array<T>::resize(size_t new_size)
 }
 
 template <typename T> 
-void Array<T>::push_back(const T &new_thing)
+void Array<T>::push(const T &new_thing)
 {
-	// Si es necesario agrandar el arreglo ya que no queda más espacio, lo
-	// agrando por 2.
-	// La decisión de cuando agrandar puede variar, ya que puede ser cuando 
-	// el tamaño es la mitad del reservado, por ejemplo.
-	// Al agrandar, copio todos los elementos del arreglo
-
 	if(alloc_size_ == used_size_){
 		this->resize(alloc_size_*ARRAY_GROWTH_RATE);
-	}	
+	}
 	ptr_[used_size_] = new_thing;
 	used_size_++;
 }
 
-template <typename T> 
-std::ostream & operator<< (std::ostream& os,const Array<T> & arr)
-{
-	// Escribe el arreglo en el formato (T1,T2,T3 ... Tn)
-	// Se asume que existe el operador << para la clase T
-	
-	if( arr.size() == 0 ){
-		os << "()";
-		return os;
-	}
-	os << "(";
-
-	for(size_t i=0; i<arr.size()-1; ++i){
-		os << arr[i] << ",";
-	}
-	os << arr[arr.size()-1];
-	os << ")";
-	return os;
-}
-
-template <typename T>
-std::istream & operator>> (std::istream& is,Array<T>& arr)
-{
-	// Limpio el arreglo y leo en formato T1,T2,...,Tn de is. Si no se hace conforme a lo
-	// esperado, limpio el arreglo (devuelvo uno sin elementos)
-	// Si llega a EOF, marcará en el istream
-
-	T aux = 0;
-	char ch = 0;
-
-	arr.clear();
-	if (is >> aux){
-		arr.push_back(aux);
-		while( (is >> ch) && (ch == ',') && (is >> aux) ){
-			arr.push_back(aux);
-		}
-	}
-	else{
-		arr.clear();
-	}
-
-	return is;
-}
-
-template <typename T>
-int Array<T>::linear_search(T& objective)
-{
-	// Devuelve la posición del objeto encontrado o -1 si no lo encontró
-
-	if(this->size()==0)
-		return -1;
-	for(size_t i=0;i<this->size();++i){
-		if((*this)[i] == objective)
-			return i;
-	}
-	return -1;
-}
 
 #endif
