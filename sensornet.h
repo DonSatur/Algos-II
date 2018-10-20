@@ -65,15 +65,16 @@ sensornet::operator[ ](size_t pos) const{
 	return this->s_arr_[pos];
 }
 
-bool read_file(istream &is,sensornet &s, Array segment_tree &S_TREE){
-//	string str_st;
+bool read_file(istream &is,sensornet &s){
+
 	string str,str2;
 	data no_data();
-	size_t i = 0, j = 0, k = 0;
+	size_t i, j = 0;
 	Array <bool> first;
 	first[0] = true;
 	double val_aux;
-
+	bool k = true;
+	sensor all_sensors("All sensors");
 
 	getline(is,str2);
 	stringstream str_st(str2);
@@ -83,9 +84,9 @@ bool read_file(istream &is,sensornet &s, Array segment_tree &S_TREE){
 			return false;
 		}
 		sensor s_aux(str);
-		if (s.size() == 1 && k == 0){
+		if (s.size() == 1 && k){
 			s[0] = s_aux;
-			k++;
+			k = false;
 		}
 		else{
 			s.push(s_aux);
@@ -132,11 +133,34 @@ bool read_file(istream &is,sensornet &s, Array segment_tree &S_TREE){
 			}
 		}
 	}
-	for (i=0; i<s.size(); i++){
-		segment_tree s_tree_aux(s[i].arr());
-		s[i] = s_tree_aux;
+
+	for (i = 0 ; i<s.size()-1; i++){
+		if(s[i].size() != s[i+1].size()){
+			cout<<"BAD DATA"<<endl;
+			return false;
+		}
 	}
-	return true;
+
+	s.push(all_sensors);
+	for(j = 0; j<s[i].size(); j++){
+		val_aux = 0;
+		for (i = 0 ; i<s.size(); i++){
+			val_aux += s[i].sum();
+		}
+		val_aux = val_aux/i;
+		data data_aux(val_aux,j);
+		if (s[s.size()-1].size() == 1 && j == 0){
+			s[s.size()-1][0] = data_aux;
+		}
+		else{
+			s[s.size()-1].push(data_aux);
+		}
+	}
+	if(enable_stree){
+		for(size_t i=0; i<s.size(); i++){
+			s[i].create_segment_tree();	
+		}	
+	}
 }
 
 void 
