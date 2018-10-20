@@ -174,6 +174,7 @@ void Array<T>::clear()
 	ptr_ = new T[alloc_size_];
 }
 
+
 template <typename T> 
 void Array<T>::resize(size_t new_size)
 {

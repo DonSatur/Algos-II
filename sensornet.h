@@ -11,19 +11,22 @@ using namespace std;
 
 class sensornet {
 	Array <sensor> s_arr_;	//Un vector con los valores del sensor
+	bool stree_mode_;
 	
 public:
 	sensornet();
+	sensornet(bool stree_mode);
 	sensornet(size_t n);
 	sensornet( const sensornet & ); 
 	~sensornet();
 
 	size_t size();
+	bool stree_mode();
 
 	sensor &		operator[ ]( size_t pos);
 	sensor const &	operator[ ]( size_t pos) const;
 
-	friend bool read_file(istream&,sensornet&, Array segment_tree &S_TREE);
+	friend bool read_file(istream&,sensornet&);
 
 	void push(const sensor &new_sensor);
 
@@ -32,17 +35,26 @@ public:
 sensornet::sensornet()
 {
 	this->s_arr_ = ARRAY_DEFAULT_SIZE;
+	this->stree_mode_ = false;
+}
+
+sensornet::sensornet(bool stree_mode)
+{
+	this->s_arr_ = ARRAY_DEFAULT_SIZE;
+	this->stree_mode_ = stree_mode;
 }
 
 sensornet::sensornet(size_t n)
 {
 	Array <sensor> aux(n);
 	this->s_arr_ = aux;
+	this->stree_mode_ = false;
 }
 
 sensornet::sensornet(const sensornet & S)
 {
 	this->s_arr_ = S.s_arr_;
+	this->stree_mode_ = S.stree_mode_;
 }
 
 sensornet::~sensornet()
@@ -52,6 +64,11 @@ sensornet::~sensornet()
 size_t
 sensornet::size(){
 	return this->s_arr_.size();
+}
+
+bool
+sensornet::stree_mode(){
+	return this->stree_mode_;
 }
 
 sensor &
@@ -105,9 +122,10 @@ bool read_file(istream &is,sensornet &s){
 				s[i][0] = no_data;					 
 				first[i] = false;
 			}
-			else
+			else{
 				data no_data(j);
 				s[i].push(no_data);
+			}
 			if(!str.empty()){
 				for (size_t r = 0; r<str.size(); r++){
 					if(!isdigit(str[r]) && str[r]!='.'){
@@ -129,7 +147,7 @@ bool read_file(istream &is,sensornet &s){
 		if (s[i].size() != s[i].alloc_size()){
 			for(j=s[i].size(); j<s[i].alloc_size(); j++){
 				data no_data(j);
-				s[i][j].push(no_data);
+				s[i][j] = no_data;
 			}
 		}
 	}
@@ -145,7 +163,7 @@ bool read_file(istream &is,sensornet &s){
 	for(j = 0; j<s[i].size(); j++){
 		val_aux = 0;
 		for (i = 0 ; i<s.size(); i++){
-			val_aux += s[i].sum();
+			val_aux += s[i][j].sum();
 		}
 		val_aux = val_aux/i;
 		data data_aux(val_aux,j);
@@ -156,7 +174,7 @@ bool read_file(istream &is,sensornet &s){
 			s[s.size()-1].push(data_aux);
 		}
 	}
-	if(enable_stree){
+	if(s.stree_mode()){
 		for(size_t i=0; i<s.size(); i++){
 			s[i].create_segment_tree();	
 		}	

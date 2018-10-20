@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include "Array.h"
 #include "data.h"
+#include "segment_tree.h"
 
 using namespace std;
 
@@ -28,6 +29,7 @@ public:
 	size_t size();		//Devuelve la longitud del arreglo values_
 	size_t alloc_size();
 	Array <data> arr();
+	segment_tree& s_tree();
 
 	sensor&		operator=( const sensor & S); 
 	sensor&		operator=( const segment_tree s_tree);
@@ -95,6 +97,11 @@ sensor::alloc_size(){
 Array <data>
 sensor::arr(){
 	return this->v_arr_;
+}
+
+segment_tree&
+sensor::s_tree(){
+	return this->s_tree_;
 }
 
 sensor&

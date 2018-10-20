@@ -131,7 +131,7 @@ main(int argc, char * const argv[])
 	cmdl.parse(argc, argv); 
 
 	bool q_state = true;			// Variable que indica si las consultas fueron correctas o no
-	sensornet S;					// Inicializacion del arreglo de sensores
+	sensornet S(enable_stree);					// Inicializacion del arreglo de sensores
 	size_t id;						// Arreglo donde se guarda la posicion (en el arreglo de sensores) 
 									// de cada sensor (que pide la consulta) 
 	size_t pos1 = 0, pos2 = 0;		// Posiciones para las cuales se calcula el resultado
@@ -139,7 +139,7 @@ main(int argc, char * const argv[])
 									//	*el arreglo al que se le calculan los resultados
 									//	*los resultados: promedio, minimo, maximo, cantidad de valores.
 
-	if (!read_file(*diss,S, S_TREE)){		// Lee el archivo de entrada donde estan los valores de los sensores
+	if (!read_file(*diss,S)){		// Lee el archivo de entrada donde estan los valores de los sensores
 		return EXIT_FAILURE;
 	}
 	else{

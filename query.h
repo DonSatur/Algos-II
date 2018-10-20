@@ -15,15 +15,15 @@
 using namespace std;
 
 class query {
-	double mean_;
-	double max_;
-	double min_;
-	size_t amount_;
+	double mean_ = 0;
+	double max_ = 0;
+	double min_ = 0;
+	size_t amount_ = 0;
 
 	
 public:
 	query();
-	query(data & D)
+	query(data & D);
 	query( const query & Q); 
 	~query( );
 
@@ -32,13 +32,9 @@ public:
 	double		mean();			//Devuelve el promedio del arreglo
 	size_t		amount();		//Devuelve la cantidad de lugares del arreglo
 
-	size_t		size();
-
 	query&		operator=( const query & Q); 
 	bool 		operator==( const query & Q) const; 
 	bool 		operator!=( const query & Q) const; 
-	data &		operator[ ]( size_t pos);
-	data const &	operator[ ]( size_t pos) const;
 
 
 	friend
@@ -62,10 +58,6 @@ public:
 };
 
 query::query(){
-	this->mean_ = 0;
-	this->max_ = 0;
-	this->min_ = 0;
-	this->amount_ = 0;
 }
 
 query::query(data & D){
@@ -108,18 +100,10 @@ query::amount(){
 }
 
 
-size_t
-query::size(){
-	return d_arr_.size();
-}
-
 query&
 query::operator=( const query & Q ){
-	if (this->d_arr_ == Q. d_arr_ && this->mean_ == Q.mean_ && this->max_ == Q.max_ && this->min_ == Q.min_ && this->amount_ == Q.amount_){
+	if (this->mean_ == Q.mean_ && this->max_ == Q.max_ && this->min_ == Q.min_ && this->amount_ == Q.amount_){
 		return *this;
-	}
-	if(this->d_arr_ != Q.d_arr_){
-		this->d_arr_ = Q.d_arr_;
 	}
 	if(this->mean_ != Q.mean_){
 		this->mean_ = Q.mean_;
@@ -139,26 +123,21 @@ query::operator=( const query & Q ){
 
 bool
 query::operator==( const query & Q) const{
-	if(this->d_arr_ != Q.d_arr_){
-			return false;
+	if(this->mean_ != Q.mean_){
+		return false;
 	}
 	else{
-		if(this->mean_ != Q.mean_){
+		if(this->max_ != Q.max_){
 			return false;
 		}
 		else{
-			if(this->max_ != Q.max_){
+			if(this->min_ != Q.min_){
 				return false;
 			}
 			else{
-				if(this->min_ != Q.min_){
+				if(this->amount_ != Q.amount_){
 					return false;
-				}
-				else{
-					if(this->amount_ != Q.amount_){
-						return false;
-					}
-				}
+		 		}
 			}
 		}
 	}
@@ -169,43 +148,26 @@ query::operator==( const query & Q) const{
 
 bool
 query::operator!=( const query & Q) const{
-	if(this->d_arr_ == Q.d_arr_){
-			return false;
+	if(this->mean_ == Q.mean_){
+		return false;
 	}
 	else{
-		if(this->mean_ == Q.mean_){
+		if(this->max_ == Q.max_){
 			return false;
 		}
 		else{
-			if(this->max_ == Q.max_){
+			if(this->min_ == Q.min_){
 				return false;
 			}
 			else{
-				if(this->min_ == Q.min_){
+				if(this->amount_ == Q.amount_){
 					return false;
-				}
-				else{
-					if(this->amount_ == Q.amount_){
-						return false;
-					}
 				}
 			}
 		}
 	}
 	return true;
 } 
-
-	
-data &
-query::operator[ ]( size_t pos){
-	return this->d_arr_[pos];
-}
-
-
-data const &
-query::operator[ ]( size_t pos) const{
-	return this->d_arr_[pos];
-}
 
 
 
@@ -234,12 +196,11 @@ check_pos(sensornet & S, size_t id, size_t & pos1, size_t & pos2){
 	if(pos1 > S[id].size() || pos1 > pos2 || pos1 < 0){	//Chequea que la posicion mas baja no sobrepase
 		return false;						//la cantidad de lugares del arreglo	
 	}
-		else{
-			if (pos2 > S[id].size()){	//Chequea si la posicion mas alta sobrepaso la
-				pos2= S[id].size();	//cantidad de lugares del arreglo y de ser asi,
-			}										//coloca como posicion mas alta la cantidad de 
-		}											//lugares del arreglo
-	}
+	else{
+		if (pos2 > S[id].size()){	//Chequea si la posicion mas alta sobrepaso la
+			pos2= S[id].size();	//cantidad de lugares del arreglo y de ser asi,
+		}										//coloca como posicion mas alta la cantidad de 
+	}											//lugares del arreglo
 	return true;
 }
 
@@ -254,7 +215,6 @@ read_query(istream & is,ostream & os, sensornet & S, size_t id, size_t & pos1, s
 	bool first1 = true;
 	size_t i;
 
-	id_arr.clear();
 	q_state = true;
 
 
@@ -290,7 +250,7 @@ read_query(istream & is,ostream & os, sensornet & S, size_t id, size_t & pos1, s
 		}
 		str_st >> pos2;
 
-		if(!check_pos(S, id_arr, pos1, pos2)){	//Se chequea que las posiciones sean correctas
+		if(!check_pos(S, id, pos1, pos2)){	//Se chequea que las posiciones sean correctas
 			os << "NO DATA" << endl;
 			q_state = false;
 			return true;
@@ -310,7 +270,7 @@ read_query(istream & is,ostream & os, sensornet & S, size_t id, size_t & pos1, s
 
 void
 query::process_data(query & Q, sensornet & S, size_t id, size_t & pos1, size_t & pos2){
-	if (!enable_stree){
+	if (!S.stree_mode()){
 		process_data_std(Q, S, id, pos1, pos2);
 	}
 	else{
@@ -340,7 +300,7 @@ query::process_data_std(query & Q, sensornet & S, size_t id, size_t & pos1, size
 
 
 	for (i = 0; i < aux_arr.size(); i++){
-		aux = data(aux,aux_arr[i]);
+		data aux(aux,aux_arr[i]);
 	}
 
 	query q_aux(aux);
@@ -353,7 +313,7 @@ query::process_data_stree(query & Q, sensornet & S, size_t id, size_t & pos1, si
 	data aux;
 	size_t index = floor(log2(pos2-pos1));
 
-	aux = find_data(pos1, pos2, index, S[id].segment_tree);
+	aux = find_data(pos1, pos2, index, S[id].s_tree());
 
 	query q_aux(aux);
 	Q = q_aux;
@@ -363,15 +323,15 @@ query::process_data_stree(query & Q, sensornet & S, size_t id, size_t & pos1, si
 data
 query::find_data(size_t pos1, size_t pos2, size_t index, segment_tree & s_tree){
 	size_t new_index;
-	while (s_tree[index].pos[0] != pos1){
+	while (s_tree[index].pos()[0] != pos1){
 		index++;
 	}
-	if (pos2 == s_tree[index].pos[1]){
+	if (pos2 == s_tree[index].pos()[1]){
 		return s_tree[index];
 	}
-	else if (pos2 > s_tree[index].pos[1]){
-		new_index = floor(log2(pos2-s_tree[index].pos[1]));
-		data aux(s_tree[index], find_data(s_tree[index].pos[1],pos2,new_index,s_tree));
+	else if (pos2 > s_tree[index].pos()[1]){
+		new_index = floor(log2(pos2-s_tree[index].pos()[1]));
+		data aux(s_tree[index], find_data(s_tree[index].pos()[1],pos2,new_index,s_tree));
 	}
 	else{
 		find_data(pos1,pos2,index+1,s_tree);
