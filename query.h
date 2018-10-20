@@ -15,7 +15,6 @@
 using namespace std;
 
 class query {
-	Array <data> d_arr_;	//El arreglo que se va a crear con todos los datos que se van a utilizar
 	double mean_;
 	double max_;
 	double min_;
@@ -24,14 +23,9 @@ class query {
 	
 public:
 	query();
-	query(Array <data> d_arr);
+	query(data & D)
 	query( const query & Q); 
 	~query( );
-
-	double		calc_max();			//Obtiene el valor maximo del arreglo
-	double		calc_min();			//Obtiene el valor minimo del arreglo
-	double		calc_mean();				//Obtiene el promedio del arreglo
-	size_t		calc_amount();			//Obtiene la cantidad de lugares del arreglo
 
 	double		max();			//Devuelve el valor maximo del arreglo
 	double		min();			//Devuelve el valor minimo del arreglo
@@ -48,13 +42,19 @@ public:
 
 
 	friend
-	bool		check_id(string str, sensornet & S, Array <size_t> & id_arr,bool & first);
+	bool		check_id(string str, sensornet & S, size_t id,bool & first);
 	friend
-	bool		check_pos(sensornet & S, Array <size_t> id_arr, size_t & pos1, size_t & pos2);
+	bool		check_pos(sensornet & S, size_t id, size_t & pos1, size_t & pos2);
 	friend
-	bool		read_query(istream & is,ostream & os, sensornet & S, Array <size_t> & id_arr, size_t & pos1, size_t & pos2, bool & end);
+	bool		read_query(istream & is,ostream & os, sensornet & S, size_t id, size_t & pos1, size_t & pos2, bool & end);
+
+	void		process_data(query & Q, sensornet & S, size_t id, size_t & pos1, size_t & pos2);
 	
-	void 		process_data(query & Q, sensornet & S, Array <size_t> id_arr, size_t &pos1, size_t & pos2);
+	void 		process_data_std(query & Q, sensornet & S, size_t id, size_t & pos1, size_t & pos2);
+
+	void 		process_data_stree(query & Q, sensornet & S, size_t id, size_t & pos1, size_t & pos2);
+
+	data 		find_data(size_t pos1, size_t pos2, size_t index, segment_tree & s_tree);
 
 	friend
 	ostream& 	operator<<(ostream & os, query Q); 	
@@ -62,25 +62,21 @@ public:
 };
 
 query::query(){
-	this->d_arr_ = ARRAY_DEFAULT_SIZE;
 	this->mean_ = 0;
 	this->max_ = 0;
 	this->min_ = 0;
 	this->amount_ = 0;
 }
 
-query::query(Array <data> d_arr){
-	this->d_arr_ = d_arr;
-	this->amount_ = calc_amount();
-	this->max_ = calc_max();
-	this->min_ = calc_min();
-	this->mean_= calc_mean();
-	
+query::query(data & D){
+	this->mean_ = D.sum()/D.amount();
+	this->max_ = D.max();
+	this->min_ = D.min();
+	this->amount_ = D.amount();
 }
 
 
 query::query( const query & Q){
-	this->d_arr_ = Q.d_arr_;
 	this->mean_ = Q.mean_;
 	this->max_ = Q.max_;
 	this->min_ = Q.min_;
@@ -90,72 +86,6 @@ query::query( const query & Q){
 query::~query( ){
 
 }
-	
-
-double
-query::calc_max(){
-	size_t i, j = 0;
-	size_t d_size = d_arr_.size();
-	while(this->d_arr_[j].state() == false){
-		j++;
-	}
-	double aux = this->d_arr_[j].value();
-
-	for (i = 1; i < d_size-1; i++){
-		if (this->d_arr_[i] > aux && this->d_arr_[i].state() == true){
-			aux = this->d_arr_[i].value();
-		}
-	}
-	return aux;
-}
-	
-
-double
-query::calc_min(){
-	size_t i, j = 0;
-	size_t d_size = d_arr_.size();
-	while(this->d_arr_[j].state() == false){
-		j++;
-	}
-	double aux = this->d_arr_[j].value();
-
-	for (i = j+1; i < d_size-1 ; i++){
-		if (this->d_arr_[i] < aux && this->d_arr_[i].state() == true){
-			aux = d_arr_[i].value();	
-		}
-	}
-
-	return aux;
-}
-
-
-size_t
-query::calc_amount(){
-	size_t i, aux = 0;
-	size_t d_size = this->d_arr_.size();
-	for (i = 0; i < d_size; i++){
-		if (this->d_arr_[i].state() == true){
-			aux++;
-		}
-	}
-	return aux;
-}
-
-
-double
-query::calc_mean(){
-	size_t i;
-	double aux = 0;
-	size_t d_size = this->d_arr_.size();
-
-	for (i = 0; i < d_size; i++){
-		if (this->d_arr_[i].state( )== true){
-			aux+=this->d_arr_[i].value();
-		}
-	}
-	return aux/this->amount_;
-}
-
 
 double
 query::max(){
@@ -280,21 +210,14 @@ query::operator[ ]( size_t pos) const{
 
 
 bool
-check_id(string str, sensornet & S, Array <size_t> & id_arr,bool &first){
+check_id(string str, sensornet & S, size_t id, bool &first){
 
 	size_t S_size = S.size();
 	size_t i;
 
 	for (i = 0; i < S_size; i++){
 		if (str == S[i].id()){		//Si encuentra el sensor que pide el query, agrega su posicion
-			if (id_arr.size() == 1 && first == true){
-				id_arr[0] = i;
-				first = false;
-			}
-			else{
-				id_arr.push(i);	
-			}
-
+			id = i;
 			return true;
 		}
 	}
@@ -305,16 +228,15 @@ check_id(string str, sensornet & S, Array <size_t> & id_arr,bool &first){
 
 
 bool
-check_pos(sensornet & S, Array <size_t> id_arr, size_t & pos1, size_t & pos2){
+check_pos(sensornet & S, size_t id, size_t & pos1, size_t & pos2){
 	size_t i;
 
-	for (i = 0; i < id_arr.size(); i++){
-		if(pos1 > S[id_arr[i]].size() || pos1 > pos2 || pos1 < 0){	//Chequea que la posicion mas baja no sobrepase
-			return false;						//la cantidad de lugares del arreglo	
-		}
+	if(pos1 > S[id].size() || pos1 > pos2 || pos1 < 0){	//Chequea que la posicion mas baja no sobrepase
+		return false;						//la cantidad de lugares del arreglo	
+	}
 		else{
-			if (pos2 > S[id_arr[i]].size()){	//Chequea si la posicion mas alta sobrepaso la
-				pos2= S[id_arr[i]].size();	//cantidad de lugares del arreglo y de ser asi,
+			if (pos2 > S[id].size()){	//Chequea si la posicion mas alta sobrepaso la
+				pos2= S[id].size();	//cantidad de lugares del arreglo y de ser asi,
 			}										//coloca como posicion mas alta la cantidad de 
 		}											//lugares del arreglo
 	}
@@ -324,7 +246,7 @@ check_pos(sensornet & S, Array <size_t> id_arr, size_t & pos1, size_t & pos2){
 
 
 bool
-read_query(istream & is,ostream & os, sensornet & S, Array <size_t> & id_arr, size_t & pos1, size_t & pos2,bool & q_state){
+read_query(istream & is,ostream & os, sensornet & S, size_t id, size_t & pos1, size_t & pos2,bool & q_state){
 	string str,str2,str3, str4;
 	Array <size_t> id_number;		//Aca se guarda la posicion (dentro de sensornet) de cada sensor
 	char ch;
@@ -347,28 +269,15 @@ read_query(istream & is,ostream & os, sensornet & S, Array <size_t> & id_arr, si
 			return true;
 		}
 		else{
-			if(str2.empty()){				//Si no hay q_id y hay un guion, significa que se hacen los calculos
-				for (i = 0; i < S.size(); i++){	//con todos los sensores
-					if (id_arr.size() == 1 && first1 == true){
-						i=0;
-						id_arr[0] = i;
-						first1 = false;
-					}
-					else{
-						id_arr.push(i);	
-
-					}
-					
-				}
+			if(str2.empty()){
+				id = S.size()-1;
 			}
 			else{
-				stringstream str_st2(str2);
-				while (getline(str_st2, str3, ';')){	//Se lee cada q_id por separado
-					if(!check_id(str3, S, id_arr,first)){	//Se chequea que los q_id sean correctos
-						os << "UNKNOWN ID" << endl;
-						q_state = false;
-						return true;
-					}
+				if(!check_id(str2, S, id,first)){	//Se chequea que los q_id sean correctos
+					os << "UNKNOWN ID" << endl;
+					q_state = false;
+					return true;
+			
 				}
 			}	
 		}
@@ -400,52 +309,73 @@ read_query(istream & is,ostream & os, sensornet & S, Array <size_t> & id_arr, si
 
 
 void
-query::process_data(query & Q, sensornet & S, Array <size_t> id_arr, size_t & pos1, size_t & pos2){
+query::process_data(query & Q, sensornet & S, size_t id, size_t & pos1, size_t & pos2){
+	if (enable_stree == false){
+		process_data_std(Q, S, id, pos1, pos2);
+	}
+	else{
+		process_data_stree(Q, S, id, pos1, pos2);
+	}
+}
+
+void
+query::process_data_std(query & Q, sensornet & S, size_t id, size_t & pos1, size_t & pos2){
 
 	Array <data> aux_arr = 1;
-	size_t i, j = 0, k = 0;
+	size_t i, j = 0;
 	bool first = true;
-	data aux(0.0);
-	double q = 0;
+	data aux();
 	
 	
-	if (id_arr.size() == 1){
-		for (i = pos1; i < pos2; i++){
-			if (aux_arr.size() == 1 && first == true){
-				aux_arr[j] = S[id_arr[j]][i];
-				first = false;
-			}
-			else{
-				aux_arr.push(S[id_arr[0]][i]);
-			}
-			j++;
+	for (i = pos1; i < pos2; i++){
+		if (aux_arr.size() == 1 && first == true){
+			aux_arr[j] = S[id][i];
+			first = false;
 		}
+		else{
+			aux_arr.push(S[id][i]);
+		}
+		j++;
 	}
 
+
+	for (i = 0; i < aux_arr.size(); i++){
+		aux = data(aux,aux_arr[i]);
+	}
+
+	query q_aux(aux);
+	Q = q_aux;
+
+}
+
+void
+query::process_data_stree(query & Q, sensornet & S, size_t id, size_t & pos1, size_t & pos2){
+	data aux;
+	size_t index = floor(log2(pos2-pos1));
+
+	aux = find_data(pos1, pos2, index, S[id].segment_tree);
+
+	query q_aux(aux);
+	Q = q_aux;
+}
+
+
+data
+query::find_data(size_t pos1, size_t pos2, size_t index, segment_tree & s_tree){
+	size_t new_index;
+	while (s_tree[index].pos[0] != pos1){
+		index++;
+	}
+	if (pos2 == s_tree[index].pos[1]){
+		return s_tree[index];
+	}
+	else if (pos2 > s_tree[index].pos[1]){
+		new_index = floor(log2(pos2-s_tree[index].pos[1]));
+		data aux(s_tree[index], find_data(s_tree[index].pos[1],pos2,new_index,s_tree));
+	}
 	else{
-		first = true;
-		for (i = pos1; i < pos2; i++){
-			aux = 0.0;
-			q = 0;
-			for (j = 0; j < id_arr.size(); j++){
-				aux = aux + S[id_arr[j]][i];
-				q++;
-			}			if (aux_arr.size() == 1 && first == true){
-				aux_arr[k] = aux.value()/q;
-				first = false;
-			}
-			else{
-				aux_arr.push(aux.value()/q);
-			}
-			k++;
-		} 
+		find_data(pos1,pos2,index+1,s_tree);
 	}
-
-	query Q_aux(aux_arr);
-	Q = Q_aux;
-
-
-
 }
 
 //Esta funcion devuelve los resultados obtenidos

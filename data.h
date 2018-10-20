@@ -20,7 +20,7 @@ public:
 	data();
 	data(Array <size_t> pos);
 	data(size_t min, size_t max, size_t sum, size_t amount, size_t Array pos);
-	data (double value, size_t pos );
+	data (double value, size_t pos);
 	data (data D1, data D2);
 	data( const data & D);
 	~data();
@@ -28,8 +28,16 @@ public:
 	double			calc_max (data D1, data D2);	// El primer objeto debe estar ubicado en una posicion
 	double			calc_min (data D1, data D2);	// menor al segundo
 	double			calc_sum (data D1, data D2);
-	Array size_t	calc_pos (data D1, data D2);
+	Array <size_t>	calc_pos (data D1, data D2);
 	size_t			calc_amount (data D1, data D2);			
+
+	double 			max();
+	double			min();
+	double			sum();
+	size_t			amount();
+	Array <size_t>	pos();
+	bool			state();
+
 
 	data &		operator=( const data & D); 
 };
@@ -152,6 +160,38 @@ data::calc_pos (data D1, data D2){
 size_t
 data::calc_amount(data D1, data D2){
 	this->amount_ = D1.amount_ + D2.amount_;
+}
+
+
+double 			
+data::max(){
+	return this->max_;
+}
+	
+double			
+data::min(){
+	return this->min_;
+}
+	
+double			
+data::sum(){
+	return this->sum_;
+}
+	
+size_t			
+data::amount(){
+	return this->amount_;
+}
+	
+Array <size_t>	
+data::pos(){
+	return this->pos_;
+}
+
+
+bool
+data::state(){
+	return this->state_;
 }
 
 
