@@ -310,7 +310,7 @@ read_query(istream & is,ostream & os, sensornet & S, size_t id, size_t & pos1, s
 
 void
 query::process_data(query & Q, sensornet & S, size_t id, size_t & pos1, size_t & pos2){
-	if (enable_stree == false){
+	if (!enable_stree){
 		process_data_std(Q, S, id, pos1, pos2);
 	}
 	else{
