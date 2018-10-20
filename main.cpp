@@ -138,7 +138,6 @@ main(int argc, char * const argv[])
 	query Q;						// Objeto donde se van a guardar:
 									//	*el arreglo al que se le calculan los resultados
 									//	*los resultados: promedio, minimo, maximo, cantidad de valores.
-	Array segment_tree S_TREE;
 
 	if (!read_file(*diss,S, S_TREE)){		// Lee el archivo de entrada donde estan los valores de los sensores
 		return EXIT_FAILURE;
