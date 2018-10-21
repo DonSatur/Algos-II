@@ -140,11 +140,11 @@ sensor::operator=( const segment_tree s_tree){
 	else{
 		this->s_tree_ = s_tree;
 	}
+	return *this;
 }
  
 bool
-sensor::operator==( const sensor & S) const
-{
+sensor::operator==( const sensor & S) const{
 	if ( this->id_ != S.id_)
 		return false; 
 	else{

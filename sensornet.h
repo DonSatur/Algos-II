@@ -86,7 +86,7 @@ bool read_file(istream &is,sensornet &s){
 
 	string str,str2;
 	data no_data();
-	size_t i, j = 0;
+	size_t i, m, j = 0;
 	Array <bool> first;
 	first[0] = true;
 	double val_aux;
@@ -97,7 +97,7 @@ bool read_file(istream &is,sensornet &s){
 	stringstream str_st(str2);
 	while(getline(str_st,str,',')){
 		if(str.empty()){
-			cout<<"Error Data"<<endl;
+			cout<<"BAD DATA"<<endl;
 			return false;
 		}
 		sensor s_aux(str);
@@ -114,9 +114,11 @@ bool read_file(istream &is,sensornet &s){
 		first.push(true);
 	}
 	while(getline(is, str2)){ // str2 se queda con los valores separados por coma
+		m=0;
 		i=0;
 		stringstream str_st(str2);
 		while( getline(str_st,str,',')){ // str ahora tiene un valor
+			m++;
 			if(s[i].size() == 1 && first[i] == true){ //Evaluamos el caso en que sea el primer elemento del arreglo de datos
 				data no_data(0);
 				s[i][0] = no_data;					 
@@ -129,8 +131,11 @@ bool read_file(istream &is,sensornet &s){
 			if(!str.empty()){
 				for (size_t r = 0; r<str.size(); r++){
 					if(!isdigit(str[r]) && str[r]!='.'){
-						cout << str[r] << endl;
-						cout<<"Error Data"<<endl;
+						cout<<"BAD DATA"<<endl;
+						return false;
+					}
+					if(str[r] == '.' && !isdigit(str[r+1])){
+						cout << "BAD DATA" <<endl;
 						return false;
 					}
 				}
@@ -142,6 +147,10 @@ bool read_file(istream &is,sensornet &s){
 			i++;
 		}
 		j++;
+		if(m != s.size()){
+			cout << "BAD DATA" << endl;
+			return false;
+		}
 	}
 	for(i=0; i<s.size(); i++){
 		if (s[i].size() != s[i].alloc_size()){

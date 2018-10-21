@@ -50,7 +50,7 @@ public:
 
 	void 		process_data_stree(query & Q, sensornet & S, size_t id, size_t & pos1, size_t & pos2);
 
-	data 		find_data(size_t pos1, size_t pos2, size_t index, segment_tree & s_tree);
+	data& 		find_data(size_t pos1, size_t pos2, size_t index, segment_tree & s_tree);
 
 	friend
 	ostream& 	operator<<(ostream & os, query Q); 	
@@ -191,9 +191,8 @@ check_id(string str, sensornet & S, size_t id, bool &first){
 
 bool
 check_pos(sensornet & S, size_t id, size_t & pos1, size_t & pos2){
-	size_t i;
 
-	if(pos1 > S[id].size() || pos1 > pos2 || pos1 < 0){	//Chequea que la posicion mas baja no sobrepase
+	if(pos1 > S[id].size() || pos1 >= pos2 || pos1 < 0){	//Chequea que la posicion mas baja no sobrepase
 		return false;						//la cantidad de lugares del arreglo	
 	}
 	else{
@@ -212,18 +211,18 @@ read_query(istream & is,ostream & os, sensornet & S, size_t id, size_t & pos1, s
 	Array <size_t> id_number;		//Aca se guarda la posicion (dentro de sensornet) de cada sensor
 	char ch;
 	bool first = true;
-	bool first1 = true;
-	size_t i;
 
 	q_state = true;
-
-
-	if (!getline(is, str)){					//Se lee por linea
-		return false;
+	is >> str;
+	if(str == "/0"){
+		q_state = false;
+		return true;
 	}
 	else{
-		stringstream str_st(str);				
-		if (!getline(str_st, str2, ',')){			//Se leen solo los q_ids
+		is.clear();
+		is.seekg(0,ios::beg);
+		getline(is, str);			
+		if (!getline(is, str2, ',')){			//Se leen solo los q_ids
 			os << "BAD QUERY" << endl;
 			q_state	= false;
 			return true;
@@ -241,22 +240,32 @@ read_query(istream & is,ostream & os, sensornet & S, size_t id, size_t & pos1, s
 				}
 			}	
 		}
-		str_st >> pos1;
-		str_st >> ch;
+		is >> pos1;
+		if(!isdigit(pos1)){
+			os << "BAD QUERY" << endl;
+			q_state = false;
+			return true;
+		}
+		is >> ch;
 		if(ch != ','){
 			os << "BAD QUERY" << endl;
 			q_state	= false;
 			return true;
 		}
-		str_st >> pos2;
+		is >> pos2;
+		if(!isdigit(pos2)){
+			os << "BAD QUERY" << endl;
+			q_state = false;
+			return true;
+		}
 
 		if(!check_pos(S, id, pos1, pos2)){	//Se chequea que las posiciones sean correctas
 			os << "NO DATA" << endl;
 			q_state = false;
 			return true;
 		}
-
-		if(getline(str_st,str4) && str4!=","){
+		is >> str4;
+		if(str4!="\0"){
 			os<< "BAD QUERY" << endl;
 			q_state = false;
 			return true;
@@ -300,10 +309,10 @@ query::process_data_std(query & Q, sensornet & S, size_t id, size_t & pos1, size
 
 
 	for (i = 0; i < aux_arr.size(); i++){
-		data aux(aux,aux_arr[i]);
+		data aux(aux, aux_arr[i]);
 	}
-
-	query q_aux(aux);
+	
+	query q_aux;
 	Q = q_aux;
 
 }
@@ -320,7 +329,7 @@ query::process_data_stree(query & Q, sensornet & S, size_t id, size_t & pos1, si
 }
 
 
-data
+data &
 query::find_data(size_t pos1, size_t pos2, size_t index, segment_tree & s_tree){
 	size_t new_index;
 	while (s_tree[index].pos()[0] != pos1){

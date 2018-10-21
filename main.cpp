@@ -132,7 +132,7 @@ main(int argc, char * const argv[])
 
 	bool q_state = true;			// Variable que indica si las consultas fueron correctas o no
 	sensornet S(enable_stree);					// Inicializacion del arreglo de sensores
-	size_t id;						// Arreglo donde se guarda la posicion (en el arreglo de sensores) 
+	size_t id = 0;						// Arreglo donde se guarda la posicion (en el arreglo de sensores) 
 									// de cada sensor (que pide la consulta) 
 	size_t pos1 = 0, pos2 = 0;		// Posiciones para las cuales se calcula el resultado
 	query Q;						// Objeto donde se van a guardar:

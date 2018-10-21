@@ -3,7 +3,7 @@
 ##Facultad de Ingenieria##
 ##Universidad de Buenos Aires##
 
-CC = g++ -Wall -ansi -pedantic -g
+CC = g++ -Wall -ansi -pedantic -g -std=c++11
 
 all: tp0 clean
 
