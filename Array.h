@@ -30,6 +30,7 @@ public:
 
 	void		push(const T&);
 	void		clear();
+	void 		fill(T aux);
 
 
 private:
@@ -205,5 +206,12 @@ void Array<T>::push(const T &new_thing)
 	used_size_++;
 }
 
+template <typename T>
+void Array<T>::fill(T aux){
+
+	for (int i = this->used_size; i < this->alloc_size ; i++){
+		this->push(aux);
+	}
+}
 
 #endif

@@ -44,12 +44,38 @@ segment_tree::segment_tree(){
 // Constructor por tamano del arreglo
 segment_tree::segment_tree(size_t n){
 	Array <data> s_aux(n);
-	this->s_tree_ = s_aux;
-	this->empty_index_ = n - 1;
+		this->s_tree_ = s_aux;
+		this->empty_index_ = n - 1;
 }
 
 
 // Constructor por copia de arreglo
+segment_tree::segment_tree(Array <data> arr){
+	data aux;
+	arr.fill(aux);
+
+	size_t i, j = arr.size();
+	segment_tree s_aux(2 * arr.size() - 1);
+
+	for (i = s_aux.size() - 1; j>0; i--){
+		s_aux[i] = arr[j-1];
+		j--;
+	}
+	j = s_aux.size();
+	while(i =< 0){
+		data aux(s_aux[j],s_aux[j-1]);
+		s_aux[i] = aux;
+		i--;
+		j-=2;
+	}
+
+
+	this->s_tree_ = s_aux.s_tree_;
+
+
+}
+
+
 segment_tree::segment_tree(Array <data> arr){
 	size_t i, j = arr.size();
 	segment_tree s_aux(2 * arr.size() - 1);
@@ -58,6 +84,7 @@ segment_tree::segment_tree(Array <data> arr){
 		s_aux[i] = arr[j-1];
 		j--;
 	}
+
 
 	this->s_tree_ = s_aux.s_tree_;
 	this->empty_index_ = arr.size() - 2;
