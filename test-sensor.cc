@@ -10,6 +10,7 @@ main()
 	size_t i;
 	double k;
 	char c;
+	bool first = true, first1 = true;
 	string str;
 	sensor s;
 	sensor aux;
@@ -28,6 +29,8 @@ main()
 			cout << "empty";
 			cout << endl;
 			s = s_empty;
+			first = true;
+			first1 = true;
 			break;
 		case 'L':
 			// Length.
@@ -44,46 +47,65 @@ main()
 				cout << k;
 			    cout << endl;
 			    data d(k, s.size());
-				s.push(d);
+			    if(s.size() == 1 && first == true){
+			    	s[0] = d;
+			    	first = false;
+			    }
+			    else{
+					s.push(d);
+				}
 			}
 			break;
 		case 'P': {
 			// Print.
 			//
-			cout << "print:"<< endl;
 			const char *prthl = "(";
 			const char *prthr = ")";
 			const char *coma = ",";
 
-			cout << "sensor: ";
-			cout << (s.id() == "\0" ? "no id" : s.id());
-			if (s.size() == 0){
+			cout << s.id();
+			if(s.id()=="\0"){
+				cout<<"no id"<<endl;
+			}
+			else{
+				cout << "id: " << s.id() <<endl;
+			}
+			if (s.size() == 1 && first==true){
 				cout << "empty" << endl;
 			}
 			else{
-				cout<< "vector: ";
+				cout<< "mediciones: ";
 				cout << prthl;
-				for(i=0; i<s.size(); i++) {
-					cout << s[i].sum();
+				cout << s[0].sum();
+				for(i=1; i<s.size(); i++) {
 					cout << coma;
+					cout << s[i].sum();
 				}
 				cout<<prthr;
 				cout << endl;
-				if(s.s_tree().size() == 0){
+				if(s.s_tree().size() == 1){
 					cout<< "no segment tree"<<endl;
 				}
 				else{
 					cout<<"segment tree: (min;max;sum;amount;[pos1,pos2])"<< endl;
 					cout<< prthl;
-					for(i=0; i<s.s_tree().size(); i++){
 
+						cout << s.s_tree()[0].min()<< ";";
+						cout << s.s_tree()[0].max()<< ";";
+						cout << s.s_tree()[0].sum()<< ";";
+						cout << s.s_tree()[0].amount()<< ";";
+						cout << "[" << s.s_tree()[0].pos()[0] << ",";
+						cout << s.s_tree()[0].pos()[1] << "]";
+
+					for(i=1; i<s.s_tree().size(); i++){
+						cout << coma;
 						cout << s.s_tree()[i].min()<< ";";
 						cout << s.s_tree()[i].max()<< ";";
 						cout << s.s_tree()[i].sum()<< ";";
 						cout << s.s_tree()[i].amount()<< ";";
 						cout << "[" << s.s_tree()[i].pos()[0] << ",";
 						cout << s.s_tree()[i].pos()[1] << "]";
-						cout << coma;
+						
 					}
 					cout<< prthr;
 					cout<< endl;
@@ -95,14 +117,15 @@ main()
 		case 'N': {
 			// Sensor name.
 			//
-			cout<< "sensor name/id:"<<endl;
+			cout<< "sensor name/id: ";
 			cin >> str;
-			sensor aux(str);
+			s.id() = str;
 			break;
 		}
 		case 'M': {
 			// Compare.
 			//
+
 			cout<< "compare sensors: "<< endl;
 			cout<< "enter ID: ";
 			cin>>str;
@@ -113,7 +136,13 @@ main()
 				cout<<"enter a measurment value: ";
 				cin>> k;
 				data d(k, j);
-				aux.push(d);
+				if(aux.size() == 1 && first1 == true){
+					aux[0] = d;
+					first = false;
+				}
+				else{
+					aux.push(d);
+				}
 				cout<<endl;
 			}
 			aux.create_segment_tree();
@@ -124,13 +153,6 @@ main()
 				cout<< "not equal"<< endl;
 			}
 
-		}
-		case 'I': {
-			// Index.
-			//
-			cin >> i;
-			cout << "value in position "<< i<< ": "<< s[i].sum()<< endl;
-			break;
 		}
 		case 'S': {
 			// Create Segment Tree.
@@ -144,18 +166,33 @@ main()
 
 			cout<<"segment tree: (min;max;sum;amount;[pos1,pos2])"<< endl;
 			cout<< prthl;
-			for(i=0; i<s.s_tree().size(); i++){
 
-				cout << s.s_tree()[i].min()<< ";";
-				cout << s.s_tree()[i].max()<< ";";
-				cout << s.s_tree()[i].sum()<< ";";
-				cout << s.s_tree()[i].amount()<< ";";
-				cout << "[" << s.s_tree()[i].pos()[0] << ",";
-				cout << s.s_tree()[i].pos()[1] << "]";
+				cout << s.s_tree()[0].min()<< ";";
+				//cout << s.s_tree()[0].max()<< ";";
+//				cout << s.s_tree()[0].sum()<< ";";
+//				cout << s.s_tree()[0].amount()<< ";";
+//				cout << "[" << s.s_tree()[0].pos()[0] << ",";
+//				cout << s.s_tree()[0].pos()[1] << "]";
+
+			for(i=1; i<s.s_tree().size(); i++){
 				cout << coma;
+				cout << s.s_tree()[i].min()<< ";";
+//				cout << s.s_tree()[i].max()<< ";";
+//				cout << s.s_tree()[i].sum()<< ";";
+//				cout << s.s_tree()[i].amount()<< ";";
+//				cout << "[" << s.s_tree()[i].pos()[0] << ",";
+//				cout << s.s_tree()[i].pos()[1] << "]";
+				
 			}
 			cout<< prthr;
 			cout<< endl;
+		}
+		case 'I': {
+			// Index.
+			//
+			cin >> i;
+			cout << "value in position "<< i<< ": "<< s[i].sum()<< endl;
+			break;
 		}
 		default:
 			cout << "error: unknown command (";

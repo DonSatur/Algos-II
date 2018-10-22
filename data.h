@@ -10,9 +10,9 @@
 using namespace std;
 
 class data{
-	size_t min_ = DBL_MAX * (-1);
-	size_t max_ = DBL_MAX;
-	size_t sum_ = 0;
+	double min_ = DBL_MAX;
+	double max_ = DBL_MAX * (-1);
+	double sum_ = 0;
 	size_t amount_ = 1;
 	Array <size_t> pos_;		// El arreglo es creciente
 	bool state_ = false;			// Si state es false, quiere decir que no se senso en ese instante
@@ -56,8 +56,8 @@ data::data(){
 
 
 data::data(Array <size_t> pos){
-	this->min_ = DBL_MAX * (-1);
-	this->max_ = DBL_MAX;
+	this->min_ = DBL_MAX;
+	this->max_ = DBL_MAX * (-1);
 	this->sum_ = 0;
 	this->amount_ = 0;
 	this->pos_[0] = pos[0];
@@ -122,60 +122,57 @@ data::~data()
 // Calculo del valor maximo
 double
 data::calc_max (data &D1, data &D2){
-	double max;
 	if (D1.max_ > D2.max_){
-		max = D1.max_;
+		this->max_ = D1.max_;
 	}
 	else{
-		max = D2.max_;
+		this->max_ = D2.max_;
 	}
-	return max;
+	return this->max_;
 }
 
 
 // Calculo del valor minimo
 double
 data::calc_min (data &D1, data &D2){
-	double min;
 	if (D1.min_ < D2.min_){
-		min = D1.min_;
+		this->min_ = D1.min_;
 	}
 	else{
-		min = D2.min_;
+		this->min_ = D2.min_;
 	}
-	return min;
+	return this->min_;
 }
 
 
 // Suma de los valores de dos objetos data
 double
 data::calc_sum (data &D1, data &D2){
-	return D1.sum_ + D2.sum_;
+	return this->sum_ = D1.sum_ + D2.sum_;
 }
 
 
 // Calculo de las posiciones asociadas al objeto data
 Array <size_t>
 data::calc_pos (data &D1, data &D2){
-	Array <size_t> pos(2);
 	if(D1.pos_[0] == 0 && D1.pos_[1]== 0){
-		pos[0] = D2.pos_[0];
-		pos[1] = D2.pos_[1];
+		this->pos_[0] = D2.pos_[0];
+		this->pos_[1] = D2.pos_[1];
 	}
 	else if(D2.pos_[0] == 0 && D2.pos_[1]== 0){
-		pos[0] = D1.pos_[0];
-		pos[1] = D1.pos_[1];
+		this->pos_[0] = D1.pos_[0];
+		this->pos_[1] = D1.pos_[1];
 	}
 	else{
-		pos[0] = D1.pos_[0];
-		pos[1] = D2.pos_[1];
+		this->pos_[0] = D1.pos_[0];
+		this->pos_[1] = D2.pos_[1];
 	}	
-	return pos;
+	return this->pos_;
 }
 
 size_t
 data::calc_amount(data &D1, data &D2){
-	return D1.amount_ + D2.amount_;
+	return this->amount_ = D1.amount_ + D2.amount_;
 }
 
 
