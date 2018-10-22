@@ -14,14 +14,15 @@ class data{
 	double max_ = DBL_MAX * (-1);
 	double sum_ = 0;
 	size_t amount_ = 1;
-	Array <size_t> pos_;		// El arreglo es creciente
+	size_t pos1_ = 0;
+	size_t pos2_ = 0;
 	bool state_ = false;			// Si state es false, quiere decir que no se senso en ese instante
 
 
 public:
 	data();
-	data(Array <size_t> pos);
-	data(size_t min, size_t max, size_t sum, size_t amount, Array <size_t> pos);
+	data(size_t pos);
+	data(size_t min, size_t max, size_t sum, size_t amount, size_t pos1, size_t pos2);
 	data (double value, size_t pos);
 	data (data & D1, data & D2);
 	data( const data & D);
@@ -30,7 +31,8 @@ public:
 	double			calc_max (data &D1, data &D2);	// El primer objeto debe estar ubicado en una posicion
 	double			calc_min (data &D1, data &D2);	// menor al segundo
 	double			calc_sum (data &D1, data &D2);
-	Array <size_t>	calc_pos (data &D1, data &D2);
+	size_t			calc_pos1 (data &D1, data &D2);
+	size_t			calc_pos2 (data &D1, data &D2);
 	size_t			calc_amount (data &D1, data &D2);	
 	bool			calc_state(data &D1, data &D2);		
 
@@ -38,7 +40,8 @@ public:
 	double			min();
 	double			sum();
 	size_t			amount();
-	Array <size_t>	pos();
+	size_t			pos1();
+	size_t			pos2();
 	bool			state();
 
 
@@ -50,30 +53,28 @@ public:
 
 // Constructor por defecto
 data::data(){
-	this->pos_[0] = 0;
-	this->pos_[1] = 0;
 }
 
 
-data::data(Array <size_t> pos){
+data::data(size_t pos){
 	this->min_ = DBL_MAX;
 	this->max_ = DBL_MAX * (-1);
 	this->sum_ = 0;
 	this->amount_ = 0;
-	this->pos_[0] = pos[0];
-	this->pos_[1] = pos[1];
+	this->pos1_ = pos;
+	this->pos2_ = pos+1;
 	this->state_ = false;
 }
 
 
 // Constructor por copia
-data::data(size_t min, size_t max, size_t sum, size_t amount, Array <size_t> pos){
+data::data(size_t min, size_t max, size_t sum, size_t amount, size_t pos1, size_t pos2){
 	this->min_ = min;
 	this->max_ = max;
 	this->sum_ = sum;
 	this->amount_ = amount;
-	this->pos_[0] = pos[0];
-	this->pos_[1] = pos[1];
+	this->pos1_ = pos1;
+	this->pos2_ = pos2;
 	this->state_ = true;
 }
 
@@ -84,8 +85,8 @@ data::data(double value, size_t pos){
 	this->max_ = value;
 	this->sum_ = value;
 	this->amount_ = 1;
-	this->pos_[0] = pos;
-	this->pos_[1] = pos+1;
+	this->pos1_ = pos;
+	this->pos2_ = pos+1;
 	this->state_ = true;
 }
 
@@ -96,7 +97,8 @@ data::data(data & D1, data & D2){
 	this->max_ = calc_max(D1,D2);
 	this->sum_ = calc_sum(D1,D2);
 	this->amount_ = calc_amount(D1,D2);
-	this->pos_ = calc_pos(D1,D2);
+	this->pos1_ = calc_pos1(D1,D2);
+	this->pos2_ = calc_pos2(D1,D2);
 	this->state_ = calc_state(D1,D2);
 }
 
@@ -108,8 +110,8 @@ data::data(const data & D)
 	this->max_ = D.max_;
 	this->sum_ = D.sum_;
 	this->amount_ = D.amount_;
-	this->pos_[0] = D.pos_[0];
-	this->pos_[1] = D.pos_[1];
+	this->pos1_ = D.pos1_;
+	this->pos2_ = D.pos2_;
 }
 
 
@@ -152,22 +154,33 @@ data::calc_sum (data &D1, data &D2){
 }
 
 
-// Calculo de las posiciones asociadas al objeto data
-Array <size_t>
-data::calc_pos (data &D1, data &D2){
-	if(D1.pos_[0] == 0 && D1.pos_[1]== 0){
-		this->pos_[0] = D2.pos_[0];
-		this->pos_[1] = D2.pos_[1];
+size_t
+data::calc_pos1 (data &D1, data &D2){
+	if(D1.pos1_ == 0 && D1.pos2_ == 0){
+		this->pos1_ = D2.pos1_;
 	}
-	else if(D2.pos_[0] == 0 && D2.pos_[1]== 0){
-		this->pos_[0] = D1.pos_[0];
-		this->pos_[1] = D1.pos_[1];
+	else if(D2.pos1_ == 0 && D2.pos2_ == 0){
+		this->pos1_ = D1.pos1_;
 	}
 	else{
-		this->pos_[0] = D1.pos_[0];
-		this->pos_[1] = D2.pos_[1];
+		this->pos1_ = D1.pos1_;
 	}	
-	return this->pos_;
+	return this->pos1_;
+}
+
+
+size_t
+data::calc_pos2 (data &D1, data &D2){
+	if(D1.pos1_ == 0 && D1.pos2_ == 0){
+		this->pos2_ = D2.pos2_;
+	}
+	else if(D2.pos1_ == 0 && D2.pos2_ == 0){
+		this->pos2_ = D1.pos2_;
+	}
+	else{
+		this->pos2_ = D2.pos2_;
+	}	
+	return this->pos2_;
 }
 
 size_t
@@ -207,11 +220,15 @@ data::amount(){
 	return this->amount_;
 }
 	
-Array <size_t>	
-data::pos(){
-	return this->pos_;
+size_t
+data::pos1(){
+	return this->pos1_;
 }
 
+size_t
+data::pos2(){
+	return this->pos2_;
+}
 
 bool
 data::state(){
@@ -221,7 +238,7 @@ data::state(){
 
 data &
 data::operator=( const data & D){
-	if (this->min_ == D.min_ && this->max_ == D.max_ && this->sum_ == D.sum_ && this->amount_ == D.amount_ && this->state_ == D.state_){
+	if (this->min_ == D.min_ && this->max_ == D.max_ && this->sum_ == D.sum_ && this->amount_ == D.amount_ && this->state_ == D.state_ && this->pos1_ == D.pos1_ && this->pos2_ == D.pos2_){
 		return *this;
 	}
 	if (this->min_ != D.min_){
@@ -238,6 +255,12 @@ data::operator=( const data & D){
 	}
 	if (this->state_ != D.state_){
 		this->state_ = D.state_;
+	}
+	if (this->pos1_ != D.pos1_){
+		this->pos1_ = D.pos1_;
+	}
+	if (this->pos2_ != D.pos2_){
+		this->pos2_ = D.pos2_;
 	}
 	return *this;
 }
@@ -263,6 +286,16 @@ data::operator==( const data & D){
 				else{
 					if(this->state_ != D.state_){
 						return false;
+					}
+					else{
+						if(this->pos1_ != D.pos1_){
+							return false;
+						}
+						else{
+							if(this->pos2_ != D.pos2_){
+								return false;
+							}
+						}
 					}
 				}
 			}
@@ -292,6 +325,16 @@ data::operator!=( const data & D){
 				else{
 					if(this->state_ == D.state_){
 						return false;
+					}
+					else{
+						if(this->pos1_ == D.pos1_){
+							return false;
+						}
+						else{
+							if(this->pos2_ == D.pos2_){
+								return false;
+							}
+						}
 					}
 				}
 			}

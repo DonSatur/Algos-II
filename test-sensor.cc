@@ -46,12 +46,13 @@ main()
 				cout << "add: ";
 				cout << k;
 			    cout << endl;
-			    data d(k, s.size());
 			    if(s.size() == 1 && first == true){
+			    	data d(k, s.size()-1);
 			    	s[0] = d;
 			    	first = false;
 			    }
 			    else{
+			    	data d(k, s.size());
 					s.push(d);
 				}
 			}
@@ -87,25 +88,56 @@ main()
 					cout<< "no segment tree"<<endl;
 				}
 				else{
-					cout<<"segment tree: (min;max;sum;amount;[pos1,pos2])"<< endl;
+					cout<<"segment tree:"<< endl;
+					
+					cout<< "minimum: ";
 					cout<< prthl;
-
-						cout << s.s_tree()[0].min()<< ";";
-						cout << s.s_tree()[0].max()<< ";";
-						cout << s.s_tree()[0].sum()<< ";";
-						cout << s.s_tree()[0].amount()<< ";";
-						cout << "[" << s.s_tree()[0].pos()[0] << ",";
-						cout << s.s_tree()[0].pos()[1] << "]";
-
+					cout << s.s_tree()[0].min();
 					for(i=1; i<s.s_tree().size(); i++){
-						cout << coma;
-						cout << s.s_tree()[i].min()<< ";";
-						cout << s.s_tree()[i].max()<< ";";
-						cout << s.s_tree()[i].sum()<< ";";
-						cout << s.s_tree()[i].amount()<< ";";
-						cout << "[" << s.s_tree()[i].pos()[0] << ",";
-						cout << s.s_tree()[i].pos()[1] << "]";
-						
+						cout << " " << coma << " ";
+						cout << s.s_tree()[i].min();
+					}
+					cout<< prthr;
+					cout<< endl;
+
+					cout<< "maximum: ";
+					cout<< prthl;
+					cout << s.s_tree()[0].max();
+					for(i=1; i<s.s_tree().size(); i++){
+						cout << " " << coma << " ";
+						cout << s.s_tree()[i].max();
+					}
+					cout<< prthr;
+					cout<< endl;
+
+					cout<< "sum: ";
+					cout<< prthl;
+					cout << s.s_tree()[0].sum();
+					for(i=1; i<s.s_tree().size(); i++){
+						cout << " " << coma << " ";
+						cout << s.s_tree()[i].sum();
+					}
+					cout<< prthr;
+					cout<< endl;
+
+					cout<< "amount: ";
+					cout<< prthl;
+					cout << s.s_tree()[0].amount();
+					for(i=1; i<s.s_tree().size(); i++){
+						cout << " " << coma << " ";
+						cout << s.s_tree()[i].amount();
+					}
+					cout<< prthr;
+					cout<< endl;
+
+					cout<< "positions: ";
+					cout<< prthl;
+					cout << "[" << s.s_tree()[0].pos1()<< coma;
+					cout << s.s_tree()[0].pos2() << "]";
+					for(i=1; i<s.s_tree().size(); i++){
+						cout << " " << coma << " ";
+						cout << "[" << s.s_tree()[i].pos1()<< coma;
+						cout << s.s_tree()[i].pos2() << "]";
 					}
 					cout<< prthr;
 					cout<< endl;
@@ -152,6 +184,7 @@ main()
 			else{
 				cout<< "not equal"<< endl;
 			}
+			break;
 
 		}
 		case 'S': {
@@ -164,34 +197,66 @@ main()
 
 			s.create_segment_tree();
 
-			cout<<"segment tree: (min;max;sum;amount;[pos1,pos2])"<< endl;
-			cout<< prthl;
+			cout<<"segment tree:"<< endl;
+					
+					cout<< "minimum: ";
+					cout<< prthl;
+					cout << s.s_tree()[0].min();
+					for(i=1; i<s.s_tree().size(); i++){
+						cout << " " << coma << " ";
+						cout << s.s_tree()[i].min();
+					}
+					cout<< prthr;
+					cout<< endl;
 
-				cout << s.s_tree()[0].min()<< ";";
-				//cout << s.s_tree()[0].max()<< ";";
-//				cout << s.s_tree()[0].sum()<< ";";
-//				cout << s.s_tree()[0].amount()<< ";";
-//				cout << "[" << s.s_tree()[0].pos()[0] << ",";
-//				cout << s.s_tree()[0].pos()[1] << "]";
+					cout<< "maximum: ";
+					cout<< prthl;
+					cout << s.s_tree()[0].max();
+					for(i=1; i<s.s_tree().size(); i++){
+						cout << " " << coma << " ";
+						cout << s.s_tree()[i].max();
+					}
+					cout<< prthr;
+					cout<< endl;
 
-			for(i=1; i<s.s_tree().size(); i++){
-				cout << coma;
-				cout << s.s_tree()[i].min()<< ";";
-//				cout << s.s_tree()[i].max()<< ";";
-//				cout << s.s_tree()[i].sum()<< ";";
-//				cout << s.s_tree()[i].amount()<< ";";
-//				cout << "[" << s.s_tree()[i].pos()[0] << ",";
-//				cout << s.s_tree()[i].pos()[1] << "]";
-				
-			}
-			cout<< prthr;
-			cout<< endl;
+					cout<< "sum: ";
+					cout<< prthl;
+					cout << s.s_tree()[0].sum();
+					for(i=1; i<s.s_tree().size(); i++){
+						cout << " " << coma << " ";
+						cout << s.s_tree()[i].sum();
+					}
+					cout<< prthr;
+					cout<< endl;
+
+					cout<< "amount: ";
+					cout<< prthl;
+					cout << s.s_tree()[0].amount();
+					for(i=1; i<s.s_tree().size(); i++){
+						cout << " " << coma << " ";
+						cout << s.s_tree()[i].amount();
+					}
+					cout<< prthr;
+					cout<< endl;
+
+					cout<< "positions: ";
+					cout<< prthl;
+					cout << "[" << s.s_tree()[0].pos1()<< coma;
+					cout << s.s_tree()[0].pos2() << "]";
+					for(i=1; i<s.s_tree().size(); i++){
+						cout << " " << coma << " ";
+						cout << "[" << s.s_tree()[i].pos1()<< coma;
+						cout << s.s_tree()[i].pos2() << "]";
+					}
+					cout<< prthr;
+					cout<< endl;
+					break;
 		}
 		case 'I': {
 			// Index.
 			//
 			cin >> i;
-			cout << "value in position "<< i<< ": "<< s[i].sum()<< endl;
+			cout << "value in position "<< i<< ": "<< s[i-1].sum()<< endl;
 			break;
 		}
 		default:

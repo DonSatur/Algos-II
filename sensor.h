@@ -193,6 +193,14 @@ sensor::push(const data &new_data)
 
 void
 sensor::create_segment_tree(){
+	size_t i;
+
+	for(i=this->v_arr_.size(); i<this->v_arr_.alloc_size(); i++){
+		data d_aux(i);
+		this->v_arr_[i] = d_aux;
+	}
+
+
 	segment_tree s_tree_aux(this->v_arr_);
 	
 	this->s_tree_ = s_tree_aux;

@@ -64,18 +64,11 @@ segment_tree::segment_tree(Array <data> arr){
 		s_aux[i] = arr[j-1];
 		j--;
 	}
-	for (size_t r=0; r<s_aux.size(); r++){
-		cout<< s_aux[r].min()<<endl;
-	}
 	k = s_aux.size() - arr.size() -1;
 	j = s_aux.size();
-	cout << "holaa" << endl;
 	while(k >= 0){
 		data aux(s_aux[j-2],s_aux[j-1]);
 		s_aux[k] = aux;
-		cout << s_aux[j-2].min() << " " << s_aux[j-1].min() << endl;
-		cout << s_aux[k].min()<<endl;
-		cout << k << "  " << j-2 << "  "<< j-1 << endl;
 		k--;
 		j-=2;
 	}
