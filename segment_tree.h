@@ -57,6 +57,11 @@ segment_tree::segment_tree(Array <data> arr){
 	size_t i, j;
 	int k;
 
+	for(i=arr.size(); i<arr.alloc_size(); i++){
+		data d(i);
+		arr.push(d);
+	}
+
 	segment_tree s_aux(2 * arr.size() - 1);
 
 	j = arr.size();
