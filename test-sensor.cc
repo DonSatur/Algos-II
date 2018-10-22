@@ -10,12 +10,11 @@ main()
 	size_t i;
 	double k;
 	char c;
-	bool first = true, first1 = true;
+	bool first = true, first1;
 	string str;
 	sensor s;
-	sensor aux;
 	sensor s_empty;
-	cout << "Clone (C), Empty (E), Length (L), Add (A), Print (P), Name (N), Compare (M), Index (I), Create Segment Tree (S)"<< endl;
+	cout << "Clone (C), Empty (E), Length (L), Add (A), Print (P), New (N), Compare (M), Index (I), Create Segment Tree (S)"<< endl;
 	while (cin >> c) {
 		switch (c) {
 		case 'C':
@@ -64,7 +63,6 @@ main()
 			const char *prthr = ")";
 			const char *coma = ",";
 
-			cout << s.id();
 			if(s.id()=="\0"){
 				cout<<"no id"<<endl;
 			}
@@ -147,37 +145,132 @@ main()
 			break;
 		}
 		case 'N': {
-			// Sensor name.
+			// New sensor.
 			//
-			cout<< "sensor name/id: ";
+			cout<< "enter the sensor name: ";
 			cin >> str;
-			s.id() = str;
+			sensor aux(str);
+			s = aux;
 			break;
 		}
 		case 'M': {
 			// Compare.
 			//
+			first1 = true;
+			const char *prthl = "(";
+			const char *prthr = ")";
+			const char *coma = ",";
+
 
 			cout<< "compare sensors: "<< endl;
-			cout<< "enter ID: ";
+			cout<< "enter sensor name: ";
 			cin>>str;
-			aux.id() = str;
+			sensor aux(str);
 			cout<< "enter sensor length: ";
 			cin >> i;
 			for(size_t j = 0; j<i; j++){
-				cout<<"enter a measurment value: ";
+				cout<<"enter a measurement value: ";
 				cin>> k;
-				data d(k, j);
+				data d(k,j);
 				if(aux.size() == 1 && first1 == true){
 					aux[0] = d;
-					first = false;
+					first1 = false;
 				}
 				else{
 					aux.push(d);
 				}
-				cout<<endl;
 			}
-			aux.create_segment_tree();
+			cout<< "do you want segment tree? (yes:0, no:1): ";
+			cin>> i;
+			if(i == 0){
+				aux.create_segment_tree();
+			}
+
+
+			if(aux.id()=="\0"){
+				cout<<"no id"<<endl;
+			}
+			else{
+				cout << "id: " << aux.id() <<endl;
+			}
+			if (aux.size() == 1 && first==true){
+				cout << "empty" << endl;
+			}
+			else{
+				cout<< "mediciones: ";
+				cout << prthl;
+				cout << aux[0].sum();
+				for(i=1; i<aux.size(); i++) {
+					cout << coma;
+					cout << aux[i].sum();
+				}
+				cout<<prthr;
+				cout << endl;
+				if(aux.s_tree().size() == 1){
+					cout<< "no segment tree"<<endl;
+				}
+				else{
+					cout<<"segment tree:"<< endl;
+					
+					cout<< "minimum: ";
+					cout<< prthl;
+					cout << aux.s_tree()[0].min();
+					for(i=1; i<aux.s_tree().size(); i++){
+						cout << " " << coma << " ";
+						cout << aux.s_tree()[i].min();
+					}
+					cout<< prthr;
+					cout<< endl;
+
+					cout<< "maximum: ";
+					cout<< prthl;
+					cout << aux.s_tree()[0].max();
+					for(i=1; i<aux.s_tree().size(); i++){
+						cout << " " << coma << " ";
+						cout << aux.s_tree()[i].max();
+					}
+					cout<< prthr;
+					cout<< endl;
+
+					cout<< "sum: ";
+					cout<< prthl;
+					cout << aux.s_tree()[0].sum();
+					for(i=1; i<aux.s_tree().size(); i++){
+						cout << " " << coma << " ";
+						cout << aux.s_tree()[i].sum();
+					}
+					cout<< prthr;
+					cout<< endl;
+
+					cout<< "amount: ";
+					cout<< prthl;
+					cout << aux.s_tree()[0].amount();
+					for(i=1; i<aux.s_tree().size(); i++){
+						cout << " " << coma << " ";
+						cout << aux.s_tree()[i].amount();
+					}
+					cout<< prthr;
+					cout<< endl;
+
+					cout<< "positions: ";
+					cout<< prthl;
+					cout << "[" << aux.s_tree()[0].pos1()<< coma;
+					cout << aux.s_tree()[0].pos2() << "]";
+					for(i=1; i<aux.s_tree().size(); i++){
+						cout << " " << coma << " ";
+						cout << "[" << aux.s_tree()[i].pos1()<< coma;
+						cout << aux.s_tree()[i].pos2() << "]";
+					}
+					cout<< prthr;
+					cout<< endl;
+				}
+			}
+			
+
+
+
+
+
 			if(aux == s){
 				cout<< "equal" << endl;
 			}
