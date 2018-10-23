@@ -331,7 +331,7 @@ query::process_data_std(sensornet & S, size_t id, size_t & pos1, size_t & pos2){
 	Array <data> aux_arr = 1;
 	size_t i, j = 0;
 	bool first = true;
-	data aux, d;
+	data aux2, d;
 	
 	
 	for (i = pos1; i < pos2; i++){
@@ -347,8 +347,10 @@ query::process_data_std(sensornet & S, size_t id, size_t & pos1, size_t & pos2){
 
 
 	for (i = 0; i < aux_arr.size(); i++){
-		data aux(aux, aux_arr[i]);
-		d = aux;
+		data aux(aux2, aux_arr[i]);
+		aux2 = aux;
+		cout<< aux2.min() << endl;
+		d = aux2;
 	}
 	
 
