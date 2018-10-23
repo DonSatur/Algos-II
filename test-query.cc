@@ -17,7 +17,7 @@ static bool enable_stree = false;
 int
 main()
 {
-	size_t id=0, pos1, pos2;
+	size_t id, pos1, pos2;
 	bool not_end;
 	char c;
 	string str;
@@ -54,6 +54,8 @@ main()
 			// New query.
 			//
 			cout<< "enter the query: ";
+			cin.clear();
+			cin.ignore(1000000,'\n');
 			getline(cin,str);
 			stringstream str_st(str);
 			read_query(str_st, cout, S, id, pos1, pos2, not_end);
@@ -62,9 +64,6 @@ main()
 				cout << q;
 			}
 
-			cin.clear();
-			cin.ignore(1000000,'\n');
-
 			break;
 		}
 		case 'M': {
@@ -72,6 +71,8 @@ main()
 			//
 			query aux;
 			cout<< "enter the query: ";
+			cin.clear();
+			cin.ignore(1000000,'\n');
 			getline(cin, str);
 			cout<< str<<endl;
 			stringstream str_st(str);
@@ -87,9 +88,6 @@ main()
 			else{
 				cout << "not equal" << endl;
 			}
-
-			cin.clear();
-			cin.ignore(1000000,'\n');
 
 			break;
 

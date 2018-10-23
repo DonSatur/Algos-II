@@ -38,11 +38,11 @@ public:
 
 
 	friend
-	bool		check_id(string str, sensornet & S, size_t id,bool & first);
+	bool		check_id(string str, sensornet & S, size_t & id,bool & first);
 	friend
 	bool		check_pos(sensornet & S, size_t id, size_t & pos1, size_t & pos2);
 	friend
-	bool		read_query(istream & is,ostream & os, sensornet & S, size_t id, size_t & pos1, size_t & pos2, bool & end);
+	bool		read_query(istream & is,ostream & os, sensornet & S, size_t & id, size_t & pos1, size_t & pos2, bool & end);
 
 	void		process_data(sensornet & S, size_t id, size_t & pos1, size_t & pos2);
 	
@@ -172,7 +172,7 @@ query::operator!=( const query & Q) const{
 
 
 bool
-check_id(string str, sensornet & S, size_t id, bool &first){
+check_id(string str, sensornet & S, size_t & id, bool &first){
 
 	size_t S_size = S.size();
 	size_t i;
@@ -206,7 +206,7 @@ check_pos(sensornet & S, size_t id, size_t & pos1, size_t & pos2){
 
 
 bool
-read_query(istream & is,ostream & os, sensornet & S, size_t id, size_t & pos1, size_t & pos2,bool & q_state){
+read_query(istream & is,ostream & os, sensornet & S, size_t & id, size_t & pos1, size_t & pos2,bool & q_state){
 	string str,str2,str3, str4;
 	Array <size_t> id_number;		//Aca se guarda la posicion (dentro de sensornet) de cada sensor
 	bool first = true;
@@ -229,7 +229,7 @@ read_query(istream & is,ostream & os, sensornet & S, size_t id, size_t & pos1, s
 			id = S.size()-1;
 		}
 		else{
-			if(!check_id(str2, S, id,first)){	//Se chequea que los q_id sean correctos
+			if(!check_id(str2, S, id, first)){	//Se chequea que los q_id sean correctos
 				os << "UNKNOWN ID" << endl;
 				q_state = false;
 				return true;
@@ -237,6 +237,7 @@ read_query(istream & is,ostream & os, sensornet & S, size_t id, size_t & pos1, s
 			}
 		}	
 	}
+
 	if (!getline(str_st, str2, ',')){			//Se leen solo los q_ids
 		os << "BAD QUERY"<< "dos"<< str2<< endl;
 		q_state	= false;
