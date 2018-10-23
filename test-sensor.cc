@@ -14,7 +14,7 @@ main()
 	string str;
 	sensor s;
 	sensor s_empty;
-	cout << "Clone (C), Empty (E), Length (L), Add (A), Print (P), New (N), Compare (M), Index (I), Create Segment Tree (S)"<< endl;
+	cout << "Clone (C), Empty (E), Sensor Length (L), Add (A), Print (P), New (N), Compare (M), Index (I), Create Segment Tree (S)"<< endl;
 	while (cin >> c) {
 		switch (c) {
 		case 'C':
@@ -32,7 +32,7 @@ main()
 			first1 = true;
 			break;
 		case 'L':
-			// Length.
+			// Sensor Length.
 			// 
 			cout << "sensor length: ";
 			cout << s.size();
@@ -141,9 +141,9 @@ main()
 					cout<< endl;
 				}
 			}
-			
 			break;
 		}
+		
 		case 'N': {
 			// New sensor.
 			//
@@ -153,6 +153,7 @@ main()
 			s = aux;
 			break;
 		}
+		
 		case 'M': {
 			// Compare.
 			//

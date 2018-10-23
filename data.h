@@ -13,7 +13,7 @@ class data{
 	double min_ = DBL_MAX;
 	double max_ = DBL_MAX * (-1);
 	double sum_ = 0;
-	size_t amount_ = 1;
+	size_t amount_ = 0;
 	size_t pos1_ = 0;
 	size_t pos2_ = 0;
 	bool state_ = false;			// Si state es false, quiere decir que no se senso en ese instante
@@ -36,13 +36,13 @@ public:
 	size_t			calc_amount (data &D1, data &D2);	
 	bool			calc_state(data &D1, data &D2);		
 
-	double 			max();
-	double			min();
-	double			sum();
-	size_t			amount();
-	size_t			pos1();
-	size_t			pos2();
-	bool			state();
+	double 			max() const;
+	double			min() const;
+	double			sum() const;
+	size_t			amount() const;
+	size_t			pos1() const;
+	size_t			pos2() const;
+	bool			state() const;
 
 
 	data &		operator=( const data & D); 
@@ -201,37 +201,37 @@ data::calc_state(data &D1, data &D2){
 
 
 double 			
-data::max(){
+data::max() const{
 	return this->max_;
 }
 	
 double			
-data::min(){
+data::min() const{
 	return this->min_;
 }
 	
 double			
-data::sum(){
+data::sum() const{
 	return this->sum_;
 }
 	
 size_t			
-data::amount(){
+data::amount() const{
 	return this->amount_;
 }
 	
 size_t
-data::pos1(){
+data::pos1() const{
 	return this->pos1_;
 }
 
 size_t
-data::pos2(){
+data::pos2() const{
 	return this->pos2_;
 }
 
 bool
-data::state(){
+data::state() const{
 	return this->state_;
 }
 

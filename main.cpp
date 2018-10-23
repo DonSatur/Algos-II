@@ -145,7 +145,7 @@ main(int argc, char * const argv[])
 	else{
 		while(read_query(*iss,*oss, S, id, pos1, pos2,q_state)){	// Lee las consultas
 			if(q_state){												// Si las consultas son correctas,
-				Q.process_data(Q, S, id, pos1, pos2);				// se procesa la data.
+				Q.process_data(S, id, pos1, pos2);				// se procesa la data.
 				*oss <<Q;									// Se escribe el resultado donde corresponde.
 
 			}

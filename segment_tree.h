@@ -21,8 +21,8 @@ class segment_tree{
 		segment_tree(const segment_tree & S_TREE);
 		~segment_tree();
 
-		size_t			empty_index();
-		size_t			size();
+		size_t			empty_index() const;
+		size_t			size() const;
 
 		void 			push(const data &new_data);
 		segment_tree&	operator=( const segment_tree & S); 
@@ -51,9 +51,6 @@ segment_tree::segment_tree(size_t n){
 
 // Constructor por copia de arreglo
 segment_tree::segment_tree(Array <data> arr){
-	//data aux;
-	//arr.fill(aux);
-
 	size_t i, j;
 	int k;
 
@@ -100,13 +97,13 @@ segment_tree::~segment_tree(){
 
 // Devuelve el valor de empty_index_
 size_t
-segment_tree::empty_index(){
+segment_tree::empty_index() const{
 	return this->empty_index_;
 }
 
 
 size_t
-segment_tree::size(){
+segment_tree::size() const{
 	return s_tree_.size();
 }
 
