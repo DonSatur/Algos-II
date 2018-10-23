@@ -25,10 +25,10 @@ public:
 	sensor( const sensor & S); 
 	~sensor( );
 
-	string id();		//Devuelve el ID del sensor
-	size_t size();		//Devuelve la longitud del arreglo values_
-	size_t alloc_size();
-	Array <data> arr();
+	string id() const;		//Devuelve el ID del sensor
+	size_t size() const;		//Devuelve la longitud del arreglo values_
+	size_t alloc_size() const;
+	Array <data> arr() const;
 	segment_tree& s_tree();
 
 	sensor&		operator=( const sensor & S); 
@@ -40,14 +40,13 @@ public:
 
 	void 		push(const data& new_data);
 	void		create_segment_tree();
-
 };
 
 // Constructor por defecto
 sensor::sensor()
 {
 	this->v_arr_ = ARRAY_DEFAULT_SIZE ;
-	this->id_='\0';
+	this->id_="\0";
 }
 
 // Constructor a partir del ID
@@ -79,23 +78,23 @@ sensor::~sensor()
 
 // Devuelve el ID del sensor
 string
-sensor::id(){
+sensor::id() const{
 	return this->id_;
 }
 
 // Devuelve el tamano del arreglo de valores
 size_t
-sensor::size(){
+sensor::size() const{
 	return this->v_arr_.size();
 }
 
 size_t
-sensor::alloc_size(){
+sensor::alloc_size() const{
 	return this->v_arr_.alloc_size();
 }
 
 Array <data>
-sensor::arr(){
+sensor::arr() const{
 	return this->v_arr_;
 }
 
@@ -145,11 +144,17 @@ sensor::operator=( const segment_tree s_tree){
  
 bool
 sensor::operator==( const sensor & S) const{
-	if ( this->id_ != S.id_)
-		return false; 
+	if ( this->id_ != S.id_){
+		return false;
+	} 
 	else{
 			if (this->v_arr_ != S.v_arr_){
 				return false;
+			}
+			else{
+				if(this->s_tree_ != S.s_tree_){
+					return false;
+				}
 			}
 		}
 
@@ -164,6 +169,11 @@ sensor::operator!=( const sensor & S) const
 	else{
 			if (this->v_arr_ == S.v_arr_){
 				return false;
+			}
+			else{
+				if(this->s_tree_ == S.s_tree_){
+					return false;
+				}
 			}
 		}
 
@@ -193,17 +203,11 @@ sensor::push(const data &new_data)
 
 void
 sensor::create_segment_tree(){
-	size_t i;
-
-	for(i=this->v_arr_.size(); i<this->v_arr_.alloc_size(); i++){
-		data d_aux(i);
-		this->v_arr_[i] = d_aux;
-	}
-
 
 	segment_tree s_tree_aux(this->v_arr_);
 	
 	this->s_tree_ = s_tree_aux;
 }
+
 
 #endif
