@@ -212,59 +212,56 @@ read_query(istream & is,ostream & os, sensornet & S, size_t id, size_t & pos1, s
 	bool first = true;
 	size_t j;
 	q_state = true;
-	is >> str;
+	
+	getline(is, str);
 	if(str.empty()){
 		q_state = false;
 		return true;
 	}
+	stringstream str_st(str);
+	if (!getline(str_st, str2, ',')){			//Se leen solo los q_ids
+		os << "BAD QUERY"<<endl;
+		q_state	= false;
+		return true;
+	}
 	else{
-		is.clear();
-		is.seekg(0,ios::beg);
-		getline(is, str);
-		stringstream str_st(str);
-		if (!getline(str_st, str2, ',')){			//Se leen solo los q_ids
-			os << "BAD QUERY"<< endl;
-			q_state	= false;
-			return true;
+		if(str2.empty()){
+			id = S.size()-1;
 		}
 		else{
-			if(str2.empty()){
-				id = S.size()-1;
+			if(!check_id(str2, S, id,first)){	//Se chequea que los q_id sean correctos
+				os << "UNKNOWN ID" << endl;
+				q_state = false;
+				return true;
+		
 			}
-			else{
-				if(!check_id(str2, S, id,first)){	//Se chequea que los q_id sean correctos
-					os << "UNKNOWN ID" << endl;
-					q_state = false;
-					return true;
-			
-				}
-			}	
-		}
-		if (!getline(str_st, str2, ',')){			//Se leen solo los q_ids
-			os << "BAD QUERY"<< endl;
+		}	
+	}
+	if (!getline(str_st, str2, ',')){			//Se leen solo los q_ids
+		os << "BAD QUERY"<< "dos"<< str2<< endl;
+		q_state	= false;
+		return true;
+	}
+
+	j=0;
+	while(str2[j] == ' '){
+		j++;
+	}
+
+ 	for (size_t i = j; i < str2.size(); i++){
+   		if (str2[i-1] == ' ' && str2[i] != ' '){
+    		os << "BAD QUERY"<< "tres"<<  endl;
 			q_state	= false;
 			return true;
-		}
-		
-		j=0;
-		while(str2[j] == ' '){
-  			j++;
- 		}
-
-  		for (size_t i = j; i < str2.size(); i++){
-    		if (str2[i-1] == ' ' && str2[i] != ' '){
-    			os << "BAD QUERY"<<  endl;
+    	}
+   		else{
+   			if(isdigit(str2[i]) == 0){
+     			os << "BAD QUERY"<< "cuatro"<< endl;
 				q_state	= false;
 				return true;
     		}
-   			else{
-   				if(isdigit(str2[i]) == 0){
-     				os << "BAD QUERY"<< endl;
-					q_state	= false;
-					return true;
-    			}
-  			}
   		}
+  	}
 
 
 		stringstream str_st1(str2);
@@ -310,7 +307,7 @@ read_query(istream & is,ostream & os, sensornet & S, size_t id, size_t & pos1, s
 			q_state = false;
 			return true;
 		}
-	}
+
 
 	return true;
 
@@ -333,7 +330,7 @@ query::process_data_std(sensornet & S, size_t id, size_t & pos1, size_t & pos2){
 	Array <data> aux_arr = 1;
 	size_t i, j = 0;
 	bool first = true;
-	data aux;
+	data aux, d;
 	
 	
 	for (i = pos1; i < pos2; i++){
@@ -350,13 +347,14 @@ query::process_data_std(sensornet & S, size_t id, size_t & pos1, size_t & pos2){
 
 	for (i = 0; i < aux_arr.size(); i++){
 		data aux(aux, aux_arr[i]);
+		d = aux;
 	}
 	
 
-	this-> min_ = aux.min();
-	this-> max_ = aux.max();
-	this-> mean_ = aux.sum()/aux.amount();
-	this-> amount_ = aux.amount();
+	this-> min_ = d.min();
+	this-> max_ = d.max();
+	this-> mean_ = d.sum()/d.amount();
+	this-> amount_ = d.amount();
 
 }
 
