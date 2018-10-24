@@ -24,7 +24,7 @@ public:
 	data(size_t pos);
 	data(size_t min, size_t max, size_t sum, size_t amount, size_t pos1, size_t pos2);
 	data (double value, size_t pos);
-	data (data & D1, data & D2);
+	data (data D1, data D2);
 	data( const data & D);
 	~data();
 
@@ -92,7 +92,7 @@ data::data(double value, size_t pos){
 
 
 // Constructor a partir de dos objetos data
-data::data(data & D1, data & D2){
+data::data(data D1, data D2){
 	this->min_ = calc_min(D1,D2);
 	this->max_ = calc_max(D1,D2);
 	this->sum_ = calc_sum(D1,D2);

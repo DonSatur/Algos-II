@@ -50,7 +50,7 @@ public:
 
 	void 		process_data_stree(sensornet & S, size_t id, size_t & pos1, size_t & pos2);
 
-	data& 		find_data(size_t pos1, size_t pos2, size_t index, segment_tree & s_tree);
+	data 		find_data(size_t pos1, size_t pos2, size_t index, segment_tree & s_tree);
 
 	friend
 	ostream& 	operator<<(ostream & os, query Q); 	
@@ -343,29 +343,23 @@ query::process_data_std(sensornet & S, size_t id, size_t & pos1, size_t & pos2){
 			aux_arr.push(S[id][i]);
 		}
 		j++;
-	}
+	}	
 
-
-	for (i = 0; i < aux_arr.size(); i++){
-		data aux(aux2, aux_arr[i]);
-		aux2 = aux;
-		cout<< aux2.min() << endl;
-		d = aux2;
-	}
-	
-
-	this-> min_ = d.min();
-	this-> max_ = d.max();
-	this-> mean_ = d.sum()/d.amount();
-	this-> amount_ = d.amount();
+	this-> min_ = aux2.min();
+	this-> max_ = aux2.max();
+	this-> mean_ = aux2.sum()/aux2.amount();
+	this-> amount_ = aux2.amount();
 
 }
 
 void
 query::process_data_stree(sensornet & S, size_t id, size_t & pos1, size_t & pos2){
 	data aux;
-	size_t index = floor(log2(pos2-pos1));
-
+	double tot_am = S[id].size();
+	double part_am = pos2-pos1;
+	size_t i = ceil(log2(tot_am/part_am)) ;
+	size_t index = pow(2, i) - 1;
+	
 	aux = find_data(pos1, pos2, index, S[id].s_tree());
 
 	this-> min_ = aux.min();
@@ -376,19 +370,33 @@ query::process_data_stree(sensornet & S, size_t id, size_t & pos1, size_t & pos2
 }
 
 
-data &
+data
 query::find_data(size_t pos1, size_t pos2, size_t index, segment_tree & s_tree){
 	size_t new_index;
 	data d_false;
+	size_t i;
+	double tot_am = (s_tree.size()+1)/2;
+	double part_am;
 
 	while (s_tree[index].pos1() != pos1){
 		index++;
 	}
+
 	if (pos2 == s_tree[index].pos2()){
 		return s_tree[index];
 	}
 	else if (pos2 > s_tree[index].pos2()){
-		new_index = floor(log2(pos2-s_tree[index].pos2()));
+		part_am =  pos2-s_tree[index].pos2();
+	//	cout << part_am << endl;
+		i = ceil(log2(tot_am/part_am));
+		new_index = pow(2, i) - 1;
+
+	//	cout <<  pos2 << "    " << s_tree[index].pos2()<< endl;
+	//	cout << tot_am << "    " << part_am << "    "<< tot_am/part_am<<endl;
+
+	//	cout<<log2(tot_am/part_am)<<" I "<< i << " NEW_I "<< new_index<<endl;
+
+
 		data aux(s_tree[index], find_data(s_tree[index].pos2(),pos2,new_index,s_tree));
 		return aux;
 	}
