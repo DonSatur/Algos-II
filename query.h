@@ -225,7 +225,7 @@ read_query(istream & is,ostream & os, sensornet & S, size_t & id, size_t & pos1,
 		return true;
 	}
 	else{
-		if(str2.empty()){
+		if(str2.empty()){ // Se pidieron todos los sensores. Como en el ultimo lugar de sensornet hay un SensorTotal, se cambia el id al del mismo.
 			id = S.size()-1;
 		}
 		else{
@@ -238,7 +238,7 @@ read_query(istream & is,ostream & os, sensornet & S, size_t & id, size_t & pos1,
 		}	
 	}
 
-	if (!getline(str_st, str2, ',')){			//Se leen solo los q_ids
+	if (!getline(str_st, str2, ',')){			//Se lee la primera posicion pedida
 		os << "BAD QUERY"<< str2<< endl;
 		q_state	= false;
 		return true;
@@ -275,7 +275,7 @@ read_query(istream & is,ostream & os, sensornet & S, size_t & id, size_t & pos1,
 		stringstream str_st1(str2);
 		str_st1 >> pos1;
 
-		if (!getline(str_st, str2, ',')){			//Se leen solo los q_ids
+		if (!getline(str_st, str2, ',')){			//Se lee la segunda posicion pedida
 			os << "BAD QUERY"<< endl;
 			q_state	= false;
 			return true;

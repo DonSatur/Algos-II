@@ -85,7 +85,6 @@ sensornet::operator[ ](size_t pos) const{
 bool read_file(istream &is,sensornet &s){
 
 	string str,str2;
-	data no_data();
 	size_t i, m, j = 0;
 	Array <bool> first;
 	first[0] = true;
@@ -97,8 +96,13 @@ bool read_file(istream &is,sensornet &s){
 	stringstream str_st(str2);
 	while(getline(str_st,str,',')){
 		if(str.empty()){
+			cout<<1;
 			cout<<"BAD DATA"<<endl;
 			return false;
+		}
+		if(str[str.size()-1] == '\r'){
+			stringstream st_aux(str); // ESTA SOLUCION ES ALGO QUE PUSE DESPUES DE CANSARME DE PROBAR IGUALANDO EL ULTIMO CARACTER A \0
+			getline(st_aux,str,'\r');
 		}
 		sensor s_aux(str);
 		if (s.size() == 1 && k){
@@ -114,12 +118,16 @@ bool read_file(istream &is,sensornet &s){
 		first.push(true);
 	}
 	while(getline(is, str2)){ // str2 se queda con los valores separados por coma
+		if(str2[str2.size()-1] == '\r'){
+			stringstream st_aux(str2); // ESTA SOLUCION ES ALGO QUE PUSE DESPUES DE CANSARME DE PROBAR IGUALANDO EL ULTIMO CARACTER A \0
+			getline(st_aux,str2,'\r');
+		}
 		m=0;
 		i=0;
 		stringstream str_st(str2);
 		while( getline(str_st,str,',')){ // str ahora tiene un valor
 			m++;
-				if(s[i].size() == 1 && first[i] == true){ //Evaluamos el caso en que sea el primer elemento del arreglo de datos
+			if(s[i].size() == 1 && first[i] == true){ //Evaluamos el caso en que sea el primer elemento del arreglo de datos
 				data no_data(0);
 				s[i][0] = no_data;					 
 				first[i] = false;
@@ -130,11 +138,12 @@ bool read_file(istream &is,sensornet &s){
 			}
 			if(!str.empty()){
 				for (size_t r = 0; r<str.size(); r++){
-					if(!isdigit(str[r]) && str[r]!='.'){
+					if(!isdigit(str[r]) && str[r] != '.'){
 						cout<<"BAD DATA"<<endl;
 						return false;
 					}
 					if(str[r] == '.' && !isdigit(str[r+1])){
+						cout<<3;
 						cout << "BAD DATA" <<endl;
 						return false;
 					}
@@ -146,9 +155,17 @@ bool read_file(istream &is,sensornet &s){
 			}
 			i++;
 		}
+		if(str.empty()){ // caso en el cual el ultimo sensor no tiene informacion. Por lo tanto despues de la ultima coma lo unico que se guarda hasta \n es vacio
+			m++;
+			data no_data(j);
+			s[i].push(no_data);
+			//cout<<"Entro aca en el sensor numero "<<i+1<<"En la posicion: "<<j<<endl;
+		}
 		j++;
-		if(m > s.size()){
+
+		if(m != s.size()){
 			cout<<s.size()<<" Y "<<m<<endl;
+			cout<<4;
 			cout << "BAD DATA" << endl;
 			return false;
 		}
@@ -164,24 +181,28 @@ bool read_file(istream &is,sensornet &s){
 
 	for (i = 0 ; i<s.size()-1; i++){
 		if(s[i].size() != s[i+1].size()){
+			cout<<5;
 			cout<<"BAD DATA"<<endl;
 			return false;
 		}
 	}
-
+	m = s[i].size();
 	s.push(all_sensors);
-	for(j = 0; j<s[i].size(); j++){
-		val_aux = 0;
-		for (i = 0 ; i<s.size(); i++){
-			val_aux += s[i][j].sum();
+	for(j = 0; j<m; j++){  // En este for j es el tiempo
+		 data data_aux(0);
+		for (i = 0 ; i<s.size()-1; i++){ // En este for i es el indice del i-esimo sensor
+			data d_aux(data_aux,s[i][j]); 
+			data_aux = d_aux;
 		}
-		val_aux = val_aux/i;
-		data data_aux(val_aux,j);
+		cout<< data_aux.sum()<< " Divido en "<<data_aux.amount()<<" Es: ";
+		val_aux = data_aux.sum()/data_aux.amount();
+		cout<<val_aux<<endl;
+		data d_aux(val_aux,j);
 		if (s[s.size()-1].size() == 1 && j == 0){
-			s[s.size()-1][0] = data_aux;
+			s[s.size()-1][0] = d_aux;
 		}
 		else{
-			s[s.size()-1].push(data_aux);
+			s[s.size()-1].push(d_aux);
 		}
 	}
 	if(s.stree_mode()){
