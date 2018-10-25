@@ -85,7 +85,7 @@ sensornet::operator[ ](size_t pos) const{
 bool read_file(istream &is,sensornet &s){
 
 	string str,str2;
-	size_t i, m, j = 0;
+	size_t i = 0, m, j = 0;
 	Array <bool> first;
 	first[0] = true;
 	double val_aux;
@@ -93,16 +93,25 @@ bool read_file(istream &is,sensornet &s){
 	sensor all_sensors("All sensors");
 
 	getline(is,str2);
+	if(str2[str2.size()-1] == '\r'){
+		stringstream st_aux(str2); // ESTA SOLUCION ES ALGO QUE PUSE DESPUES DE CANSARME DE PROBAR IGUALANDO EL ULTIMO CARACTER A \0
+		getline(st_aux,str2,'\r');
+	}
 	stringstream str_st(str2);
 	while(getline(str_st,str,',')){
 		if(str.empty()){
 			cout<<"BAD DATA"<<endl;
 			return false;
 		}
-		if(str[str.size()-1] == '\r'){
-			stringstream st_aux(str); // ESTA SOLUCION ES ALGO QUE PUSE DESPUES DE CANSARME DE PROBAR IGUALANDO EL ULTIMO CARACTER A \0
-			getline(st_aux,str,'\r');
+
+		//Se chequea si dos sensores 
+		for(i = 0; i < s.size(); i++){
+			if(s[i].id() == str){
+				cout<<"BAD DATA" << endl;
+				return false;
+			}
 		}
+
 		sensor s_aux(str);
 		if (s.size() == 1 && k){
 			s[0] = s_aux;

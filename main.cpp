@@ -3,6 +3,7 @@
 #include <iostream>
 #include <sstream>
 #include <cstdlib>
+#include <ctime>
 
 #include "cmdline.h"
 #include "sensornet.h"
@@ -76,6 +77,13 @@ opt_output(string const &arg)
 			oss = &output_csv;
 		}
 		else{			// Si el archivo existe, lo abre para escritura
+			if(ofs.is_open()){
+				cerr << "already open "
+		    	 << arg
+		    	 << "."
+		   		  << endl;
+				exit(1);
+			}
 			ofs.open(arg.c_str(), ios::out);
 			oss = &ofs;
 		}
@@ -112,7 +120,7 @@ opt_data(string const &arg)
 static void
 opt_help(string const &arg)
 {
-	cout << "cmdline [-d file] [-i file] [-o file]"
+	cout << "cmdline [-d file] [-i file] [-o file]"<< " (for segment tree mode, add [-s] at the end)"
 	     << endl;
 	exit(0);
 }
@@ -139,6 +147,11 @@ main(int argc, char * const argv[])
 									//	*el arreglo al que se le calculan los resultados
 									//	*los resultados: promedio, minimo, maximo, cantidad de valores.
 
+	clock_t begin = clock();
+
+	//code_to_time();
+
+
 	if (!read_file(*diss,S)){		// Lee el archivo de entrada donde estan los valores de los sensores
 		return EXIT_FAILURE;
 	}
@@ -152,5 +165,12 @@ main(int argc, char * const argv[])
 
 		}
 	}
+
+	clock_t end = clock();
+	double elapsed_clock = double(end - begin);
+	double elapsed_msecs = double(end - begin) *1000 / CLOCKS_PER_SEC;
+
+	cout << "Clocks transcurridos: " << elapsed_clock << endl;
+	cout << "Tiempo transcurrido: " << elapsed_msecs << " milisegundos" << endl;
 	return EXIT_SUCCESS;
 }

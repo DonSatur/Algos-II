@@ -210,10 +210,12 @@ read_query(istream & is,ostream & os, sensornet & S, size_t & id, size_t & pos1,
 	string str,str2,str3, str4;
 	Array <size_t> id_number;		//Aca se guarda la posicion (dentro de sensornet) de cada sensor
 	bool first = true;
-	size_t j;
+	size_t j,k ;
 	q_state = true;
 	
-	getline(is, str);
+	if(!getline(is, str)){
+		return false;
+	}
 	if(str.empty()){
 		q_state = false;
 		return true;
@@ -255,20 +257,17 @@ read_query(istream & is,ostream & os, sensornet & S, size_t & id, size_t & pos1,
 	while(str2[j] == ' '){
 		j++;
 	}
+	k=str2.size()-1;
+	while(str2[k] == ' '){
+		k--;
+	}
 
- 	for (size_t i = j; i < str2.size(); i++){
-   		if (str2[i-1] == ' ' && str2[i] != ' '){
+ 	for (size_t i = j; i < k; i++){
+   		if (isdigit(str2[i]) == 0){
     		os << "BAD QUERY"<<  endl;
-		q_state	= false;
-		return true;
+			q_state	= false;
+			return true;
     	}
-   		else{
-   			if(isdigit(str2[i]) == 0){
-     			os << "BAD QUERY"<< endl;
-				q_state	= false;
-				return true;
-    			}
-  		}
   	}
 
 
@@ -291,19 +290,17 @@ read_query(istream & is,ostream & os, sensornet & S, size_t & id, size_t & pos1,
   			j++;
  		}
 
-  		for (size_t i = j; i < str2.size(); i++){
-    		if (str2[i-1] == ' ' && str2[i] != ' '){
-    			os << "BAD QUERY"<< endl;
+ 		k=str2.size()-1;
+		while(str2[k] == ' '){
+			k--;
+		}
+
+ 		for (size_t i = j; i < k; i++){
+   			if (isdigit(str2[i]) == 0){
+    			os << "BAD QUERY"<<  endl;
 				q_state	= false;
 				return true;
     		}
-   			else{
-   				if(!isdigit(str2[i])){
-     				os << "BAD QUERY"<< endl;
-					q_state	= false;
-					return true;
-    				}
-  			}
   		}
 
 		stringstream str_st2(str2);
@@ -356,6 +353,11 @@ query::process_data_std(sensornet & S, size_t id, size_t & pos1, size_t & pos2){
 		}
 		j++;
 	}	
+
+	for(i=0; i<aux_arr.size(); i++){
+		data aux(aux2, aux_arr[i]);
+		aux2 = aux;
+	}
 
 	this-> min_ = aux2.min();
 	this-> max_ = aux2.max();
