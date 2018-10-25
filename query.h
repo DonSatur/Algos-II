@@ -239,10 +239,17 @@ read_query(istream & is,ostream & os, sensornet & S, size_t & id, size_t & pos1,
 	}
 
 	if (!getline(str_st, str2, ',')){			//Se leen solo los q_ids
-		os << "BAD QUERY"<< "dos"<< str2<< endl;
+		os << "BAD QUERY"<< str2<< endl;
 		q_state	= false;
 		return true;
 	}
+
+	if(str2.empty()){
+		os << "BAD QUERY"<< endl;
+		q_state	= false;
+		return true;		
+	}
+	
 
 	j=0;
 	while(str2[j] == ' '){
@@ -251,16 +258,16 @@ read_query(istream & is,ostream & os, sensornet & S, size_t & id, size_t & pos1,
 
  	for (size_t i = j; i < str2.size(); i++){
    		if (str2[i-1] == ' ' && str2[i] != ' '){
-    		os << "BAD QUERY"<< "tres"<<  endl;
-			q_state	= false;
-			return true;
+    		os << "BAD QUERY"<<  endl;
+		q_state	= false;
+		return true;
     	}
    		else{
    			if(isdigit(str2[i]) == 0){
-     			os << "BAD QUERY"<< "cuatro"<< endl;
+     			os << "BAD QUERY"<< endl;
 				q_state	= false;
 				return true;
-    		}
+    			}
   		}
   	}
 
@@ -272,6 +279,11 @@ read_query(istream & is,ostream & os, sensornet & S, size_t & id, size_t & pos1,
 			os << "BAD QUERY"<< endl;
 			q_state	= false;
 			return true;
+		}
+		if(str2.empty()){
+			os << "BAD QUERY"<< endl;
+			q_state	= false;
+			return true;		
 		}
 		
 		j=0;
@@ -290,7 +302,7 @@ read_query(istream & is,ostream & os, sensornet & S, size_t & id, size_t & pos1,
      				os << "BAD QUERY"<< endl;
 					q_state	= false;
 					return true;
-    			}
+    				}
   			}
   		}
 
@@ -302,9 +314,9 @@ read_query(istream & is,ostream & os, sensornet & S, size_t & id, size_t & pos1,
 			q_state = false;
 			return true;
 		}
-		str_st2 >> str4;
-		if(str4!="\0"){
-			os<< "BAD QUERY"<< "BARRA CERO" << endl;
+		getline(str_st,str4);
+		if(!str4.empty()){
+			os<< "BAD QUERY"<< endl;
 			q_state = false;
 			return true;
 		}
@@ -387,21 +399,14 @@ query::find_data(size_t pos1, size_t pos2, size_t index, segment_tree & s_tree){
 	}
 	else if (pos2 > s_tree[index].pos2()){
 		part_am =  pos2-s_tree[index].pos2();
-	//	cout << part_am << endl;
 		i = ceil(log2(tot_am/part_am));
 		new_index = pow(2, i) - 1;
-
-	//	cout <<  pos2 << "    " << s_tree[index].pos2()<< endl;
-	//	cout << tot_am << "    " << part_am << "    "<< tot_am/part_am<<endl;
-
-	//	cout<<log2(tot_am/part_am)<<" I "<< i << " NEW_I "<< new_index<<endl;
-
 
 		data aux(s_tree[index], find_data(s_tree[index].pos2(),pos2,new_index,s_tree));
 		return aux;
 	}
 	else{
-		find_data(pos1,pos2,index+1,s_tree);
+		return find_data(pos1,pos2,index+1,s_tree);
 	}
 }
 

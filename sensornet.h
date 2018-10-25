@@ -119,7 +119,7 @@ bool read_file(istream &is,sensornet &s){
 		stringstream str_st(str2);
 		while( getline(str_st,str,',')){ // str ahora tiene un valor
 			m++;
-			if(s[i].size() == 1 && first[i] == true){ //Evaluamos el caso en que sea el primer elemento del arreglo de datos
+				if(s[i].size() == 1 && first[i] == true){ //Evaluamos el caso en que sea el primer elemento del arreglo de datos
 				data no_data(0);
 				s[i][0] = no_data;					 
 				first[i] = false;
@@ -147,7 +147,8 @@ bool read_file(istream &is,sensornet &s){
 			i++;
 		}
 		j++;
-		if(m != s.size()){
+		if(m > s.size()){
+			cout<<s.size()<<" Y "<<m<<endl;
 			cout << "BAD DATA" << endl;
 			return false;
 		}
@@ -188,6 +189,7 @@ bool read_file(istream &is,sensornet &s){
 			s[i].create_segment_tree();	
 		}	
 	}
+	return true;
 }
 
 void 
