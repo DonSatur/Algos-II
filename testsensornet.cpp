@@ -21,14 +21,14 @@ int main(){
 	char c;
 	string str;
 
-	cout<<"A: Crear sensornet a partir de archivo H: Imprimr el sensor indexado."<<endl;
+	cout<<"A: Create sensornet from file H: Print indexed sensor."<<endl;
 	while(cin>>c){
 		switch(c){
 			case 'A':
-				cout<<"Ingrese el nombre del archivo a partir del cual se creara la red de sensores."<<endl;
+				cout<<"Enter the name of the file from which the sensornet will be created."<<endl;
 				cin >> str;
 				if(str.empty()){
-					cout<<"Hubo un error leyendo el string"<<endl;
+					cout<<"Empty name"<<endl;
 					cin.clear();
 					cin.ignore(10000,'\n');
 					break;
@@ -42,13 +42,12 @@ int main(){
 			    		 << endl;
 					break;
 				}
-				if(!read_file(*diss,SN1)){
-					cout<<"El formato esta mal qcyo"<<endl;
-				}
+				read_file(*diss,SN1);
+				file.close();
 				break;
 			case 'H':
 				if(!(cin >> i)){
-					cout<< "No es un entero"<<endl;
+					cout<< "The value entered is not an int"<<endl;
 					cin.clear();
 					cin.ignore(10000,'\n');
 					break;
@@ -60,7 +59,7 @@ int main(){
 					}
 					break;
 				}
-				cout<< "Indice muy alto"<<endl;
+				cout<< "Index is higher than the amount of elements."<<endl;
 				break;
 
 			default:
