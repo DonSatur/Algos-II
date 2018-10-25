@@ -203,8 +203,7 @@ check_pos(sensornet & S, size_t id, size_t & pos1, size_t & pos2){
 	return true;
 }
 
-
-
+// Se interpreta la consulta y chequea que este bien. Se guardan los valores del flujo de entrada en distintas variables para poder ser utilizadas posteriormente.
 bool
 read_query(istream & is,ostream & os, sensornet & S, size_t & id, size_t & pos1, size_t & pos2,bool & q_state){
 	string str,str2,str3, str4;
@@ -216,12 +215,12 @@ read_query(istream & is,ostream & os, sensornet & S, size_t & id, size_t & pos1,
 	if(!getline(is, str)){
 		return false;
 	}
-	if(str.empty()){
+	if(str.empty()){ //Si la consulta esta vacia es un error.
 		q_state = false;
 		return true;
 	}
 	stringstream str_st(str);
-	if (!getline(str_st, str2, ',')){			//Se leen solo los q_ids
+	if (!getline(str_st, str2, ',')){//Se lee solo el ID y se guarda en str2
 		os << "BAD QUERY"<<endl;
 		q_state	= false;
 		return true;
@@ -231,7 +230,7 @@ read_query(istream & is,ostream & os, sensornet & S, size_t & id, size_t & pos1,
 			id = S.size()-1;
 		}
 		else{
-			if(!check_id(str2, S, id, first)){	//Se chequea que los q_id sean correctos
+			if(!check_id(str2, S, id, first)){	//Se chequea que el ID pedido este dentro de los que venian en el archivo de data
 				os << "UNKNOWN ID" << endl;
 				q_state = false;
 				return true;
@@ -246,7 +245,7 @@ read_query(istream & is,ostream & os, sensornet & S, size_t & id, size_t & pos1,
 		return true;
 	}
 
-	if(str2.empty()){
+	if(str2.empty()){ // Si no se pidio una posicion inicial es un error
 		os << "BAD QUERY"<< endl;
 		q_state	= false;
 		return true;		
@@ -254,9 +253,42 @@ read_query(istream & is,ostream & os, sensornet & S, size_t & id, size_t & pos1,
 	
 
 	j=0;
-	while(str2[j] == ' '){
+	while(str2[j] == ' '){ // Se limpian los espacios antes del valor.
 		j++;
 	}
+	k=str2.size()-1;
+	while(str2[k] == ' '){ // Se limpian los espacios despues del valor
+		k--;
+	}
+
+ 	for (size_t i = j; i < k; i++){ // Se chequea que entre las posiciones j y k solo hayan numeros y no simbolos o letras.
+   		if (!isdigit(str2[i])){
+    		os << "BAD QUERY"<<  endl;
+			q_state	= false;
+			return true;
+    	}
+  	}
+
+
+	stringstream str_st1(str2);
+	str_st1 >> pos1;
+
+	if (!getline(str_st, str2, ',')){// Se lee la segunda posicion pedida y se repite el procedimiento anterior
+		os << "BAD QUERY"<< endl;
+		q_state	= false;
+		return true;
+	}
+	if(str2.empty()){
+		os << "BAD QUERY"<< endl;
+		q_state	= false;
+		return true;		
+	}
+		
+	j=0;
+	while(str2[j] == ' '){
+  		j++;
+ 	}
+	
 	k=str2.size()-1;
 	while(str2[k] == ' '){
 		k--;
@@ -270,62 +302,28 @@ read_query(istream & is,ostream & os, sensornet & S, size_t & id, size_t & pos1,
     	}
   	}
 
+	stringstream str_st2(str2);
+	str_st2 >> pos2;
 
-		stringstream str_st1(str2);
-		str_st1 >> pos1;
-
-		if (!getline(str_st, str2, ',')){			//Se lee la segunda posicion pedida
-			os << "BAD QUERY"<< endl;
-			q_state	= false;
-			return true;
-		}
-		if(str2.empty()){
-			os << "BAD QUERY"<< endl;
-			q_state	= false;
-			return true;		
-		}
-		
-		j=0;
-		while(str2[j] == ' '){
-  			j++;
- 		}
-
- 		k=str2.size()-1;
-		while(str2[k] == ' '){
-			k--;
-		}
-
- 		for (size_t i = j; i < k; i++){
-   			if (isdigit(str2[i]) == 0){
-    			os << "BAD QUERY"<<  endl;
-				q_state	= false;
-				return true;
-    		}
-  		}
-
-		stringstream str_st2(str2);
-		str_st2 >> pos2;
-
-		if(!check_pos(S, id, pos1, pos2)){	//Se chequea que las posiciones sean correctas
-			os << "NO DATA" << endl;
-			q_state = false;
-			return true;
-		}
-		getline(str_st,str4);
-		if(!str4.empty()){
-			os<< "BAD QUERY"<< endl;
-			q_state = false;
-			return true;
-		}
-
+	if(!check_pos(S, id, pos1, pos2)){	//Se chequea que las posiciones sean correctas
+		os << "NO DATA" << endl;
+		q_state = false;
+		return true;
+	}
+	getline(str_st,str4); // Se chequea que no haya nada mas escrito despues de la segunda posicion pedida. Lo cual resultaria en un error.
+	if(!str4.empty()){
+		os<< "BAD QUERY"<< endl;
+		q_state = false;
+		return true;
+	}
 
 	return true;
-
 }
 
 
+// Dependiendo de si se pidio el segment tree se procesa la informacion pedida de una u otra forma. 
 void
-query::process_data(sensornet & S, size_t id, size_t & pos1, size_t & pos2){
+query::process_data(sensornet & S, size_t id, size_t & pos1, size_t & pos2){ 
 	if (!S.stree_mode()){
 		process_data_std(S, id, pos1, pos2);
 	}
@@ -334,6 +332,7 @@ query::process_data(sensornet & S, size_t id, size_t & pos1, size_t & pos2){
 	}
 }
 
+// En caso de no aclarar que se use segment tree se analiza la informacion buscando las posiciones inicial y final para el sensor pedido y se crea un data a partir de todos los datas.
 void
 query::process_data_std(sensornet & S, size_t id, size_t & pos1, size_t & pos2){
 
@@ -343,7 +342,7 @@ query::process_data_std(sensornet & S, size_t id, size_t & pos1, size_t & pos2){
 	data aux2, d;
 	
 	
-	for (i = pos1; i < pos2; i++){
+	for (i = pos1; i < pos2; i++){ // Se crea un sensor auxiliar que contiene solo la informacion pedida.
 		if (aux_arr.size() == 1 && first == true){
 			aux_arr[j] = S[id][i];
 			first = false;
@@ -354,11 +353,11 @@ query::process_data_std(sensornet & S, size_t id, size_t & pos1, size_t & pos2){
 		j++;
 	}	
 
-	for(i=0; i<aux_arr.size(); i++){
+	for(i=0; i<aux_arr.size(); i++){ // Se crea un data a partir del data actual y el siguiente, modificando el actual. De forma de comparar todos los datas del arreglo auxiliar.
 		data aux(aux2, aux_arr[i]);
 		aux2 = aux;
 	}
-
+	// Finalmente se devuelve el data que contiene la informacion resumida de todos los datas pedidos.
 	this-> min_ = aux2.min();
 	this-> max_ = aux2.max();
 	this-> mean_ = aux2.sum()/aux2.amount();
@@ -366,13 +365,14 @@ query::process_data_std(sensornet & S, size_t id, size_t & pos1, size_t & pos2){
 
 }
 
+// En caso de utilizar el segment tree se llama la funcion find_data
 void
 query::process_data_stree(sensornet & S, size_t id, size_t & pos1, size_t & pos2){
 	data aux;
 	double tot_am = S[id].size();
 	double part_am = pos2-pos1;
-	size_t i = ceil(log2(tot_am/part_am)) ;
-	size_t index = pow(2, i) - 1;
+	size_t i = ceil(log2(tot_am/part_am));
+	size_t index = pow(2, i) - 1; // Se envia la mayor posicion a partir de la cual se puede encontrar el rango de posicioines pedidas.
 	
 	aux = find_data(pos1, pos2, index, S[id].s_tree());
 
@@ -383,7 +383,7 @@ query::process_data_stree(sensornet & S, size_t id, size_t & pos1, size_t & pos2
 	
 }
 
-
+// Funcion recursiva que dadas dos posiciones y un indice a partir del cual empezar a buscar, encuentra el data equivalente al intervalo pedido por las posiciones
 data
 query::find_data(size_t pos1, size_t pos2, size_t index, segment_tree & s_tree){
 	size_t new_index;
@@ -392,23 +392,24 @@ query::find_data(size_t pos1, size_t pos2, size_t index, segment_tree & s_tree){
 	double tot_am = (s_tree.size()+1)/2;
 	double part_am;
 
-	while (s_tree[index].pos1() != pos1){
+	while (s_tree[index].pos1() != pos1){ // Se busca la primera posicion del segtree que tenga como posicion inicial la pedida por la consulta
 		index++;
 	}
-
-	if (pos2 == s_tree[index].pos2()){
+	// A partir de este punto se trabaja con una posicion en el segtree cuya pos1 es igual a la pedida.
+	if (pos2 == s_tree[index].pos2()){ // Caso base. Si el bloque del segtree tiene como pos2 la posicion final pedida se devuelve ese valor
 		return s_tree[index];
 	}
-	else if (pos2 > s_tree[index].pos2()){
+	else if (pos2 > s_tree[index].pos2()){ // En caso que la posicion final pedida sea mayor a la pos2 del lugar en el que me encuentro se realiza la busqueda cambiando
+										   // la posicion inicial a la pos2 del bloque en la cual nos encontrabamos.
 		part_am =  pos2-s_tree[index].pos2();
 		i = ceil(log2(tot_am/part_am));
-		new_index = pow(2, i) - 1;
+		new_index = pow(2, i) - 1; // La busqueda nuevamente empieza en la mayor posicion en la cual se puede encontrar el nuevo rango de posiciones pedidas.
 
 		data aux(s_tree[index], find_data(s_tree[index].pos2(),pos2,new_index,s_tree));
 		return aux;
 	}
-	else{
-		return find_data(pos1,pos2,index+1,s_tree);
+	else{ // Caso en el cual la posicion final pedida esta contenida dentro del rango de posiciones del bloque en el que nos encontramos.
+		return find_data(pos1,pos2,index+1,s_tree); // Se vuelve a hacer la busqueda con los mismos valores que antes empezando en la posicion siguiente a la del bloque ya encontrado.
 	}
 }
 
