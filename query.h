@@ -215,6 +215,10 @@ read_query(istream & is,ostream & os, sensornet & S, size_t & id, size_t & pos1,
 	if(!getline(is, str)){
 		return false;
 	}
+	if(str[str.size()-1] == '\r'){
+		stringstream str_st(str);
+		getline(str_st,str,'\r');
+	}
 	if(str.empty()){ //Si la consulta esta vacia es un error.
 		q_state = false;
 		return true;
@@ -240,7 +244,7 @@ read_query(istream & is,ostream & os, sensornet & S, size_t & id, size_t & pos1,
 	}
 
 	if (!getline(str_st, str2, ',')){			//Se lee la primera posicion pedida
-		os << "BAD QUERY"<< str2<< endl;
+		os << "BAD QUERY"<< endl;
 		q_state	= false;
 		return true;
 	}
@@ -273,7 +277,7 @@ read_query(istream & is,ostream & os, sensornet & S, size_t & id, size_t & pos1,
 	stringstream str_st1(str2);
 	str_st1 >> pos1;
 
-	if (!getline(str_st, str2, ',')){// Se lee la segunda posicion pedida y se repite el procedimiento anterior
+	if (!getline(str_st, str2,',')){// Se lee la segunda posicion pedida y se repite el procedimiento anterior
 		os << "BAD QUERY"<< endl;
 		q_state	= false;
 		return true;
