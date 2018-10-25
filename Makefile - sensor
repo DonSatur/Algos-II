@@ -1,17 +1,16 @@
 CXXFLAGS = -g -Wall -DDEBUG -I.
 
-all: test-query
+all: test-sensor
 	:
 
-test-query: test-query.o
-	$(CXX) $(CXXFLAGS) -o test-query test-query.o
+test-sensor: test-sensor.o
+	$(CXX) $(CXXFLAGS) -o test-sensor test-sensor.o
 
-test-query.o: test-query.cpp clone.h debug.h query.h 
-	$(CXX) $(CXXFLAGS) -c test-query.cpp
+test-sensor.o: test-sensor.cpp clone.h debug.h sensor.h
+	$(CXX) $(CXXFLAGS) -c test-sensor.cpp
 
 
-
-test: test-query
+test: test-sensor
 	@set -e; PATH="$$PATH:.";             \
 	for t in test-*-[1-9]; do             \
 	  echo testing: $$t.;                 \
@@ -20,7 +19,7 @@ test: test-query
 	done
 	@echo test ok.
 
-test-valgrind: test-query
+test-valgrind: test-sensor
 	@set -e; PATH="$$PATH:.";                                  \
 	for t in test-*-[1-9]; do                                  \
 	  echo testing: $$t.;                                      \
