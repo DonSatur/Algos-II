@@ -14,12 +14,12 @@ int main(){
 	char c;
 	Array <data> arr;
 
-	cout<<"A:Pushear al Array L:limpiar el Array O:Comparar los segment trees C:Crear segment tree a partir del Array K: Clonar P: Imprimir segment tree. H: Index I: Imprimir segundo segment tree "<<endl;
+	cout<<"A:Push data to array L: Clear array O: Compare segment trees C:Create segment tree from array K: Clone P: Print segment tree. H: Index I: Print second segment tree "<<endl;
 	while (cin >> c){
 		switch(c){
 			case 'A':{
 				if(!(cin >> daux)){
-					cout<< "No es un numero "<<endl;
+					cout<< "Value is not an int."<<endl;
 					cin.clear();
 					cin.ignore(10000,'\n');
 					break;
@@ -31,7 +31,7 @@ int main(){
 			}
 			case 'H':
 				if(!(cin >> i)){
-					cout<< "No es un entero"<<endl;
+					cout<< "Value is not an int."<<endl;
 					cin.clear();
 					cin.ignore(10000,'\n');
 					break;
@@ -44,14 +44,14 @@ int main(){
 					cout<< "pos : "<<'['<<ST1[i].pos1()<<','<<ST1[i].pos2()<<')'<<endl;
 					break;
 				}
-				cout<< "Indice muy alto"<<endl;
+				cout<< "Index too high."<<endl;
 				break;
 			case 'O':
 				if(ST1 == ST2){
-					cout<<"Los segment trees son iguales"<<endl;
+					cout<<"Segment trees are equal"<<endl;
 					break;
 				}
-				cout<<"Los segment trees no son iguales"<<endl;
+				cout<<"Segment trees are different."<<endl;
 				break;
 			case 'L':
 				arr.clear();
