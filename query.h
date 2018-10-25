@@ -256,13 +256,13 @@ read_query(istream & is,ostream & os, sensornet & S, size_t & id, size_t & pos1,
 	while(str2[j] == ' '){ // Se limpian los espacios antes del valor.
 		j++;
 	}
-	k=str2.size()-1;
-	while(str2[k] == ' '){ // Se limpian los espacios despues del valor
+	k=str2.size();
+	while(str2[k-1] == ' '){ // Se limpian los espacios despues del valor
 		k--;
 	}
 
  	for (size_t i = j; i < k; i++){ // Se chequea que entre las posiciones j y k solo hayan numeros y no simbolos o letras.
-   		if (!isdigit(str2[i])){
+   		if (isdigit(str2[i]) == 0){
     		os << "BAD QUERY"<<  endl;
 			q_state	= false;
 			return true;
@@ -289,8 +289,8 @@ read_query(istream & is,ostream & os, sensornet & S, size_t & id, size_t & pos1,
   		j++;
  	}
 	
-	k=str2.size()-1;
-	while(str2[k] == ' '){
+	k=str2.size();
+	while(str2[k-1] == ' '){
 		k--;
 	}
 

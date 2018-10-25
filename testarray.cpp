@@ -44,14 +44,24 @@ int main(){
 				cout<< "Indice muy alto"<<endl;
 				break;
 			case 'I':
-				for(j = 0 ; j < arr.size(); j++){
-					cout<<arr[j]<<',';
+				if(arr.size() == 0){
+					cout<<"Arreglo vacio"<<endl;
+					break;
+				}
+				cout<<arr[0];
+				for(j = 1 ; j < arr.size(); j++){
+					cout<<','<<arr[j];
 				}		
 				cout<<endl;
 				break;
 			case 'Y':
-				for(j = 0 ; j < arr2.size(); j++){
-					cout<<arr2[j]<<',';
+				if(arr2.size() == 0){
+					cout<<"Arreglo vacio"<<endl;
+					break;
+				}
+				cout<<arr2[0];
+				for(j = 1 ; j < arr2.size(); j++){
+					cout<<','<<arr2[j];
 				}		
 				cout<<endl;
 				break;

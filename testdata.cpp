@@ -8,7 +8,7 @@ int main(){
 	char c;
 	size_t max,min,sum,amount;
 	bool state;
-	Array <size_t> pos;
+	size_t pos1,pos2;
 
 	cout<<"M:Maximo entre D1 y D2 m:Minimo entre D1 y D2 S:Suma entre D1 y D2 P:Imprimir D1 y D2 C:Comparar K:Clonar D:Modificar data "<<endl;
 	while(cin >> c){
@@ -97,24 +97,28 @@ int main(){
 					break;
 				}
 				cout<<"Ingrese limite inferior del intervalo: ";
-				if(!(cin >> pos[0])){
+				if(!(cin >> pos1)){
 					cout<< "No es un entero positivo "<<endl;
 					cin.clear();
 					cin.ignore(10000,'\n');
 					break;
 				}
 				cout<<"Ingrese limite superior del intervalo: ";
-				if(!(cin >> pos[1])){
+				if(!(cin >> pos2)){
 					cout<< "No es un entero positivo "<<endl;
 					cin.clear();
 					cin.ignore(10000,'\n');
 					break;
 				}
-				if(pos[1]<pos[0]){
+				if(pos2<pos1){
 					cout<<"El limite superior no puede ser menor al inferior"<<endl;
 					break;
 				}
-				data aux(min,max,sum,amount,pos);
+				if (pos1 == pos2){
+					cout<<"Las posiciones no pueden ser la misma"<<endl;
+					break;
+				}					
+				data aux(min,max,sum,amount,pos1,pos2);
 				data1 = aux;
 				break;
 			}
