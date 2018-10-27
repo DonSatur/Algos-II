@@ -137,7 +137,7 @@ bool read_file(istream &is,sensornet &s){
 		while(getline(str_st,str,',')){ // Se parsea la cadena con valores por comas.
 			m++;
 			if(m>s.size()){ // Caso en el cual hubieron mas datos que sensores.
-				cout << "BAD DATA" << endl;
+				cout << "BAD DATA"<< endl;
 				return false;
 			}
 			if(s[i].size() == 1 && first[i] == true){ //Se evalua el caso en que sea el primer elemento del arreglo de datos. Se inicializa el sensor en NO_DATA.
@@ -150,18 +150,24 @@ bool read_file(istream &is,sensornet &s){
 				s[i].push(no_data);
 			}
 			if(!str.empty()){ // Luego de inicializar el dato en NO_DATA se chequea que haya un dato valido dentro.
-				for (size_t r = 0; r<str.size(); r++){
-					if(str[0] == '.'){
-						cout<<"BAD DATA"<<endl;
-						return false;
-					}
-					if(!isdigit(str[r]) && str[r] != '.'){
-						cout<<"BAD DATA"<<endl;
-						return false;
-					}
-					if(str[r] == '.' && !isdigit(str[r+1])){
-						cout << "BAD DATA" <<endl;
-						return false;
+				if(!isdigit(str[0]) && str[0] != '-'){
+					cout<<"BAD DATA" << endl;
+					return false;
+				}
+				else{
+					for (size_t r = 1; r<str.size(); r++){
+						if(str[0] == '.'){
+							cout<<"BAD DATA"<<endl;
+							return false;
+						}
+						if(!isdigit(str[r]) && str[r] != '.'){
+							cout<<"BAD DATA"<<endl;
+							return false;
+						}
+						if(str[r] == '.' && !isdigit(str[r+1])){
+							cout << "BAD DATA"<<endl;
+							return false;
+						}
 					}
 				} // Si el dato estaba vacio o si tenia un dato, y este paso por todas las pruebas anteriores se procede a ingresarlo al sensor en la posicion correspondiente.
 				stringstream str_st2(str);
@@ -181,44 +187,55 @@ bool read_file(istream &is,sensornet &s){
 			cout << "BAD DATA" << endl;
 			return false;
 		}
+
 	}
-	for(i=0; i<s.size(); i++){ // Una vez llena la red de sensores con el archivo se completa cada arreglo con NO_DATA para que la longitud del arreglo sea alloc_size (potncia de 2)
-		if (s[i].size() != s[i].alloc_size()){
-			for(j=s[i].size(); j<s[i].alloc_size(); j++){
-				data no_data(j);
-				s[i][j] = no_data;
-			}
+
+	if(j == 0){
+		for(i=0; i<s.size(); i++){
+			s[i].clear();
 		}
 	}
 
-	for (i = 0 ; i<s.size()-1; i++){ // Se chequea que la longitud de todos los sensores sea igual.
-		if(s[i].size() != s[i+1].size()){
-			cout<<"BAD DATA"<<endl;
-			return false;
+	else{	
+		for(i=0; i<s.size(); i++){ // Una vez llena la red de sensores con el archivo se completa cada arreglo con NO_DATA para que la longitud del arreglo sea alloc_size (potncia de 2)
+			if (s[i].size() != s[i].alloc_size()){
+				for(j=s[i].size(); j<s[i].alloc_size(); j++){
+					data no_data(j);
+					s[i][j] = no_data;
+				}
+			}
 		}
-	}
-	m = s[i].size();
-	s.push(all_sensors);
-	for(j = 0; j<m; j++){  // Se recorre un sensor hasta el final
-		 data data_aux(0);
-		for (i = 0 ; i<s.size()-1; i++){ // Se recorre cada sensor
-			data d_aux(data_aux,s[i][j]);  // Se genera un data a partir de todos los sensores para el tiempo j
-			data_aux = d_aux;
-		}
-		val_aux = data_aux.sum()/data_aux.amount(); // Se calcula el promedio de los valores leidos para el tiempo j
-		data d_aux(val_aux,j); 
-		if (s[s.size()-1].size() == 1 && j == 0){ // Se guarda en el ultimo sensor (All sensors) el promedio de los datos para cada tiempo.
-			s[s.size()-1][0] = d_aux;
-		}
-		else{
-			s[s.size()-1].push(d_aux);
-		}
-	}
-	if(s.stree_mode()){ // Si el usuario ingreso la opcion de utilizar el segment tree se crean los mismo.
-		for(size_t i=0; i<s.size(); i++){
-			s[i].create_segment_tree();	
+
+		m = s[i-1].size();
+		s.push(all_sensors);
+		for(j = 0; j<m; j++){  // Se recorre un sensor hasta el final
+			data data_aux(0);
+			data d_aux(0);
+			for (i = 0 ; i<s.size()-1; i++){ // Se recorre cada sensor
+				data d_aux(data_aux,s[i][j]);  // Se genera un data a partir de todos los sensores para el tiempo j
+				data_aux = d_aux;
+			}
+			if(data_aux.amount() !=0){
+				val_aux = data_aux.sum()/data_aux.amount(); // Se calcula el promedio de los valores leidos para el tiempo j
+				data d_aux(val_aux,j); 
+			}
+			else{
+				data d_aux(j);
+			}
+			if (s[s.size()-1].size() == 1 && j == 0){ // Se guarda en el ultimo sensor (All sensors) el promedio de los datos para cada tiempo.
+				s[s.size()-1][0] = d_aux;
+			}
+			else{
+				s[s.size()-1].push(d_aux);
+			}
 		}	
+		if(s.stree_mode()){ // Si el usuario ingreso la opcion de utilizar el segment tree se crean los mismo.
+			for(size_t i=0; i<s.size(); i++){
+				s[i].create_segment_tree();	
+			}	
+		}
 	}
+
 	return true;
 }
 
