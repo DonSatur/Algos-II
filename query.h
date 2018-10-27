@@ -211,14 +211,20 @@ read_query(istream & is,ostream & os, sensornet & S, size_t & id, size_t & pos1,
 	bool first = true;
 	size_t j,k ;
 	q_state = true;
+
+	getline(is,str2); // Se queda con la primera linea del archivo. Si el archivo es valido contiene los IDs de los sensores a agregar separados por coma
+	if(str2[str2.size()-1] == '\r'){ // Chequeo en caso de que el archivo haya sido creado en Windows, por lo cual el ultimo caracter previo al \n es el caracter de retorno \r
+		stringstream st_aux(str2);
+		getline(st_aux,str2,'\r');
+	}
+	stringstream str_s(str2);
 	
-	if(!getline(is, str)){
+	if(!getline(str_s, str)){
 		return false;
 	}
-	if(str[str.size()-1] == '\r'){
-		stringstream str_st(str);
-		getline(str_st,str,'\r');
-	}
+
+
+
 	if(str.empty()){ //Si la consulta esta vacia es un error.
 		q_state = false;
 		return true;
@@ -277,7 +283,7 @@ read_query(istream & is,ostream & os, sensornet & S, size_t & id, size_t & pos1,
 	stringstream str_st1(str2);
 	str_st1 >> pos1;
 
-	if (!getline(str_st, str2,',')){// Se lee la segunda posicion pedida y se repite el procedimiento anterior
+	if (!getline(str_st, str2, ',')){// Se lee la segunda posicion pedida y se repite el procedimiento anterior
 		os << "BAD QUERY"<< endl;
 		q_state	= false;
 		return true;
