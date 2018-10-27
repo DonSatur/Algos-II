@@ -44,7 +44,7 @@ public:
 	friend
 	bool		read_query(istream & is,ostream & os, sensornet & S, size_t & id, size_t & pos1, size_t & pos2, bool & end);
 
-	void		process_data(sensornet & S, size_t id, size_t & pos1, size_t & pos2);
+	bool		process_data(sensornet & S, size_t id, size_t & pos1, size_t & pos2);
 	
 	void 		process_data_std(sensornet & S, size_t id, size_t & pos1, size_t & pos2);
 
@@ -260,7 +260,6 @@ read_query(istream & is,ostream & os, sensornet & S, size_t & id, size_t & pos1,
 		q_state	= false;
 		return true;		
 	}
-	
 
 	j=0;
 	while(str2[j] == ' '){ // Se limpian los espacios antes del valor.
@@ -269,6 +268,18 @@ read_query(istream & is,ostream & os, sensornet & S, size_t & id, size_t & pos1,
 	k=str2.size();
 	while(str2[k-1] == ' '){ // Se limpian los espacios despues del valor
 		k--;
+	}
+	if(str2[j] == '-'){
+		if(!isdigit(str2[j+1])){
+			os << "BAD QUERY"<<endl;
+			q_state	= false;
+			return true;
+		}
+		else{
+			j=0;
+			k=1;
+			str2 = "0";
+		}
 	}
 
  	for (size_t i = j; i < k; i++){ // Se chequea que entre las posiciones j y k solo hayan numeros y no simbolos o letras.
@@ -284,12 +295,12 @@ read_query(istream & is,ostream & os, sensornet & S, size_t & id, size_t & pos1,
 	str_st1 >> pos1;
 
 	if (!getline(str_st, str2, ',')){// Se lee la segunda posicion pedida y se repite el procedimiento anterior
-		os << "BAD QUERY"<< endl;
+		os << "BAD QUERY"<<endl;
 		q_state	= false;
 		return true;
 	}
 	if(str2.empty()){
-		os << "BAD QUERY"<< endl;
+		os << "BAD QUERY"<<endl;
 		q_state	= false;
 		return true;		
 	}
@@ -303,10 +314,21 @@ read_query(istream & is,ostream & os, sensornet & S, size_t & id, size_t & pos1,
 	while(str2[k-1] == ' '){
 		k--;
 	}
-
+	if(str2[j] == '-'){
+		if(!isdigit(str2[j+1])){
+			os << "BAD QUERY"<< endl;
+			q_state	= false;
+			return true;
+		}
+		else{
+			j=0;
+			k=1;
+			str2 = "0";
+		}
+	}
  	for (size_t i = j; i < k; i++){
    		if (isdigit(str2[i]) == 0){
-    		os << "BAD QUERY"<<  endl;
+    		os << "BAD QUERY"<< endl;
 			q_state	= false;
 			return true;
     	}
@@ -332,7 +354,7 @@ read_query(istream & is,ostream & os, sensornet & S, size_t & id, size_t & pos1,
 
 
 // Dependiendo de si se pidio el segment tree se procesa la informacion pedida de una u otra forma. 
-void
+bool
 query::process_data(sensornet & S, size_t id, size_t & pos1, size_t & pos2){ 
 	if (!S.stree_mode()){
 		process_data_std(S, id, pos1, pos2);
@@ -340,6 +362,10 @@ query::process_data(sensornet & S, size_t id, size_t & pos1, size_t & pos2){
 	else{
 		process_data_stree(S, id, pos1, pos2);
 	}
+	if(this->amount_ == 0){
+		return false;
+	}
+	return true;
 }
 
 // En caso de no aclarar que se use segment tree se analiza la informacion buscando las posiciones inicial y final para el sensor pedido y se crea un data a partir de todos los datas.
@@ -361,8 +387,7 @@ query::process_data_std(sensornet & S, size_t id, size_t & pos1, size_t & pos2){
 			aux_arr.push(S[id][i]);
 		}
 		j++;
-	}	
-
+	}
 	for(i=0; i<aux_arr.size(); i++){ // Se crea un data a partir del data actual y el siguiente, modificando el actual. De forma de comparar todos los datas del arreglo auxiliar.
 		data aux(aux2, aux_arr[i]);
 		aux2 = aux;

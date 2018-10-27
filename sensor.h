@@ -39,6 +39,7 @@ public:
 	data const &	operator[ ]( size_t pos) const;
 
 	void 		push(const data& new_data);
+	void		clear();
 	void		create_segment_tree();
 };
 
@@ -198,6 +199,12 @@ void
 sensor::push(const data &new_data)
 {
 	this->v_arr_.push(new_data);
+}
+
+
+void
+sensor::clear(){
+	this->v_arr_.clear();
 }
 
 

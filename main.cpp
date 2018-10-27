@@ -20,6 +20,7 @@ static void opt_output(string const &);
 static void opt_data(string const &);
 static void opt_help(string const &);
 static void opt_stree(string const &);
+static void opt_time(string const &);
 
 /**************** Elementos globales ******************/
 static option_t options[] = {
@@ -28,6 +29,7 @@ static option_t options[] = {
 	{1, "d", "data", NULL, opt_data, OPT_MANDATORY},
 	{0, "h", "help", NULL, opt_help, OPT_DEFAULT},
 	{0, "s", "stree", NULL, opt_stree, OPT_DEFAULT},
+	{0, "t", "time", NULL, opt_time, OPT_DEFAULT},
 	{0, },
 };
 
@@ -38,6 +40,7 @@ static istream *iss = 0;	// Flujo de entrada que de existir archivo, toma sus va
 static fstream ofs;			// Flujo de archivo de salida donde se escribiran los resultados
 static ostream *oss = 0;	// Flujo de salida que de existir archivo de salida, toma su direccion y si no, escribe por cout
 static bool enable_stree = false;
+static bool enable_time = false;
 
 
 // Definicion y desarrollo de las funciones necesarias para cada opcion:
@@ -77,7 +80,7 @@ opt_output(string const &arg)
 			oss = &output_csv;
 		}
 		else{			// Si el archivo existe, lo abre para escritura
-			if(ofs.is_open()){
+			if(!ofs.is_open()){
 				cerr << "already open "
 		    	 << arg
 		    	 << "."
@@ -120,7 +123,7 @@ opt_data(string const &arg)
 static void
 opt_help(string const &arg)
 {
-	cout << "cmdline [-d file] [-i file] [-o file]"<< " (for segment tree mode, add [-s] at the end)"
+	cout << "cmdline [-d file] [-i file] [-o file]"<< " (for segment tree mode, add [-s] at the end) (to see time elapsed, add [-t] at the end)"
 	     << endl;
 	exit(0);
 }
@@ -130,6 +133,10 @@ opt_stree(string const &arg){
 	enable_stree = true;
 }
 
+static void
+opt_time(string const &arg){
+	enable_time = true;
+}
 
 
 int
@@ -152,15 +159,18 @@ main(int argc, char * const argv[])
 	//code_to_time();
 
 
-	if (!read_file(*diss,S)){		// Lee el archivo de entrada donde estan los valores de los sensores
+	if (!read_file(*diss,*oss,S)){		// Lee el archivo de entrada donde estan los valores de los sensores
 		return EXIT_FAILURE;
 	}
 	else{
 		while(read_query(*iss,*oss, S, id, pos1, pos2,q_state)){	// Lee las consultas
 			if(q_state){												// Si las consultas son correctas,
-				Q.process_data(S, id, pos1, pos2);				// se procesa la data.
+				if(!Q.process_data(S, id, pos1, pos2)){				// se procesa la data.
+					*oss<< "NO DATA" << endl;
+				}
+				else{
 				*oss <<Q;									// Se escribe el resultado donde corresponde.
-
+				}
 			}
 
 		}
@@ -169,8 +179,9 @@ main(int argc, char * const argv[])
 	clock_t end = clock();
 	double elapsed_clock = double(end - begin);
 	double elapsed_msecs = double(end - begin) *1000 / CLOCKS_PER_SEC;
-
-	cout << "Clocks transcurridos: " << elapsed_clock << endl;
-	cout << "Tiempo transcurrido: " << elapsed_msecs << " milisegundos" << endl;
+	if(enable_time){
+		cout << "Clocks transcurridos: " << elapsed_clock << endl;
+		cout << "Tiempo transcurrido: " << elapsed_msecs << " milisegundos" << endl;
+	}
 	return EXIT_SUCCESS;
 }

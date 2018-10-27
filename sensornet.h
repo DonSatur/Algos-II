@@ -26,7 +26,7 @@ public:
 	sensor &		operator[ ]( size_t pos);
 	sensor const &	operator[ ]( size_t pos) const;
 
-	friend bool read_file(istream&,sensornet&);
+	friend bool read_file(istream&,ostream &os,sensornet&);
 
 	void push(const sensor &new_sensor);
 
@@ -84,7 +84,7 @@ sensornet::operator[ ](size_t pos) const{
 
 // Metodo que recibe un archivo mediante flujo de entrada, lo parsea como corresponda para crear una red de sensores
 
-bool read_file(istream &is,sensornet &s){
+bool read_file(istream &is,ostream &os,sensornet &s){
 	
 	string str,str2;
 	size_t i=0, m, j = 0;
@@ -99,17 +99,18 @@ bool read_file(istream &is,sensornet &s){
 		stringstream st_aux(str2);
 		getline(st_aux,str2,'\r');
 	}
-	stringstream str_st(str2);
-	while(getline(str_st,str,',')){ // Se parsea la linea ingresada por comas y se chequea que los datos sean validos.
-		
-		if(str.empty()){ // En caso de que no haya ningun ID se devuelve un mensaje de error.
-			cout<<"BAD DATA"<<endl;
+
+	if(str2.empty()){ // En caso de que no haya ningun ID se devuelve un mensaje de error.
+			os<<"BAD DATA"<<endl;
 			return false;
 		}
 
+	stringstream str_st(str2);
+	while(getline(str_st,str,',')){ // Se parsea la linea ingresada por comas y se chequea que los datos sean validos.
+
 		for(i = 0 ; i<s.size() ; i++){ // Se chequea que los nombres de los sensores no esten repetidos.
 			if(str == s[i].id()){
-				cout<<"BAD DATA"<<endl;
+				os<<"BAD DATA"<<endl;
 				return false; 
 			}
 		}
@@ -137,7 +138,7 @@ bool read_file(istream &is,sensornet &s){
 		while(getline(str_st,str,',')){ // Se parsea la cadena con valores por comas.
 			m++;
 			if(m>s.size()){ // Caso en el cual hubieron mas datos que sensores.
-				cout << "BAD DATA"<< endl;
+				os << "BAD DATA"<< endl;
 				return false;
 			}
 			if(s[i].size() == 1 && first[i] == true){ //Se evalua el caso en que sea el primer elemento del arreglo de datos. Se inicializa el sensor en NO_DATA.
@@ -151,21 +152,21 @@ bool read_file(istream &is,sensornet &s){
 			}
 			if(!str.empty()){ // Luego de inicializar el dato en NO_DATA se chequea que haya un dato valido dentro.
 				if(!isdigit(str[0]) && str[0] != '-'){
-					cout<<"BAD DATA" << endl;
+					os<<"BAD DATA" << endl;
 					return false;
 				}
 				else{
 					for (size_t r = 1; r<str.size(); r++){
 						if(str[0] == '.'){
-							cout<<"BAD DATA"<<endl;
+							os<<"BAD DATA"<<endl;
 							return false;
 						}
 						if(!isdigit(str[r]) && str[r] != '.'){
-							cout<<"BAD DATA"<<endl;
+							os<<"BAD DATA"<<endl;
 							return false;
 						}
 						if(str[r] == '.' && !isdigit(str[r+1])){
-							cout << "BAD DATA"<<endl;
+							os << "BAD DATA"<<endl;
 							return false;
 						}
 					}
@@ -184,7 +185,7 @@ bool read_file(istream &is,sensornet &s){
 		}
 		j++;
 		if(m != s.size()){ // m cuenta la cantidad de valores que se agregaron para el tiempo j. Si no coincide con la cantidad de sensores ingresados inicialmente es un error.
-			cout << "BAD DATA" << endl;
+			os << "BAD DATA" << endl;
 			return false;
 		}
 
@@ -197,7 +198,7 @@ bool read_file(istream &is,sensornet &s){
 	}
 
 	else{	
-		for(i=0; i<s.size(); i++){ // Una vez llena la red de sensores con el archivo se completa cada arreglo con NO_DATA para que la longitud del arreglo sea alloc_size (potncia de 2)
+		for(i=0; i<s.size(); i++){ // Una vez llena la red de sensores con el archivo se completa cada arreglo con NO_DATA para que la longitud del arreglo sea alloc_size (potencia de 2)
 			if (s[i].size() != s[i].alloc_size()){
 				for(j=s[i].size(); j<s[i].alloc_size(); j++){
 					data no_data(j);
@@ -217,10 +218,12 @@ bool read_file(istream &is,sensornet &s){
 			}
 			if(data_aux.amount() !=0){
 				val_aux = data_aux.sum()/data_aux.amount(); // Se calcula el promedio de los valores leidos para el tiempo j
-				data d_aux(val_aux,j); 
+				data data_aux(val_aux,j);
+				d_aux = data_aux; 
 			}
 			else{
-				data d_aux(j);
+				data data_aux(j);
+				d_aux = data_aux;
 			}
 			if (s[s.size()-1].size() == 1 && j == 0){ // Se guarda en el ultimo sensor (All sensors) el promedio de los datos para cada tiempo.
 				s[s.size()-1][0] = d_aux;
