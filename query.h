@@ -236,7 +236,7 @@ read_query(istream & is,ostream & os, sensornet & S, size_t & id, size_t & pos1,
 		return true;
 	}
 	else{
-		if(str2.empty()){ // Se pidieron todos los sensores. Como en el ultimo lugar de sensornet hay un SensorTotal, se cambia el id al del mismo.
+		if(str2.empty() || str2 == "-"){ // Se pidieron todos los sensores. Como en el ultimo lugar de sensornet hay un SensorTotal, se cambia el id al del mismo.
 			id = S.size()-1;
 		}
 		else{
