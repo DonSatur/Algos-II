@@ -206,29 +206,27 @@ check_pos(sensornet & S, size_t id, size_t & pos1, size_t & pos2){
 // Se interpreta la consulta y chequea que este bien. Se guardan los valores del flujo de entrada en distintas variables para poder ser utilizadas posteriormente.
 bool
 read_query(istream & is,ostream & os, sensornet & S, size_t & id, size_t & pos1, size_t & pos2,bool & q_state){
-	string str,str2,str3, str4;
+	string str,str2,str3;
 	Array <size_t> id_number;		//Aca se guarda la posicion (dentro de sensornet) de cada sensor
 	bool first = true;
 	size_t j,k ;
 	q_state = true;
 
-	getline(is,str2); // Se queda con la primera linea del archivo. Si el archivo es valido contiene los IDs de los sensores a agregar separados por coma
-	if(str2[str2.size()-1] == '\r'){ // Chequeo en caso de que el archivo haya sido creado en Windows, por lo cual el ultimo caracter previo al \n es el caracter de retorno \r
-		stringstream st_aux(str2);
-		getline(st_aux,str2,'\r');
-	}
-	stringstream str_s(str2);
-	
-	if(!getline(str_s, str)){
+	if(is.eof()){
 		return false;
 	}
 
-
+	getline(is,str); // Se queda con la primera linea del archivo. Si el archivo es valido contiene los IDs de los sensores a agregar separados por coma
+	if(str[str.size()-1] == '\r'){ // Chequeo en caso de que el archivo haya sido creado en Windows, por lo cual el ultimo caracter previo al \n es el caracter de retorno \r
+		stringstream st_aux(str);
+		getline(st_aux,str,'\r');
+	}
 
 	if(str.empty()){ //Si la consulta esta vacia es un error.
 		q_state = false;
 		return true;
 	}
+
 	stringstream str_st(str);
 	if (!getline(str_st, str2, ',')){//Se lee solo el ID y se guarda en str2
 		os << "BAD QUERY"<<endl;
@@ -336,8 +334,9 @@ read_query(istream & is,ostream & os, sensornet & S, size_t & id, size_t & pos1,
 
 	stringstream str_st2(str2);
 	str_st2 >> pos2;
-	getline(str_st,str4); // Se chequea que no haya nada mas escrito despues de la segunda posicion pedida. Lo cual resultaria en un error.
-	if(!str4.empty()){
+
+	getline(str_st,str3); // Se chequea que no haya nada mas escrito despues de la segunda posicion pedida. Lo cual resultaria en un error.
+	if(!str3.empty()){
 		os<< "BAD QUERY"<< endl;
 		q_state = false;
 		return true;
