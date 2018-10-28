@@ -206,7 +206,7 @@ check_pos(sensornet & S, size_t id, size_t & pos1, size_t & pos2){
 // Se interpreta la consulta y chequea que este bien. Se guardan los valores del flujo de entrada en distintas variables para poder ser utilizadas posteriormente.
 bool
 read_query(istream & is,ostream & os, sensornet & S, size_t & id, size_t & pos1, size_t & pos2,bool & q_state){
-	string str,str2,str3;
+	string str,str2,str3,str_aux;
 	Array <size_t> id_number;		//Aca se guarda la posicion (dentro de sensornet) de cada sensor
 	bool first = true;
 	size_t j,k ;
@@ -222,7 +222,10 @@ read_query(istream & is,ostream & os, sensornet & S, size_t & id, size_t & pos1,
 		getline(st_aux,str,'\r');
 	}
 
-	if(str.empty()){ //Si la consulta esta vacia es un error.
+	stringstream str_s(str);
+	str_s >> str_aux;
+
+	if(str_aux.empty()){ //Si la consulta esta vacia es un error.
 		q_state = false;
 		return true;
 	}
