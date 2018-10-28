@@ -11,25 +11,25 @@ using namespace std;
 
 
 class segment_tree{
-	Array info s_tree_;
+	Array <data> s_tree_;
 	size_t empty_index_;		// Indica cual es el primer indice contando de atras hacia adelante
 
 	public:
 		segment_tree();
 		segment_tree(size_t n);
-		segment_tree(Array info s_tree);
+		segment_tree(Array <data> arr);
 		segment_tree(const segment_tree & S_TREE);
 		~segment_tree();
 
-		size_t			empty_index();
-		size_t			size();
+		size_t			empty_index() const;
+		size_t			size() const;
 
-		void 			push(const info &new_info);		
-		sensor&			operator=( const sensor & S);
-		info &			operator[ ]( size_t pos);
-		info const &	operator[ ]( size_t pos) const;
-
-		void 			process_sensor(segment_tree & S_TREE, sensor & s);
+		void 			push(const data &new_data);
+		segment_tree&	operator=( const segment_tree & S); 
+		bool 			operator==( const segment_tree & S) const; 
+		bool 			operator!=( const segment_tree & S) const; 
+		data &			operator[ ]( size_t pos);
+		data const &	operator[ ]( size_t pos) const;
 
 };
 
@@ -37,30 +37,47 @@ class segment_tree{
 // Constructor por defecto
 segment_tree::segment_tree(){
 	this->s_tree_ = ARRAY_DEFAULT_SIZE ;
-	this->empty_index = s_tree_.size() - 1;
+	this->empty_index_ = s_tree_.size() - 1;
 }
 
 
 // Constructor por tamano del arreglo
 segment_tree::segment_tree(size_t n){
-	Array info s_aux(n);
-	this->s_tree_ = s_aux;
-	this->empty_index_ = n - 1;
+	Array <data> s_aux(n);
+		this->s_tree_ = s_aux;
+		this->empty_index_ = n - 1;
 }
 
 
 // Constructor por copia de arreglo
-segment_tree::segment_tree(Array info s_tree){
-	size_t j = s_tree.size() - 1;
+segment_tree::segment_tree(Array <data> arr){
+	size_t i, j;
+	int k;
 
-	Array info s_aux(2 * s_tree.size() - 1);
-	for (size_t i = s_aux.size() - 1; i--){
-		info i_aux(s_tree[j])
-		s_aux[i] == i_aux;
+	for(i=arr.size(); i<arr.alloc_size(); i++){
+		data d(i);
+		arr.push(d);
 	}
 
-	this->s_tree_ = s_aux;
-	this->empty_index = s_tree.size() - 1;
+	segment_tree s_aux(2 * arr.size() - 1);
+
+	j = arr.size();
+	for (i = s_aux.size() - 1; j>0; i--){
+		s_aux[i] = arr[j-1];
+		j--;
+	}
+	k = s_aux.size() - arr.size() -1;
+	j = s_aux.size();
+	while(k >= 0){
+		data aux(s_aux[j-2],s_aux[j-1]);
+		s_aux[k] = aux;
+		k--;
+		j-=2;
+	}
+
+
+	this->s_tree_ = s_aux.s_tree_;
+
 
 }
 
@@ -68,7 +85,7 @@ segment_tree::segment_tree(Array info s_tree){
 // Constructor por puntero
 segment_tree::segment_tree(const segment_tree & S_TREE){
 	this->s_tree_ = S_TREE.s_tree_;
-	this->empty_index = S_TREE.empty_index-;
+	this->empty_index_ = S_TREE.empty_index_;
 }
 
 
@@ -80,78 +97,74 @@ segment_tree::~segment_tree(){
 
 // Devuelve el valor de empty_index_
 size_t
-segment_tree::empty_index(){
+segment_tree::empty_index() const{
 	return this->empty_index_;
 }
 
 
 size_t
-segment_tree::size(){
+segment_tree::size() const{
 	return s_tree_.size();
 }
 
 
 void
-segment_tree::push(const info &new_info){
-	this->s_tree_.push(new_info);
+segment_tree::push(const data &new_data){
+	this->s_tree_.push(new_data);
 }
-		
+
 
 segment_tree&
-segment_tree::operator=( const segment_tree & S_TREE)
-{
-	if ( S_TREE.s_tree_ == this->s_tree_ && S_TREE.empty_index_ == this->empty_index_) 
-	{
+segment_tree::operator=( const segment_tree & S){
+	if(this->s_tree_ == S.s_tree_ && this->empty_index_ == S.empty_index_){
 		return *this;
 	}
-	// Después, cambiamos el tamaño del arreglo si es necesario y procedemos a copiar
-	if(S_TREE.s_tree_ != this->s_tree_)
-	{
-		this->s_tree_=S_TREE.s_tree_;
+	if(this->s_tree_ != S.s_tree_){
+		this->s_tree_ = S.s_tree_;
 	}
-
-	if (S_TREE.empty_index_ != this->empty_index_)
-	{
-		this->empty_index_=S_TREE.empty_index_;
+	if(this->empty_index_ != S.empty_index_){
+		this->empty_index_ = S.empty_index_;
 	}
-
 	return *this;
+}
 
-} 
+bool 			
+segment_tree::operator==( const segment_tree & S) const{
+	if(this->s_tree_ != S.s_tree_){
+		return false;
+	}
+	else{
+		if(this->empty_index_ != S.empty_index_){
+			return false;
+		}
+	}
+	return true;
+}
 
 
-info &
+bool 			
+segment_tree::operator!=( const segment_tree & S) const{
+	if(this->s_tree_ == S.s_tree_){
+		return false;
+	}
+	else{
+		if(this->empty_index_ == S.empty_index_){
+			return false;
+		}
+	}
+	return true;
+}
+
+data &
 segment_tree::operator[ ]( size_t pos){
 	return s_tree_[pos];
 
 }
 
-info const &
+data const &
 segment_tree::operator[ ]( size_t pos) const{
 	return s_tree_[pos];
 }
 
-
-// Procesamiento de un sensor para convertirlo en segment_tree
-
-void 			
-segment_tree::process_sensor(segment_tree & S_TREE, sensor & s){
-	size_t i;
-	Array info i_arr(s.size());
-
-	for (i = 0; i < s.size(); i++){
-		info i_aux(s[i]);			// Convierto los objetos data en objetos info y luego
-		i_arr[i] = i_aux;			// creo el arreglo con toda la informacion
-
-	}
-	segment_tree s_tree_aux(i_arr);	// Creo el segment_tree con el arreglo original convertido
-	S_TREE = s_tree_aux;			// en un arreglo de objetos info
-
-	for (i = S_TREE.size(); i > 0; i-=2){
-		info i_aux(S_TREE[i-1], S_TREE[i]);
-		S_TREE[empty_index_] = i_aux;
-	}
-
-}
 
 #endif

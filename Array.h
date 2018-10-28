@@ -8,7 +8,7 @@
 #include <stdio.h>
 
 #define ARRAY_DEFAULT_SIZE 1
-#define ARRAY_GROWTH_RATE 5
+#define ARRAY_GROWTH_RATE 2
 
 using namespace std;
 
@@ -21,6 +21,7 @@ public:
 	Array( const Array<T> & ); 
 	~Array( ); 
 	size_t 		size( ) const; 
+	size_t		alloc_size( ) const;
 	Array<T>&	operator=( const Array<T> & ); 
 	bool 		operator==( const Array<T> & ) const; 
 	bool 		operator!=( const Array<T> & ) const; 
@@ -79,6 +80,9 @@ Array<T>::~Array(){
 
 template <typename T> 
 size_t Array<T>::size() const { return used_size_; }
+
+template <typename T> 
+size_t Array<T>::alloc_size() const { return alloc_size_; }
 
 template <typename T> 
 Array<T>& Array<T>::operator=( const Array<T> &rhs )
@@ -170,6 +174,7 @@ void Array<T>::clear()
 	ptr_ = new T[alloc_size_];
 }
 
+
 template <typename T> 
 void Array<T>::resize(size_t new_size)
 {
@@ -199,6 +204,7 @@ void Array<T>::push(const T &new_thing)
 	ptr_[used_size_] = new_thing;
 	used_size_++;
 }
+
 
 
 #endif

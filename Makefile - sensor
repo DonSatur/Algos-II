@@ -1,0 +1,32 @@
+CXXFLAGS = -g -Wall -DDEBUG -I.
+
+all: test-sensor
+	:
+
+test-sensor: test-sensor.o
+	$(CXX) $(CXXFLAGS) -o test-sensor test-sensor.o
+
+test-sensor.o: test-sensor.cpp clone.h debug.h sensor.h
+	$(CXX) $(CXXFLAGS) -c test-sensor.cpp
+
+
+test: test-sensor
+	@set -e; PATH="$$PATH:.";             \
+	for t in test-*-[1-9]; do             \
+	  echo testing: $$t.;                 \
+	  $$t <$$t.in >$$t.t;                 \
+	  diff $$t.ref $$t.t >/dev/null 2>&1; \
+	done
+	@echo test ok.
+
+test-valgrind: test-sensor
+	@set -e; PATH="$$PATH:.";                                  \
+	for t in test-*-[1-9]; do                                  \
+	  echo testing: $$t.;                                      \
+	  valgrind --tool=memcheck $$t <$$t.in >$$t.t 2>/dev/null; \
+	  diff $$t.ref $$t.t >/dev/null 2>&1;                      \
+	done
+	@echo test ok.
+
+clean:
+	rm -f *.o *.t core test-*-[1-9]
