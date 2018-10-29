@@ -99,6 +99,8 @@ read_ids(string IDs, sensornet &s){
 	stringstream str_st(IDs);
 	while(getline(str_st,ID,',')){ // Se parsea la linea ingresada por comas y se chequea que los datos sean validos.
 
+		if(ID.empty())
+			return false;
 		for(i = 0 ; i<s.size() ; i++){ // Se chequea que los nombres de los sensores no esten repetidos.
 			if(ID == s[i].id())
 				return false; 
