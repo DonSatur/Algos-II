@@ -430,6 +430,9 @@ query::find_data(size_t pos1, size_t pos2, size_t index, segment_tree & s_tree){
 
 	while (s_tree[index].pos1() != pos1){ // Se busca la primera posicion del segtree que tenga como posicion inicial la pedida por la consulta
 		index++;
+		if(s_tree[index].pos1() > pos1){
+			index = tuvieja;
+		}
 	}
 	// A partir de este punto se trabaja con una posicion en el segtree cuya pos1 es igual a la pedida.
 	if (pos2 == s_tree[index].pos2()){ // Caso base. Si el bloque del segtree tiene como pos2 la posicion final pedida se devuelve ese valor
